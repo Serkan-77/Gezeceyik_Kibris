@@ -1,6 +1,4 @@
-// app/places/page.tsx — All places listing (/places)
-// Server Component — passes data to Client Component PlaceFilters.
-// Suspense required because PlaceFilters uses useSearchParams.
+// app/places/page.tsx — Tüm Yerler (/places)
 
 import { Suspense } from 'react';
 import { Metadata } from 'next';
@@ -8,13 +6,12 @@ import { getAllPlaces, getAllCategories, getAllRegions } from '@/lib/places';
 import { PlaceFilters } from '@/components/places/PlaceFilters';
 
 export const metadata: Metadata = {
-  title: 'All Places in Cyprus — Museums, Castles, Beaches & More',
+  title: 'Kuzey Kıbrıs\'ta Tüm Yerler — Müzeler, Kaleler, Plajlar ve Daha Fazlası',
   description:
-    'Browse and filter all places to visit in Cyprus — museums, castles, archaeological sites, beaches, monasteries, viewpoints, and natural attractions across all six regions.',
+    'Kuzey Kıbrıs\'taki tüm gezilecek yerleri keşfedin — müzeler, kaleler, arkeolojik alanlar, plajlar, manastırlar, seyir noktaları ve doğa güzellikleri.',
   openGraph: {
-    title: 'Explore All Places in Cyprus | Cyprus Discovery',
-    description:
-      'Find museums, castles, beaches, monasteries, archaeological sites and more across Cyprus.',
+    title: 'Kuzey Kıbrıs\'ı Keşfet | Kuzey Kıbrıs Discovery',
+    description: 'Tüm bölgelerdeki müze, kale, plaj, manastır ve arkeolojik alanları bulun.',
   },
 };
 
@@ -25,21 +22,19 @@ export default function PlacesPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
-      {/* Page header */}
       <header className="mb-10 border-b border-[#f5f2ee] pb-8">
         <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-[#e8651a]">
-          All places
+          Tüm Yerler
         </p>
         <h1 className="font-display text-3xl font-bold text-[#1a1a1a] sm:text-4xl">
-          Explore Cyprus
+          Kuzey Kıbrıs&apos;ı Keşfet
         </h1>
         <p className="mt-2 max-w-2xl text-[#6b7280]">
-          Museums, castles, beaches, monasteries, archaeological sites, and
-          more — search and filter across all six regions.
+          Müzeler, kaleler, plajlar, manastırlar, arkeolojik alanlar ve daha fazlası —
+          tüm altı bölgede arayın ve filtreleyin.
         </p>
       </header>
 
-      {/* Filters + grid — wrapped in Suspense for useSearchParams */}
       <Suspense fallback={<FiltersSkeleton />}>
         <PlaceFilters places={places} categories={categories} regions={regions} />
       </Suspense>

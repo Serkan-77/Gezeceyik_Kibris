@@ -1,4 +1,4 @@
-// app/historical-places/page.tsx — Historical Places category landing
+// app/historical-places/page.tsx — Tarihi Yerler (/historical-places)
 
 import { Suspense } from 'react';
 import { Metadata } from 'next';
@@ -6,12 +6,12 @@ import { getPlacesByCategory, getAllRegions } from '@/lib/places';
 import { PlaceFilters } from '@/components/places/PlaceFilters';
 
 export const metadata: Metadata = {
-  title: 'Historical Places in Cyprus — Visitor Guide',
+  title: 'Kuzey Kıbrıs Tarihi Yerler — Ziyaretçi Rehberi',
   description:
-    'Discover the historical places of Cyprus — Gothic abbeys, Byzantine ruins, and sites spanning 10,000 years of history across all regions.',
+    'Kuzey Kıbrıs\'ın tarihi yerlerini keşfedin — Osmanlı hanları, Gotik kiliseler, Venedik surları ve 10.000 yıllık tarihe ev sahipliği yapan alanlar.',
   openGraph: {
-    title: 'Historical Places in Cyprus | Cyprus Discovery',
-    description: 'Abbeys, ancient sites, and places where centuries of Cypriot history are written into stone.',
+    title: 'Kuzey Kıbrıs Tarihi Yerler | Kuzey Kıbrıs Discovery',
+    description: 'Kuzey Kıbrıs\'ın tarihi hanlar, surlar, antik yapılar ve mimari miras alanları.',
   },
 };
 
@@ -23,14 +23,14 @@ export default function HistoricalPlacesPage() {
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
       <header className="mb-10 border-b border-[#f5f2ee] pb-8">
         <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-[#e8651a]">
-          Historical places
+          Tarihi Yerler
         </p>
         <h1 className="font-display text-3xl font-bold text-[#1a1a1a] sm:text-4xl">
-          Historical places in Cyprus
+          Kuzey Kıbrıs Tarihi Yerleri
         </h1>
         <p className="mt-2 max-w-2xl text-[#6b7280]">
-          Gothic abbeys, medieval old towns, and places where centuries of
-          Cypriot history are written into stone.
+          Osmanlı hanları, ortaçağ şehirleri ve tarihin taşa kazındığı alanlar —
+          Kuzey Kıbrıs&apos;ın yüzyıllar öncesine uzanan mirası.
         </p>
       </header>
       <Suspense>

@@ -1,14 +1,16 @@
 // types/place.ts
 // Core data model for the Cyprus Discovery platform.
 // Every attraction — museum, castle, beach, monastery, viewpoint — is a Place.
+// KKTC (Northern Cyprus) first, expandable island-wide.
 
+/** Northern Cyprus administrative regions — expandable to full island later. */
 export type Region =
-  | 'Nicosia'
-  | 'Limassol'
-  | 'Larnaca'
-  | 'Paphos'
-  | 'Famagusta'
-  | 'Kyrenia';
+  | 'Lefkoşa'
+  | 'Girne'
+  | 'Gazimağusa'
+  | 'İskele'
+  | 'Güzelyurt'
+  | 'Lefke';
 
 export type Category =
   | 'Museum'
@@ -45,9 +47,11 @@ export interface Accessibility {
 
 export interface Admission {
   isFree: boolean;
-  adultPrice?: number; // EUR
-  childPrice?: number; // EUR
-  currency?: 'EUR';
+  /** Adult price in TRY (Turkish Lira) for KKTC venues. */
+  adultPrice?: number;
+  /** Child price in TRY. */
+  childPrice?: number;
+  currency?: 'TRY' | 'EUR';
   notes?: string;
 }
 
@@ -64,7 +68,7 @@ export interface Place {
   description: string;
   /** Historical or cultural context. Optional — beaches / viewpoints may omit. */
   history?: string;
-  /** Primary image — path relative to /public, e.g. "/images/places/slug.jpg" */
+  /** Primary image — Unsplash URL or path relative to /public */
   image: string;
   gallery?: string[];
   /** Optional — open-air sites, beaches, and viewpoints may not have set hours. */

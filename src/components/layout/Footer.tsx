@@ -1,26 +1,29 @@
 // components/layout/Footer.tsx
-// Simplified dark footer — matches Navbar logo mark, clean typography hierarchy.
+// Kuzey Kıbrıs Discovery — Turkish dark footer.
 
 import Link from 'next/link';
 
 const exploreLinks = [
-  { href: '/places', label: 'All places' },
-  { href: '/museums', label: 'Museums' },
-  { href: '/castles', label: 'Castles' },
-  { href: '/beaches', label: 'Beaches' },
-  { href: '/historical-places', label: 'Historical places' },
+  { href: '/places', label: 'Tüm Yerler' },
+  { href: '/museums', label: 'Müzeler' },
+  { href: '/castles', label: 'Kaleler' },
+  { href: '/beaches', label: 'Plajlar' },
+  { href: '/historical-places', label: 'Tarihi Yerler' },
+  { href: '/harita', label: 'Harita' },
 ];
 
 const planLinks = [
-  { href: '/coming-soon', label: 'Plan your visit' },
-  { href: '/coming-soon', label: 'Travel tips' },
-  { href: '/coming-soon', label: 'Getting around' },
+  { href: '/gezi-planla', label: 'Gezi Planla' },
+  { href: '/favoriler', label: 'Favorilerim' },
+  { href: '/places?category=Natural+Attraction', label: 'Doğa' },
+  { href: '/places?category=Archaeological+Site', label: 'Arkeolojik Alanlar' },
 ];
 
 export function Footer() {
   return (
     <footer className="bg-[#111111]" role="contentinfo">
       <div className="mx-auto max-w-7xl px-4 pt-14 pb-8 sm:px-6 lg:px-8">
+
         {/* Top grid */}
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
 
@@ -29,7 +32,7 @@ export function Footer() {
             <Link
               href="/"
               className="group mb-5 inline-flex items-center gap-3"
-              aria-label="Cyprus Discovery — Home"
+              aria-label="Kuzey Kıbrıs Discovery — Ana Sayfa"
             >
               <span className="flex h-8 w-8 items-center justify-center rounded-sm bg-[#1a1a1a] ring-1 ring-white/10">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -38,26 +41,25 @@ export function Footer() {
                 </svg>
               </span>
               <span className="font-display text-base font-semibold text-white">
-                Cyprus Discovery
+                Kuzey Kıbrıs Discovery
               </span>
             </Link>
             <p className="max-w-sm text-sm leading-relaxed text-[#6b7280]">
-              Discover the best places to visit in Cyprus — museums, castles,
-              archaeological sites, beaches, monasteries, and cultural
-              destinations across all six regions.
+              Kuzey Kıbrıs&apos;taki en iyi müzeleri, kaleleri, arkeolojik alanları,
+              plajları ve tarihi yerleri keşfedin. Tüm bölgeler, tek platform.
             </p>
             {/* Data disclaimer */}
             <p className="mt-5 rounded-sm border border-amber-900/30 bg-amber-950/30 px-3 py-2.5 text-xs leading-relaxed text-amber-600/80">
-              Opening hours, prices, and contact details shown are{' '}
-              <strong className="font-medium text-amber-500/80">sample data only</strong>
-              {' '}— not independently verified. Always check official sources before visiting.
+              Açılış saatleri, fiyatlar ve iletişim bilgileri{' '}
+              <strong className="font-medium text-amber-500/80">örnek veridir</strong>
+              {' '}— bağımsız olarak doğrulanmamıştır. Ziyaret öncesi resmi kaynaklara başvurun.
             </p>
           </div>
 
           {/* Explore links */}
           <div>
             <h3 className="mb-4 text-xs font-semibold uppercase tracking-widest text-[#4b5563]">
-              Explore Cyprus
+              Keşfet
             </h3>
             <ul className="space-y-2.5">
               {exploreLinks.map(({ href, label }) => (
@@ -76,7 +78,7 @@ export function Footer() {
           {/* Plan links */}
           <div>
             <h3 className="mb-4 text-xs font-semibold uppercase tracking-widest text-[#4b5563]">
-              Plan your trip
+              Gezi Planla
             </h3>
             <ul className="space-y-2.5">
               {planLinks.map(({ href, label }) => (
@@ -96,10 +98,10 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="mt-12 flex flex-col gap-2 border-t border-white/5 pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs text-[#4b5563]">
-            © {new Date().getFullYear()} Cyprus Discovery. Built for travellers who love history, culture, and beautiful places.
+            © {new Date().getFullYear()} Kuzey Kıbrıs Discovery. Tarihi, kültürü ve güzel yerleri seven gezginler için.
           </p>
           <p className="text-xs text-[#4b5563]">
-            Not affiliated with any government body or tourism authority.
+            Resmi bir turizm kurumu veya devlet kuruluşuyla bağlantılı değildir.
           </p>
         </div>
       </div>

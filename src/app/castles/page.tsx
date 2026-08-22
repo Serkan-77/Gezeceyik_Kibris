@@ -1,4 +1,4 @@
-// app/castles/page.tsx — Castles category landing (/castles)
+// app/castles/page.tsx — Kaleler (/castles)
 
 import { Suspense } from 'react';
 import { Metadata } from 'next';
@@ -6,12 +6,12 @@ import { getPlacesByCategory, getAllRegions } from '@/lib/places';
 import { PlaceFilters } from '@/components/places/PlaceFilters';
 
 export const metadata: Metadata = {
-  title: 'Castles in Cyprus — History, Opening Hours & Visitor Guide',
+  title: 'Kuzey Kıbrıs Kaleleri — Tarih, Açılış Saatleri ve Ziyaretçi Rehberi',
   description:
-    'Visit the castles of Cyprus — Kyrenia Castle, Limassol Medieval Castle, Kolossi, and more. Opening hours, entrance fees, and visitor information.',
+    'Kuzey Kıbrıs\'ın kalelerini ziyaret edin — Girne Kalesi, Othello Kalesi, St. Hilarion, Kantara ve daha fazlası. Açılış saatleri ve giriş ücretleri.',
   openGraph: {
-    title: 'Castles in Cyprus | Cyprus Discovery',
-    description: 'Medieval fortresses and Crusader strongholds across Cyprus.',
+    title: 'Kuzey Kıbrıs Kaleleri | Kuzey Kıbrıs Discovery',
+    description: 'Kuzey Kıbrıs\'ın ortaçağ kaleleri ve Haçlı döneminden kalma surlar.',
   },
 };
 
@@ -23,14 +23,14 @@ export default function CastlesPage() {
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
       <header className="mb-10 border-b border-[#f5f2ee] pb-8">
         <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-[#e8651a]">
-          Castles
+          Kaleler
         </p>
         <h1 className="font-display text-3xl font-bold text-[#1a1a1a] sm:text-4xl">
-          Castles in Cyprus
+          Kuzey Kıbrıs Kaleleri
         </h1>
         <p className="mt-2 max-w-2xl text-[#6b7280]">
-          Medieval fortresses, Crusader strongholds, and Byzantine castles —
-          from Kyrenia&apos;s harbour fortress to Kolossi in the Limassol vineyards.
+          Ortaçağ kaleleri, Haçlı döneminden kalma surlar ve Bizans kaleleri —
+          Girne&apos;nin liman kalesinden Gazimağusa&apos;nın Venedik surlarına.
         </p>
       </header>
       <Suspense>

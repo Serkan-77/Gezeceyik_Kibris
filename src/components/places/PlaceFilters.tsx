@@ -1,7 +1,6 @@
 'use client';
 // components/places/PlaceFilters.tsx
-// Client Component — manages filter state, reads URL search params on mount.
-// Receives all places as a prop (fetched server-side), filters client-side.
+// Client Component — Turkish labels, reads URL search params on mount.
 
 import { useState, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -14,7 +13,6 @@ interface PlaceFiltersProps {
   places: Place[];
   categories: Category[];
   regions: Region[];
-  /** If provided, the category filter is locked and hidden. */
   lockedCategory?: Category;
 }
 
@@ -26,8 +24,6 @@ export function PlaceFilters({
 }: PlaceFiltersProps) {
   const searchParams = useSearchParams();
 
-  // Initialise from URL params so /places?category=Museum pre-filters correctly.
-  // useSearchParams is reactive so this is safe as direct initialiser.
   const [query, setQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>(
     () => lockedCategory ?? searchParams.get('category') ?? ALL
@@ -42,8 +38,7 @@ export function PlaceFilters({
       if (selectedCategory !== ALL && p.category !== selectedCategory) return false;
       if (selectedRegion !== ALL && p.region !== selectedRegion) return false;
       if (onlyFree) {
-        const free = p.admission?.isFree ?? true;
-        if (!free) return false;
+        if (!(p.admission?.isFree ?? true)) return false;
       }
       if (query.trim()) {
         const q = query.toLowerCase();
@@ -73,7 +68,7 @@ export function PlaceFilters({
       {/* Filter bar */}
       <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
 
-        {/* Search — visually prominent */}
+        {/* Search */}
         <div className="relative flex-1 sm:min-w-[280px]">
           <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-[#9ca3af]" aria-hidden="true">
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -83,26 +78,25 @@ export function PlaceFilters({
           <input
             id="search-places"
             type="search"
-            placeholder="Search by name or city…"
+            placeholder="Yer adı veya şehir ara…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className={`${inputBase} w-full pl-9 placeholder:text-[#9ca3af]`}
           />
         </div>
 
-        {/* Divider — visual grouping */}
         <div className="hidden h-6 w-px bg-[#e8e4de] sm:block" aria-hidden="true" />
 
         {/* Category */}
         {!lockedCategory && (
           <select
             id="filter-category"
-            aria-label="Filter by category"
+            aria-label="Kategoriye göre filtrele"
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
             className={`${inputBase} pr-8`}
           >
-            <option value={ALL}>All categories</option>
+            <option value={ALL}>Tüm Kategoriler</option>
             {categories.map((c) => (
               <option key={c} value={c}>{c}</option>
             ))}
@@ -112,18 +106,18 @@ export function PlaceFilters({
         {/* Region */}
         <select
           id="filter-region"
-          aria-label="Filter by region"
+          aria-label="Bölgeye göre filtrele"
           value={selectedRegion}
           onChange={(e) => setSelectedRegion(e.target.value)}
           className={`${inputBase} pr-8`}
         >
-          <option value={ALL}>All regions</option>
+          <option value={ALL}>Tüm Bölgeler</option>
           {regions.map((r) => (
             <option key={r} value={r}>{r}</option>
           ))}
         </select>
 
-        {/* Free only toggle */}
+        {/* Free only */}
         <label
           htmlFor="filter-free"
           className="flex h-10 cursor-pointer select-none items-center gap-2 rounded-sm border border-[#e8e4de] bg-white px-3 text-sm text-[#4b5563] transition-colors hover:border-[#e8651a]/50"
@@ -135,10 +129,10 @@ export function PlaceFilters({
             onChange={(e) => setOnlyFree(e.target.checked)}
             className="h-4 w-4 rounded-sm border-[#e8e4de] accent-[#e8651a]"
           />
-          Free entry
+          Ücretsiz Giriş
         </label>
 
-        {/* Clear filters */}
+        {/* Clear */}
         {isFiltered && (
           <button
             type="button"
@@ -153,21 +147,21 @@ export function PlaceFilters({
             <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
-            Clear
+            Temizle
           </button>
         )}
       </div>
 
-      {/* Results count — subtle */}
+      {/* Results count */}
       <p className="mb-5 text-xs text-[#9ca3af]">
         {filtered.length === 0
-          ? 'No places match your filters'
-          : `${filtered.length} ${filtered.length === 1 ? 'place' : 'places'} found`}
+          ? 'Arama kriterlerinize uygun yer bulunamadı'
+          : `${filtered.length} yer bulundu`}
       </p>
 
       <PlaceGrid
         places={filtered}
-        emptyMessage="Try adjusting your search or clearing filters."
+        emptyMessage="Arama kriterlerinizi değiştirmeyi veya filtreleri temizlemeyi deneyin."
       />
     </div>
   );

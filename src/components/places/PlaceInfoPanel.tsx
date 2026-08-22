@@ -1,92 +1,87 @@
 'use client';
-
 // components/places/PlaceInfoPanel.tsx
-// Redesigned visitor information card.
-// Client Component for "Open today" status detection.
+// Turkish visitor information sidebar panel with FavoriteButton and AddToTripButton.
 
 import Link from 'next/link';
 import { Place } from '@/types/place';
+import { FavoriteButton } from '@/components/ui/FavoriteButton';
+import { AddToTripButton } from '@/components/ui/AddToTripButton';
 
 interface PlaceInfoPanelProps {
   place: Place;
 }
 
 const DAY_KEYS = [
-  'sunday',
-  'monday',
-  'tuesday',
-  'wednesday',
-  'thursday',
-  'friday',
-  'saturday',
+  'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday',
 ] as const;
 
 type DayKey = (typeof DAY_KEYS)[number];
 
 const DAY_LABELS: Record<DayKey, string> = {
-  monday: 'Mon',
-  tuesday: 'Tue',
-  wednesday: 'Wed',
-  thursday: 'Thu',
-  friday: 'Fri',
-  saturday: 'Sat',
-  sunday: 'Sun',
+  monday: 'Pzt',
+  tuesday: 'Sal',
+  wednesday: 'Çar',
+  thursday: 'Per',
+  friday: 'Cum',
+  saturday: 'Cmt',
+  sunday: 'Paz',
 };
 
 function getTodayKey(): DayKey {
   return DAY_KEYS[new Date().getDay()];
 }
 
-function getTodayStatus(hours: Place['openingHours']): {
-  isOpen: boolean;
-  label: string;
-} | null {
+function getTodayStatus(hours: Place['openingHours']): { isOpen: boolean; label: string } | null {
   if (!hours) return null;
   const key = getTodayKey();
   const val = hours[key];
-  if (val === null || val === undefined) return { isOpen: false, label: 'Closed today' };
-  return { isOpen: true, label: `Open today \u00b7 ${val}` };
+  if (val === null) return { isOpen: false, label: 'Bugün kapalı' };
+  if (val === undefined) return null;
+  return { isOpen: true, label: `Bugün açık · ${val}` };
+}
+
+function formatVisitDuration(minutes: number): string {
+  if (minutes < 60) return `${minutes} dakika`;
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return m ? `${h} sa ${m} dk` : `${h} saat`;
 }
 
 export function PlaceInfoPanel({ place }: PlaceInfoPanelProps) {
   const todayKey = getTodayKey();
   const todayStatus = getTodayStatus(place.openingHours);
-  const mapsQuery = encodeURIComponent(
-    `${place.name}, ${place.address}`,
-  );
 
-  const visitHours =
-    place.estimatedVisitMinutes !== undefined
-      ? place.estimatedVisitMinutes >= 60
-        ? `${Math.round(place.estimatedVisitMinutes / 60 * 10) / 10} hr${place.estimatedVisitMinutes >= 120 ? 's' : ''}`
-        : `${place.estimatedVisitMinutes} min`
-      : null;
+  const mapsQuery = encodeURIComponent(`${place.name}, ${place.address}`);
+
+  const visitDuration = place.estimatedVisitMinutes
+    ? formatVisitDuration(place.estimatedVisitMinutes)
+    : null;
 
   const admissionText = place.admission?.isFree
-    ? 'Free entry'
+    ? 'Ücretsiz Giriş'
     : place.admission?.adultPrice !== undefined
-    ? `Adults €${place.admission.adultPrice}${
+    ? `${place.admission.adultPrice.toLocaleString('tr-TR')} ${place.admission.currency ?? 'TRY'} (Yetişkin)${
         place.admission.childPrice !== undefined
-          ? ` · Children €${place.admission.childPrice}`
+          ? ` · ${place.admission.childPrice.toLocaleString('tr-TR')} ${place.admission.currency ?? 'TRY'} (Çocuk)`
           : ''
       }`
     : null;
 
-  const accessibilityFeatures = [
-    place.accessibility?.wheelchairAccessible && 'Wheelchair accessible',
-    place.accessibility?.audioGuide && 'Audio guide available',
-    place.accessibility?.guidedTours && 'Guided tours',
-  ].filter(Boolean) as string[];
+  const accessibilityFeatures: string[] = [
+    place.accessibility?.wheelchairAccessible ? 'Tekerlekli Sandalye Erişimi' : '',
+    place.accessibility?.audioGuide ? 'Sesli Rehber' : '',
+    place.accessibility?.guidedTours ? 'Rehberli Tur' : '',
+  ].filter(Boolean);
 
   return (
     <aside
       className="rounded-md border border-[#e8e4de] bg-white text-sm lg:sticky lg:top-20 lg:self-start"
-      aria-label="Visitor information"
+      aria-label="Ziyaret bilgileri"
     >
-      {/* Header row */}
+      {/* Header */}
       <div className="border-b border-[#f5f2ee] px-5 py-4">
         <h2 className="font-display text-base font-semibold text-[#1a1a1a]">
-          Visitor information
+          Ziyaret Bilgileri
         </h2>
         {todayStatus && (
           <p
@@ -99,31 +94,26 @@ export function PlaceInfoPanel({ place }: PlaceInfoPanelProps) {
         )}
       </div>
 
+      {/* Action buttons */}
+      <div className="flex gap-2 border-b border-[#f5f2ee] px-5 py-3">
+        <FavoriteButton placeSlug={place.slug} placeName={place.name} large className="flex-1" />
+        <AddToTripButton placeSlug={place.slug} placeName={place.name} large className="flex-1" />
+      </div>
+
       <div className="divide-y divide-[#f5f2ee]">
         {/* Address */}
-        <InfoRow label="Address" icon={<PinIcon />}>
+        <InfoRow label="Adres" icon={<PinIcon />}>
           <span className="text-[#4b5563]">{place.address}</span>
         </InfoRow>
 
         {/* Admission */}
         {place.admission && (
-          <InfoRow
-            label="Admission"
-            icon={<TicketIcon />}
-          >
-            <span
-              className={
-                place.admission.isFree
-                  ? 'font-medium text-emerald-700'
-                  : 'text-[#4b5563]'
-              }
-            >
+          <InfoRow label="Giriş Ücreti" icon={<TicketIcon />}>
+            <span className={place.admission.isFree ? 'font-medium text-emerald-700' : 'text-[#4b5563]'}>
               {admissionText}
             </span>
             {place.admission.notes && (
-              <p className="mt-0.5 text-[11px] text-[#9ca3af]">
-                {place.admission.notes}
-              </p>
+              <p className="mt-0.5 text-[11px] text-[#9ca3af]">{place.admission.notes}</p>
             )}
           </InfoRow>
         )}
@@ -133,18 +123,15 @@ export function PlaceInfoPanel({ place }: PlaceInfoPanelProps) {
           <div className="px-5 py-4">
             <div className="mb-3 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-[#9ca3af]">
               <ClockIcon />
-              <span>Opening hours</span>
+              <span>Açılış Saatleri</span>
             </div>
-            <table className="w-full text-xs" role="table" aria-label="Weekly opening hours">
-              <tbody className="space-y-0">
+            <table className="w-full text-xs" role="table" aria-label="Haftalık açılış saatleri">
+              <tbody>
                 {(Object.keys(DAY_LABELS) as DayKey[]).map((day) => {
                   const hours = place.openingHours![day];
                   const isToday = day === todayKey;
                   return (
-                    <tr
-                      key={day}
-                      className={`${isToday ? 'font-semibold' : ''}`}
-                    >
+                    <tr key={day} className={isToday ? 'font-semibold' : ''}>
                       <td
                         className={`py-[3px] pr-4 w-10 ${
                           isToday ? 'text-[#1a1a1a]' : 'text-[#9ca3af]'
@@ -152,7 +139,7 @@ export function PlaceInfoPanel({ place }: PlaceInfoPanelProps) {
                       >
                         {DAY_LABELS[day]}
                         {isToday && (
-                          <span className="ml-1 inline-block h-1 w-1 rounded-full bg-[#e8651a] align-middle" aria-label="today" />
+                          <span className="ml-1 inline-block h-1 w-1 rounded-full bg-[#e8651a] align-middle" aria-label="bugün" />
                         )}
                       </td>
                       <td
@@ -164,7 +151,7 @@ export function PlaceInfoPanel({ place }: PlaceInfoPanelProps) {
                             : 'text-[#4b5563]'
                         }`}
                       >
-                        {hours ?? 'Closed'}
+                        {hours === null ? 'Kapalı' : hours ?? 'Bilinmiyor'}
                       </td>
                     </tr>
                   );
@@ -175,21 +162,18 @@ export function PlaceInfoPanel({ place }: PlaceInfoPanelProps) {
         )}
 
         {/* Estimated visit */}
-        {visitHours && (
-          <InfoRow label="Estimated visit" icon={<TimerIcon />}>
-            <span className="text-[#4b5563]">{visitHours}</span>
+        {visitDuration && (
+          <InfoRow label="Tahmini Ziyaret Süresi" icon={<TimerIcon />}>
+            <span className="text-[#4b5563]">{visitDuration}</span>
           </InfoRow>
         )}
 
         {/* Contact */}
         {(place.phone || place.website) && (
-          <InfoRow label="Contact" icon={<ContactIcon />}>
+          <InfoRow label="İletişim" icon={<ContactIcon />}>
             <div className="space-y-1">
               {place.phone && (
-                <a
-                  href={`tel:${place.phone}`}
-                  className="block text-[#4b5563] hover:text-[#e8651a]"
-                >
+                <a href={`tel:${place.phone}`} className="block text-[#4b5563] hover:text-[#e8651a]">
                   {place.phone}
                 </a>
               )}
@@ -210,7 +194,7 @@ export function PlaceInfoPanel({ place }: PlaceInfoPanelProps) {
 
         {/* Accessibility */}
         {accessibilityFeatures.length > 0 && (
-          <InfoRow label="Accessibility" icon={<AccessibilityIcon />}>
+          <InfoRow label="Erişilebilirlik" icon={<AccessibilityIcon />}>
             <ul className="space-y-0.5">
               {accessibilityFeatures.map((f) => (
                 <li key={f} className="flex items-center gap-1.5 text-[#4b5563]">
@@ -220,15 +204,13 @@ export function PlaceInfoPanel({ place }: PlaceInfoPanelProps) {
               ))}
             </ul>
             {place.accessibility?.notes && (
-              <p className="mt-1 text-[11px] text-[#9ca3af]">
-                {place.accessibility.notes}
-              </p>
+              <p className="mt-1 text-[11px] text-[#9ca3af]">{place.accessibility.notes}</p>
             )}
           </InfoRow>
         )}
       </div>
 
-      {/* Get Directions CTA */}
+      {/* Get directions CTA */}
       <div className="px-5 py-4">
         <Link
           href={`https://www.google.com/maps/search/?api=1&query=${mapsQuery}`}
@@ -239,24 +221,16 @@ export function PlaceInfoPanel({ place }: PlaceInfoPanelProps) {
           <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
           </svg>
-          Get directions
+          Yol Tarifi Al
         </Link>
       </div>
     </aside>
   );
 }
 
-// ── Sub-components ────────────────────────────────────────────
+// ── Sub-components ─────────────────────────────────────────────
 
-function InfoRow({
-  label,
-  icon,
-  children,
-}: {
-  label: string;
-  icon: React.ReactNode;
-  children: React.ReactNode;
-}) {
+function InfoRow({ label, icon, children }: { label: string; icon: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="px-5 py-3.5">
       <div className="mb-1 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-[#9ca3af]">
@@ -267,8 +241,6 @@ function InfoRow({
     </div>
   );
 }
-
-// ── Icons (simple inline SVG, no external library) ───────────
 
 function PinIcon() {
   return (

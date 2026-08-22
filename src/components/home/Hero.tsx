@@ -1,14 +1,14 @@
-// components/home/Hero.tsx — Editorial hero section
-// Designed so a full-bleed Cyprus photograph can be added later
-// without restructuring this component.
+// components/home/Hero.tsx
+// KKTC-first editorial hero section. Turkish copy.
+// Dark background with warm orange accent — premium Mediterranean feel.
 
 import Link from 'next/link';
 
 const stats = [
-  { value: '14+', label: 'Curated places' },
-  { value: '6', label: 'Regions covered' },
-  { value: '8', label: 'Categories' },
-  { value: 'Free', label: 'Forever' },
+  { value: '24+', label: 'Seçilmiş Yer' },
+  { value: '6', label: 'Bölge' },
+  { value: '9', label: 'Kategori' },
+  { value: 'Ücretsiz', label: 'Sonsuza Dek' },
 ];
 
 export function Hero() {
@@ -17,7 +17,7 @@ export function Hero() {
       className="relative overflow-hidden bg-[#1a1a1a] py-24 sm:py-32 lg:py-40"
       aria-labelledby="hero-heading"
     >
-      {/* Subtle texture / grain — purely decorative */}
+      {/* Subtle texture grain — decorative */}
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.03]"
         style={{
@@ -27,9 +27,13 @@ export function Hero() {
         aria-hidden="true"
       />
 
-      {/* Warm accent glow bottom-left — subtle Mediterranean warmth */}
+      {/* Warm glow — Mediterranean atmosphere */}
       <div
         className="pointer-events-none absolute -bottom-32 -left-32 h-96 w-96 rounded-full bg-[#e8651a]/10 blur-3xl"
+        aria-hidden="true"
+      />
+      <div
+        className="pointer-events-none absolute -top-20 right-0 h-64 w-64 rounded-full bg-[#e8651a]/5 blur-3xl"
         aria-hidden="true"
       />
 
@@ -38,7 +42,7 @@ export function Hero() {
           {/* Eyebrow */}
           <p className="mb-6 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[#e8651a]">
             <span className="h-px w-6 bg-[#e8651a]" aria-hidden="true" />
-            Cyprus Travel Discovery
+            Kuzey Kıbrıs Seyahat Rehberi
           </p>
 
           {/* Main headline */}
@@ -46,16 +50,17 @@ export function Hero() {
             id="hero-heading"
             className="font-display text-4xl font-bold leading-[1.1] text-white sm:text-5xl lg:text-6xl"
           >
-            Discover
+            Kuzey Kıbrıs&apos;ı{' '}
             <br />
-            <em className="not-italic text-[#e8651a]">the real</em>{' '}
-            Cyprus.
+            <em className="not-italic text-[#e8651a]">gerçekten</em>{' '}
+            keşfedin.
           </h1>
 
           {/* Subheadline */}
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/60">
-            Museums, castles, ancient theatres, monasteries, beaches, and
-            hidden viewpoints — handpicked across all six regions of Cyprus.
+            Müzeler, kaleler, antik tiyatrolar, manastırlar, plajlar ve saklı
+            seyir noktaları — Kuzey Kıbrıs&apos;ın altı bölgesinde el ile
+            seçilmiş 24+ yer.
           </p>
 
           {/* CTAs */}
@@ -64,16 +69,16 @@ export function Hero() {
               href="/places"
               className="inline-flex items-center gap-2 rounded-sm bg-[#e8651a] px-6 py-3.5 text-sm font-semibold text-white shadow-lg transition-all hover:bg-[#c9540e] hover:shadow-[#e8651a]/20 hover:shadow-xl"
             >
-              Explore all places
+              Tüm Yerleri Keşfet
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
             </Link>
             <Link
-              href="/coming-soon"
+              href="/gezi-planla"
               className="inline-flex items-center gap-2 rounded-sm border border-white/20 px-6 py-3.5 text-sm font-medium text-white/80 transition-colors hover:border-white/40 hover:text-white"
             >
-              Plan your visit
+              Gezi Planla
             </Link>
           </div>
         </div>

@@ -1,39 +1,41 @@
+'use client';
 // components/places/PlaceCard.tsx
-// Image-dominant travel editorial card.
-// Works for any Place category.
+// Kuzey Kıbrıs Discovery — travel editorial card.
+// Turkish labels, favorite button, add-to-trip button.
+// Client component because it reads favorites/trip state from localStorage.
 
 import Image from 'next/image';
 import Link from 'next/link';
 import { Place } from '@/types/place';
 import { CategoryBadge } from '@/components/ui/Badge';
-
+import { FavoriteButton } from '@/components/ui/FavoriteButton';
+import { AddToTripButton } from '@/components/ui/AddToTripButton';
 
 interface PlaceCardProps {
   place: Place;
+  /** Optional distance in metres — shown when available (geolocation mode) */
+  distanceMeters?: number;
 }
 
-export function PlaceCard({ place }: PlaceCardProps) {
+function formatDistance(m: number): string {
+  return m < 1000 ? `${Math.round(m)} m` : `${(m / 1000).toFixed(1)} km`;
+}
+
+export function PlaceCard({ place, distanceMeters }: PlaceCardProps) {
   const admissionLabel = place.admission?.isFree
-    ? 'Free entry'
+    ? 'Ücretsiz'
     : place.admission?.adultPrice !== undefined
-    ? `From €${place.admission.adultPrice}`
+    ? `${place.admission.adultPrice.toLocaleString('tr-TR')} ${place.admission.currency ?? 'TRY'}`
     : null;
 
-  // Show opening hours for today — simple day name map
   const todayKey = [
-    'sunday',
-    'monday',
-    'tuesday',
-    'wednesday',
-    'thursday',
-    'friday',
-    'saturday',
+    'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday',
   ][new Date().getDay()] as keyof NonNullable<Place['openingHours']>;
 
   const todayHours = place.openingHours?.[todayKey];
 
   return (
-    <article className="group flex flex-col overflow-hidden rounded-md border border-[#e8e4de] bg-white transition-shadow hover:shadow-md">
+    <article className="group relative flex flex-col overflow-hidden rounded-md border border-[#e8e4de] bg-white transition-shadow hover:shadow-md">
       {/* Image */}
       <Link
         href={`/places/${place.slug}`}
@@ -51,11 +53,11 @@ export function PlaceCard({ place }: PlaceCardProps) {
           />
         ) : (
           <div className="flex h-full items-center justify-center text-[#c4bdb4] text-sm">
-            No image available
+            Fotoğraf yok
           </div>
         )}
 
-        {/* Category badge overlay */}
+        {/* Category badge */}
         <div className="absolute left-3 top-3">
           <CategoryBadge category={place.category} overlay />
         </div>
@@ -64,11 +66,27 @@ export function PlaceCard({ place }: PlaceCardProps) {
         {place.admission?.isFree && (
           <div className="absolute right-3 top-3">
             <span className="inline-block rounded-sm bg-emerald-700/90 px-2 py-0.5 text-[11px] font-semibold text-white backdrop-blur-sm">
-              Free
+              Ücretsiz
             </span>
           </div>
         )}
       </Link>
+
+      {/* Action buttons — absolute top-right on image when NOT free */}
+      {!place.admission?.isFree && (
+        <div className="absolute right-3 top-3 flex gap-1.5">
+          <FavoriteButton placeSlug={place.slug} placeName={place.name} />
+        </div>
+      )}
+      {place.admission?.isFree && (
+        <div className="absolute right-3 bottom-[calc(100%-theme(spacing.10))] flex gap-1.5" />
+      )}
+
+      {/* Fav + Trip buttons overlay when free (right side below free badge) */}
+      <div className="absolute right-3 top-11 flex flex-col gap-1.5">
+        <FavoriteButton placeSlug={place.slug} placeName={place.name} />
+        <AddToTripButton placeSlug={place.slug} placeName={place.name} />
+      </div>
 
       {/* Content */}
       <div className="flex flex-1 flex-col px-4 pb-4 pt-3.5">
@@ -79,6 +97,9 @@ export function PlaceCard({ place }: PlaceCardProps) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
           {place.city}, {place.region}
+          {distanceMeters !== undefined && (
+            <span className="ml-1 text-[#e8651a]">· {formatDistance(distanceMeters)}</span>
+          )}
         </p>
 
         {/* Title */}
@@ -101,9 +122,7 @@ export function PlaceCard({ place }: PlaceCardProps) {
           {admissionLabel && (
             <span
               className={`text-xs font-medium ${
-                place.admission?.isFree
-                  ? 'text-emerald-700'
-                  : 'text-[#4b5563]'
+                place.admission?.isFree ? 'text-emerald-700' : 'text-[#4b5563]'
               }`}
             >
               {admissionLabel}
@@ -114,9 +133,7 @@ export function PlaceCard({ place }: PlaceCardProps) {
           )}
           {todayHours !== undefined && (
             <span className="text-xs text-[#9ca3af]">
-              {todayHours === null
-                ? 'Closed today'
-                : `Today ${todayHours}`}
+              {todayHours === null ? 'Bugün kapalı' : `Bugün ${todayHours}`}
             </span>
           )}
         </div>

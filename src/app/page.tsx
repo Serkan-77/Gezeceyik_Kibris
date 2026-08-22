@@ -1,5 +1,5 @@
-// app/page.tsx — Homepage (/)
-// Server Component — renders all sections, pulls featured places server-side.
+// app/page.tsx — Ana Sayfa (/)
+// Server Component — tüm bölümleri render eder, öne çıkan yerler sunucu tarafında çekilir.
 
 import { Metadata } from 'next';
 import Link from 'next/link';
@@ -13,13 +13,13 @@ import { SectionHeading } from '@/components/ui/SectionHeading';
 import { getFeaturedPlaces } from '@/lib/places';
 
 export const metadata: Metadata = {
-  title: 'Cyprus Discovery — Museums, Castles, Beaches & Cultural Places',
+  title: 'Kuzey Kıbrıs Discovery — Müzeler, Kaleler, Plajlar ve Tarihi Yerler',
   description:
-    'Discover the best places to visit in Cyprus — museums, castles, archaeological sites, beaches, monasteries, and cultural destinations across all six regions of the island.',
+    'Kuzey Kıbrıs\'taki en iyi gezilecek yerleri keşfedin — müzeler, kaleler, arkeolojik alanlar, plajlar, manastırlar ve kültürel destinasyonlar.',
   openGraph: {
-    title: 'Cyprus Discovery — Explore the Island',
+    title: 'Kuzey Kıbrıs Discovery — Adayı Keşfedin',
     description:
-      'Museums, castles, beaches, monasteries, archaeological sites and more — with opening hours, prices and visitor guides.',
+      'Müzeler, kaleler, plajlar, manastırlar, arkeolojik alanlar ve daha fazlası — açılış saatleri, fiyatlar ve ziyaretçi rehberleriyle.',
   },
 };
 
@@ -30,7 +30,7 @@ export default function HomePage() {
     <>
       <Hero />
 
-      {/* Featured places */}
+      {/* Öne çıkan yerler */}
       <section
         className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8"
         aria-labelledby="featured-heading"
@@ -38,8 +38,8 @@ export default function HomePage() {
         <div className="mb-10">
           <SectionHeading
             id="featured-heading"
-            title="Featured places"
-            subtitle="Handpicked attractions that give a taste of Cyprus at its best."
+            title="Öne Çıkan Yerler"
+            subtitle="Kuzey Kıbrıs'ı en iyi temsil eden el ile seçilmiş destinasyonlar."
             accent
           />
         </div>
@@ -49,7 +49,7 @@ export default function HomePage() {
             href="/places"
             className="inline-flex items-center gap-2 rounded-sm border border-[#e8651a] px-5 py-2.5 text-sm font-medium text-[#e8651a] transition-colors hover:bg-[#e8651a] hover:text-white"
           >
-            View all places
+            Tüm yerleri gör
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
             </svg>
@@ -57,18 +57,18 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Category grid — CategoryGrid manages its own max-w + padding */}
+      {/* Kategori grid */}
       <div className="bg-[#f5f2ee]">
         <CategoryGrid />
       </div>
 
-      {/* Why section */}
+      {/* Neden biz */}
       <WhySection />
 
-      {/* Region grid — RegionGrid manages its own max-w + padding */}
+      {/* Bölge grid */}
       <RegionGrid />
 
-      {/* Bottom CTA */}
+      {/* Alt CTA */}
       <HomeCTA />
     </>
   );
