@@ -1,33 +1,39 @@
 // components/ui/Badge.tsx
-// Small pill badge for category, region, or status labels.
+// Small pill for status/category labels. Color communicates *state*
+// (free entry, open now, verification) — category identity does not
+// get its own arbitrary hue; every category badge shares one neutral
+// treatment so the taxonomy reads as structure, not decoration.
 
 import { Category } from '@/types/place';
+import { tr } from '@/lib/i18n/tr';
+
+export type BadgeVariant = 'neutral' | 'brand' | 'success' | 'warning' | 'overlay';
 
 interface BadgeProps {
   label: string;
-  variant?: 'default' | 'orange' | 'green' | 'muted' | 'overlay';
+  variant?: BadgeVariant;
 }
 
-export function Badge({ label, variant = 'default' }: BadgeProps) {
-  const variants: Record<NonNullable<BadgeProps['variant']>, string> = {
-    default: 'bg-[#f5f2ee] text-[#4b5563]',
-    orange:  'bg-[#e8651a]/10 text-[#c9540e]',
-    green:   'bg-emerald-50 text-emerald-700',
-    muted:   'bg-[#f5f2ee] text-[#9ca3af]',
-    // Used when rendered on top of an image
-    overlay: 'bg-white/90 text-[#1a1a1a] backdrop-blur-sm shadow-sm',
-  };
+const variantClass: Record<BadgeVariant, string> = {
+  neutral: 'bg-surface-muted text-muted',
+  brand: 'bg-brand/10 text-brand-strong',
+  success: 'bg-success-soft text-success',
+  warning: 'bg-warning-soft text-warning',
+  // Rendered on top of a photograph — needs its own contrast strategy.
+  overlay: 'bg-white/90 text-strong backdrop-blur-sm shadow-[var(--shadow-card)]',
+};
 
+export function Badge({ label, variant = 'neutral' }: BadgeProps) {
   return (
     <span
-      className={`inline-flex items-center rounded-sm px-2 py-0.5 text-xs font-medium ${variants[variant]}`}
+      className={`inline-flex items-center rounded-sm px-2 py-0.5 text-meta font-medium ${variantClass[variant]}`}
     >
       {label}
     </span>
   );
 }
 
-/** Maps a Category to a display-friendly label and badge variant. */
+/** Every category renders identically — the label carries the meaning, not a color code. */
 export function CategoryBadge({
   category,
   overlay = false,
@@ -35,23 +41,5 @@ export function CategoryBadge({
   category: Category;
   overlay?: boolean;
 }) {
-  if (overlay) {
-    return <Badge label={category} variant="overlay" />;
-  }
-
-  const variantMap: Record<Category, BadgeProps['variant']> = {
-    Museum:               'orange',
-    'Historical Place':   'default',
-    Castle:               'default',
-    'Archaeological Site':'default',
-    Monastery:            'muted',
-    Church:               'muted',
-    'Natural Attraction': 'green',
-    Beach:                'green',
-    Viewpoint:            'green',
-    'Cultural Site':      'default',
-    'Family Activity':    'default',
-  };
-
-  return <Badge label={category} variant={variantMap[category] ?? 'default'} />;
+  return <Badge label={tr.categories[category]} variant={overlay ? 'overlay' : 'neutral'} />;
 }

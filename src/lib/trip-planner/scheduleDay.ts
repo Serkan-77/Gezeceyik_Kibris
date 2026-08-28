@@ -2,9 +2,9 @@
 // Converts an ordered list of places into a scheduled ItineraryDay.
 // Times start at 09:00 and are computed from visit durations + travel times.
 
-import { Place } from '@/types/place';
+import { Place, Region } from '@/types/place';
 import { ItineraryDay, ItineraryStop, TransportMode } from './types';
-import { drivingMinutes, walkingMinutes, LatLng } from './distance';
+import { drivingMinutes, walkingMinutes, publicTransitMinutes, haversineKm, LatLng } from './distance';
 
 const START_HOUR = 9; // 09:00
 const LUNCH_BREAK_MIN = 60; // 1-hour lunch at midday
@@ -24,7 +24,8 @@ function getTravelMinutes(
   transport: TransportMode
 ): number {
   if (transport === 'walking') return walkingMinutes(from, to);
-  return drivingMinutes(from, to); // public transport treated like driving for now
+  if (transport === 'public') return publicTransitMinutes(from, to);
+  return drivingMinutes(from, to);
 }
 
 function getAdmissionCost(place: Place): number {
@@ -39,7 +40,7 @@ export function scheduleDay(
   places: Place[],
   dayNumber: number,
   transport: TransportMode,
-  region: string
+  region: Region
 ): ItineraryDay {
   const stops: ItineraryStop[] = [];
   let cursor = START_HOUR * 60; // current time in minutes from midnight
@@ -70,14 +71,10 @@ export function scheduleDay(
     let distanceToNextKm = 0;
 
     if (next?.latitude && next?.longitude && place.latitude && place.longitude) {
-      travelToNextMin = getTravelMinutes(
-        { lat: place.latitude, lng: place.longitude },
-        { lat: next.latitude, lng: next.longitude },
-        transport
-      );
-      // Rough km estimate: travelMin * speed / 60
-      const speed = transport === 'walking' ? 4 : 40;
-      distanceToNextKm = parseFloat(((travelToNextMin / 60) * speed).toFixed(1));
+      const from = { lat: place.latitude, lng: place.longitude };
+      const to = { lat: next.latitude, lng: next.longitude };
+      travelToNextMin = getTravelMinutes(from, to, transport);
+      distanceToNextKm = parseFloat(haversineKm(from, to).toFixed(1));
     }
 
     totalTravelMin += travelToNextMin;
@@ -99,8 +96,7 @@ export function scheduleDay(
 
   return {
     dayNumber,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    region: region as any,
+    region,
     stops,
     totalTravelMin,
     totalVisitMin,

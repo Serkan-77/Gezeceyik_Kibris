@@ -3,7 +3,9 @@
 import { Suspense } from 'react';
 import { Metadata } from 'next';
 import { getAllPlaces, getAllCategories, getAllRegions } from '@/lib/places';
-import { PlaceFilters } from '@/components/places/PlaceFilters';
+import { PlaceFilters, PlaceFiltersSkeleton } from '@/components/places/PlaceFilters';
+import { PlaceListingHeader } from '@/components/places/PlaceListingHeader';
+import { Container } from '@/components/ui/Container';
 
 export const metadata: Metadata = {
   title: 'Kuzey Kıbrıs\'ta Tüm Yerler — Müzeler, Kaleler, Plajlar ve Daha Fazlası',
@@ -21,40 +23,16 @@ export default function PlacesPage() {
   const regions = getAllRegions();
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
-      <header className="mb-10 border-b border-[#f5f2ee] pb-8">
-        <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-[#e8651a]">
-          Tüm Yerler
-        </p>
-        <h1 className="font-display text-3xl font-bold text-[#1a1a1a] sm:text-4xl">
-          Kuzey Kıbrıs&apos;ı Keşfet
-        </h1>
-        <p className="mt-2 max-w-2xl text-[#6b7280]">
-          Müzeler, kaleler, plajlar, manastırlar, arkeolojik alanlar ve daha fazlası —
-          tüm altı bölgede arayın ve filtreleyin.
-        </p>
-      </header>
+    <Container className="py-12 sm:py-16">
+      <PlaceListingHeader
+        eyebrow="Tüm Yerler"
+        title="Kuzey Kıbrıs'ı Keşfet"
+        subtitle="Müzeler, kaleler, plajlar, manastırlar, arkeolojik alanlar ve daha fazlası — tüm altı bölgede arayın ve filtreleyin."
+      />
 
-      <Suspense fallback={<FiltersSkeleton />}>
+      <Suspense fallback={<PlaceFiltersSkeleton />}>
         <PlaceFilters places={places} categories={categories} regions={regions} />
       </Suspense>
-    </div>
-  );
-}
-
-function FiltersSkeleton() {
-  return (
-    <div className="animate-pulse">
-      <div className="mb-8 flex gap-3">
-        <div className="h-10 flex-1 rounded-sm bg-[#f5f2ee]" />
-        <div className="h-10 w-36 rounded-sm bg-[#f5f2ee]" />
-        <div className="h-10 w-36 rounded-sm bg-[#f5f2ee]" />
-      </div>
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="aspect-[4/3] rounded-md bg-[#f5f2ee]" />
-        ))}
-      </div>
-    </div>
+    </Container>
   );
 }

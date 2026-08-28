@@ -36,3 +36,19 @@ const WALKING_SPEED_KMH = 4;
 export function walkingMinutes(a: LatLng, b: LatLng): number {
   return Math.round((haversineKm(a, b) / WALKING_SPEED_KMH) * 60);
 }
+
+/** Average dolmuş/bus speed including stops — slower than driving */
+const TRANSIT_AVG_SPEED_KMH = 22;
+
+/** Fixed estimate for waiting + a transfer, added on top of ride time */
+const TRANSIT_WAIT_MIN = 15;
+
+/**
+ * Estimate public-transport time in minutes between two points.
+ * No real KKTC timetable data exists yet, so this is a rough estimate:
+ * a slower average speed than driving plus a fixed wait/transfer buffer.
+ */
+export function publicTransitMinutes(a: LatLng, b: LatLng): number {
+  const rideMinutes = (haversineKm(a, b) / TRANSIT_AVG_SPEED_KMH) * 60;
+  return Math.round(rideMinutes + TRANSIT_WAIT_MIN);
+}

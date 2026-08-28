@@ -3,7 +3,9 @@
 import { Suspense } from 'react';
 import { Metadata } from 'next';
 import { getPlacesByCategory, getAllRegions } from '@/lib/places';
-import { PlaceFilters } from '@/components/places/PlaceFilters';
+import { PlaceFilters, PlaceFiltersSkeleton } from '@/components/places/PlaceFilters';
+import { PlaceListingHeader } from '@/components/places/PlaceListingHeader';
+import { Container } from '@/components/ui/Container';
 
 export const metadata: Metadata = {
   title: 'Kuzey Kıbrıs Müzeleri — Açılış Saatleri, Fiyatlar ve Ziyaretçi Rehberi',
@@ -20,20 +22,13 @@ export default function MuseumsPage() {
   const regions = getAllRegions();
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
-      <header className="mb-10 border-b border-[#f5f2ee] pb-8">
-        <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-[#e8651a]">
-          Müzeler
-        </p>
-        <h1 className="font-display text-3xl font-bold text-[#1a1a1a] sm:text-4xl">
-          Kuzey Kıbrıs Müzeleri
-        </h1>
-        <p className="mt-2 max-w-2xl text-[#6b7280]">
-          Dünya standartlarında arkeoloji, sanat ve tarih müzeleri — açılış saatleri,
-          giriş ücretleri ve ziyaretçi bilgileriyle.
-        </p>
-      </header>
-      <Suspense>
+    <Container className="py-12 sm:py-16">
+      <PlaceListingHeader
+        eyebrow="Müzeler"
+        title="Kuzey Kıbrıs Müzeleri"
+        subtitle="Dünya standartlarında arkeoloji, sanat ve tarih müzeleri — açılış saatleri, giriş ücretleri ve ziyaretçi bilgileriyle."
+      />
+      <Suspense fallback={<PlaceFiltersSkeleton />}>
         <PlaceFilters
           places={museums}
           categories={['Museum']}
@@ -41,6 +36,6 @@ export default function MuseumsPage() {
           lockedCategory="Museum"
         />
       </Suspense>
-    </div>
+    </Container>
   );
 }

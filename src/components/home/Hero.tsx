@@ -1,104 +1,79 @@
 // components/home/Hero.tsx
-// KKTC-first editorial hero section. Turkish copy.
-// Dark background with warm orange accent — premium Mediterranean feel.
+// Editorial, asymmetric hero. NOTE: the sample dataset's Unsplash photo IDs
+// do not reliably depict the places they're attached to (verified several
+// against their actual content — landmarks in other countries entirely), so
+// this hero deliberately does not feature a specific-landmark photograph
+// with a named caption. A textured dark field carries the atmosphere instead;
+// swap in a verified destination photo once real photography exists
+// (see PRODUCT.md "Evidence on Hand").
 
-import Link from 'next/link';
+import { Container } from '@/components/ui/Container';
+import { Button } from '@/components/ui/Button';
+import { ArrowRightIcon } from '@/components/ui/icons';
 
 const stats = [
-  { value: '24+', label: 'Seçilmiş Yer' },
+  { value: '24+', label: 'Seçilmiş yer' },
   { value: '6', label: 'Bölge' },
-  { value: '9', label: 'Kategori' },
-  { value: 'Ücretsiz', label: 'Sonsuza Dek' },
+  { value: '10.000', label: 'Yıllık tarih' },
 ];
 
 export function Hero() {
   return (
-    <section
-      className="relative overflow-hidden bg-[#1a1a1a] py-24 sm:py-32 lg:py-40"
-      aria-labelledby="hero-heading"
-    >
-      {/* Subtle texture grain — decorative */}
+    <section className="on-ink relative overflow-hidden bg-ink" aria-labelledby="hero-heading">
+      {/* Textured atmosphere — grain + warm brand glow, no unverified photography */}
       <div
-        className="pointer-events-none absolute inset-0 opacity-[0.03]"
+        className="pointer-events-none absolute inset-0 opacity-[0.05]"
         style={{
           backgroundImage:
-            'url("data:image/svg+xml,%3Csvg width=\'200\' height=\'200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.75\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noise)\' opacity=\'1\'/%3E%3C/svg%3E")',
+            'url("data:image/svg+xml,%3Csvg width=\'200\' height=\'200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.75\' numOctaves=\'4\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E")',
         }}
         aria-hidden="true"
       />
-
-      {/* Warm glow — Mediterranean atmosphere */}
+      <div className="pointer-events-none absolute -bottom-40 -left-40 h-[32rem] w-[32rem] rounded-full bg-brand/[0.14] blur-[100px]" aria-hidden="true" />
+      <div className="pointer-events-none absolute -right-20 -top-32 h-96 w-96 rounded-full bg-brand/[0.08] blur-[100px]" aria-hidden="true" />
       <div
-        className="pointer-events-none absolute -bottom-32 -left-32 h-96 w-96 rounded-full bg-[#e8651a]/10 blur-3xl"
-        aria-hidden="true"
-      />
-      <div
-        className="pointer-events-none absolute -top-20 right-0 h-64 w-64 rounded-full bg-[#e8651a]/5 blur-3xl"
+        className="pointer-events-none absolute inset-0 opacity-[0.5]"
+        style={{ background: 'radial-gradient(120% 90% at 50% 100%, transparent 40%, var(--color-ink) 100%)' }}
         aria-hidden="true"
       />
 
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl">
-          {/* Eyebrow */}
-          <p className="mb-6 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[#e8651a]">
-            <span className="h-px w-6 bg-[#e8651a]" aria-hidden="true" />
+      <Container className="relative flex min-h-[88svh] flex-col justify-end gap-12 pb-16 pt-28 sm:min-h-[80svh] lg:flex-row lg:items-end lg:justify-between lg:pb-20">
+        {/* Text column — anchored bottom-left */}
+        <div className="max-w-2xl">
+          <p className="mb-5 inline-flex items-center gap-2 text-label font-semibold uppercase tracking-[0.2em] text-brand">
+            <span className="h-px w-6 bg-brand" aria-hidden="true" />
             Kuzey Kıbrıs Seyahat Rehberi
           </p>
 
-          {/* Main headline */}
-          <h1
-            id="hero-heading"
-            className="font-display text-4xl font-bold leading-[1.1] text-white sm:text-5xl lg:text-6xl"
-          >
-            Kuzey Kıbrıs&apos;ı{' '}
-            <br />
-            <em className="not-italic text-[#e8651a]">gerçekten</em>{' '}
-            keşfedin.
+          <h1 id="hero-heading" className="font-display text-hero font-bold text-white text-balance">
+            Kuzey Kıbrıs&apos;ı <em className="not-italic text-brand">gerçekten</em> keşfedin
           </h1>
 
-          {/* Subheadline */}
-          <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/60">
-            Müzeler, kaleler, antik tiyatrolar, manastırlar, plajlar ve saklı
-            seyir noktaları — Kuzey Kıbrıs&apos;ın altı bölgesinde el ile
-            seçilmiş 24+ yer.
+          <p className="mt-6 max-w-lg text-body leading-relaxed text-on-ink-muted text-pretty">
+            Müzeler, kaleler, manastırlar ve saklı seyir noktaları — altı bölgede
+            el ile seçilmiş 24+ yer, katman katman 10.000 yıllık tarih.
           </p>
 
-          {/* CTAs */}
           <div className="mt-10 flex flex-wrap items-center gap-4">
-            <Link
-              href="/places"
-              className="inline-flex items-center gap-2 rounded-sm bg-[#e8651a] px-6 py-3.5 text-sm font-semibold text-white shadow-lg transition-all hover:bg-[#c9540e] hover:shadow-[#e8651a]/20 hover:shadow-xl"
-            >
-              Tüm Yerleri Keşfet
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-            </Link>
-            <Link
-              href="/gezi-planla"
-              className="inline-flex items-center gap-2 rounded-sm border border-white/20 px-6 py-3.5 text-sm font-medium text-white/80 transition-colors hover:border-white/40 hover:text-white"
-            >
+            <Button href="/places" size="lg" icon={<ArrowRightIcon className="h-4 w-4" />}>
+              Yerleri Keşfet
+            </Button>
+            <Button href="/gezi-planla" size="lg" variant="outline-on-ink">
               Gezi Planla
-            </Link>
+            </Button>
           </div>
         </div>
 
-        {/* Stats bar */}
-        <div className="mt-20 border-t border-white/10 pt-8">
-          <dl className="grid grid-cols-2 gap-x-8 gap-y-6 sm:grid-cols-4">
-            {stats.map(({ value, label }) => (
-              <div key={label}>
-                <dt className="text-xs font-medium uppercase tracking-widest text-white/40">
-                  {label}
-                </dt>
-                <dd className="mt-1 font-display text-2xl font-bold text-white">
-                  {value}
-                </dd>
-              </div>
-            ))}
-          </dl>
+        {/* Floating stat card — the asymmetric counterweight */}
+        <div className="flex shrink-0 gap-6 rounded-lg border border-white/10 bg-white/[0.06] px-6 py-5 backdrop-blur-md sm:gap-8 lg:mb-1">
+          {stats.map(({ value, label }) => (
+            <div key={label}>
+              <p className="font-display text-2xl font-bold text-white">{value}</p>
+              <p className="mt-0.5 text-label uppercase tracking-wider text-on-ink-subtle">{label}</p>
+            </div>
+          ))}
         </div>
-      </div>
+      </Container>
     </section>
   );
 }

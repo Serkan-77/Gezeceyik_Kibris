@@ -1,8 +1,11 @@
 // components/home/CategoryGrid.tsx
-// Turkish category grid — 9 categories for KKTC Discovery.
-// Inline SVG icons, no emoji.
+// Category browse index — a functional taxonomy grid (not a marketing
+// feature-card pattern), so a uniform grid is the right shape here.
 
 import Link from 'next/link';
+import { Container } from '@/components/ui/Container';
+import { Reveal } from '@/components/ui/Reveal';
+import { SectionHeader } from '@/components/ui/SectionHeader';
 
 interface CategoryItem {
   href: string;
@@ -107,49 +110,33 @@ const categories: CategoryItem[] = [
 
 export function CategoryGrid() {
   return (
-    <section className="py-16 sm:py-20" aria-labelledby="categories-heading">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section className="py-20 sm:py-28" aria-labelledby="categories-heading">
+      <Reveal><Container>
         <div className="mb-10">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-[#e8651a]">
-            Türe göre keşfet
-          </p>
-          <h2
-            id="categories-heading"
-            className="font-display text-2xl font-bold text-[#1a1a1a] sm:text-3xl"
-          >
-            Ne arıyorsunuz?
-          </h2>
+          <SectionHeader id="categories-heading" title="Türe göre keşfet" />
         </div>
 
-        <ul
-          className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
-          role="list"
-        >
+        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5" role="list">
           {categories.map(({ href, label, description, icon }) => (
             <li key={href}>
               <Link
                 href={href}
-                className="group flex flex-col gap-3 rounded-md border border-[#e8e4de] bg-white p-4 transition-all hover:border-[#e8651a]/40 hover:shadow-sm sm:p-5"
+                className="group flex flex-col gap-3 rounded-md border border-line bg-surface p-4 transition-colors duration-[var(--duration-fast)] hover:border-brand/40 sm:p-5"
               >
-                {/* Icon */}
-                <span className="flex h-10 w-10 items-center justify-center rounded-sm bg-[#f5f2ee] text-[#6b7280] transition-colors group-hover:bg-[#e8651a]/10 group-hover:text-[#e8651a]">
+                <span className="flex h-10 w-10 items-center justify-center rounded-sm bg-surface-muted text-muted transition-colors group-hover:bg-brand/10 group-hover:text-brand">
                   {icon}
                 </span>
-
-                {/* Label */}
-                <span className="font-display text-sm font-semibold text-[#1a1a1a]">
+                <span className="font-display text-card-title font-semibold text-strong">
                   {label}
                 </span>
-
-                {/* Description */}
-                <span className="hidden text-xs leading-relaxed text-[#9ca3af] sm:block">
+                <span className="hidden text-body-sm leading-relaxed text-subtle sm:block">
                   {description}
                 </span>
               </Link>
             </li>
           ))}
         </ul>
-      </div>
+      </Container></Reveal>
     </section>
   );
 }

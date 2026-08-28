@@ -1,54 +1,38 @@
 'use client';
 // components/map/PlacesMap.tsx
-// Full Leaflet map with Turkish category-colored markers and popups.
+// Full Leaflet map — on-brand markers only (no rainbow category palette).
+// Every pin shares one shape and the brand orange; category is read from a
+// small glyph inside the pin, and the marker with an open popup becomes the
+// "selected" ink-filled state so it's unmistakable against the rest.
 // Only rendered client-side (dynamic import via PlacesMapWrapper).
 
 import { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Place } from '@/types/place';
+import { categoryGlyphSvg } from '@/lib/categoryIcons';
+import { tr } from '@/lib/i18n/tr';
+import { fixLeafletIcons } from '@/lib/leafletIcons';
 
-// Fix Leaflet's default icon path (broken in webpack/Next.js environments)
-function fixLeafletIcons() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  delete (L.Icon.Default.prototype as any)._getIconUrl;
-  L.Icon.Default.mergeOptions({
-    iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-    iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-  });
-}
-
-function getCategoryColor(category: Place['category']): string {
-  const map: Partial<Record<Place['category'], string>> = {
-    Museum: '#e8651a',
-    Castle: '#7c3aed',
-    Beach: '#0284c7',
-    'Archaeological Site': '#d97706',
-    Monastery: '#16a34a',
-    'Historical Place': '#dc2626',
-    'Natural Attraction': '#15803d',
-    Viewpoint: '#9333ea',
-    'Cultural Site': '#d946ef',
-  };
-  return map[category] ?? '#6b7280';
-}
-
-function createMarkerIcon(category: Place['category']): L.DivIcon {
-  const color = getCategoryColor(category);
+function createMarkerIcon(category: Place['category'], selected = false): L.DivIcon {
+  const fill = selected ? 'var(--color-ink)' : 'var(--color-brand)';
+  const ring = selected ? '0 0 0 3px rgb(232 101 26 / 0.35)' : 'none';
   return L.divIcon({
     html: `<div style="
-      width:28px;height:28px;
-      background:${color};
+      width:30px;height:30px;
+      background:${fill};
       border:2px solid white;
       border-radius:50% 50% 50% 0;
       transform:rotate(-45deg);
-      box-shadow:0 2px 6px rgba(0,0,0,0.25);
-    "></div>`,
+      box-shadow:0 2px 6px rgba(26,26,26,0.28), ${ring};
+      display:flex;align-items:center;justify-content:center;
+    ">
+      <span style="transform:rotate(45deg);display:flex">${categoryGlyphSvg(category)}</span>
+    </div>`,
     className: '',
-    iconSize: [28, 28],
-    iconAnchor: [14, 28],
-    popupAnchor: [0, -30],
+    iconSize: [30, 30],
+    iconAnchor: [15, 30],
+    popupAnchor: [0, -32],
   });
 }
 
@@ -76,41 +60,45 @@ export default function PlacesMap({ places }: PlacesMapProps) {
     });
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> katkıda bulunanlar',
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> katkıda bulunanlar',
       maxZoom: 19,
     }).addTo(map);
 
     places.forEach((place) => {
       if (!place.latitude || !place.longitude) return;
 
-      const icon = createMarkerIcon(place.category);
-      const marker = L.marker([place.latitude, place.longitude], { icon });
+      const defaultIcon = createMarkerIcon(place.category, false);
+      const selectedIcon = createMarkerIcon(place.category, true);
+      const marker = L.marker([place.latitude, place.longitude], { icon: defaultIcon });
 
       const admissionStr = place.admission?.isFree
-        ? '<span style="color:#16a34a;font-weight:600">Ücretsiz Giriş</span>'
+        ? `<span style="color:var(--color-success);font-weight:600">${tr.place.free}</span>`
         : place.admission?.adultPrice !== undefined
         ? `${place.admission.adultPrice.toLocaleString('tr-TR')} ${place.admission.currency ?? 'TRY'}`
         : '';
 
-      const popup = L.popup({ maxWidth: 240, className: 'kktc-popup' }).setContent(`
-        <div style="font-family:system-ui,sans-serif;min-width:180px">
-          <p style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#9ca3af;margin:0 0 4px">
-            ${place.category}
+      const popup = L.popup({ maxWidth: 240, className: 'kktc-popup', closeButton: true }).setContent(`
+        <div style="font-family:var(--font-sans);min-width:180px">
+          <p style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--color-subtle);margin:0 0 4px">
+            ${tr.categories[place.category]}
           </p>
-          <h3 style="margin:0 0 2px;font-size:15px;font-weight:700;color:#1a1a1a;line-height:1.2">
+          <h3 style="margin:0 0 2px;font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--color-strong);line-height:1.25">
             ${place.name}
           </h3>
-          <p style="margin:0 0 6px;font-size:12px;color:#6b7280">${place.city}</p>
-          ${admissionStr ? `<p style="font-size:12px;margin:0 0 8px;color:#4b5563">${admissionStr}</p>` : ''}
+          <p style="margin:0 0 6px;font-size:12px;color:var(--color-muted)">${place.city}</p>
+          ${admissionStr ? `<p style="font-size:12px;margin:0 0 8px;color:var(--color-muted)">${admissionStr}</p>` : ''}
           <a href="/places/${place.slug}"
-            style="display:inline-block;background:#e8651a;color:white;font-size:12px;font-weight:600;
-            padding:6px 12px;border-radius:3px;text-decoration:none">
-            Detayları Gör →
+            style="display:inline-block;background:var(--color-brand);color:white;font-size:12px;font-weight:600;
+            padding:6px 12px;border-radius:4px;text-decoration:none">
+            ${tr.place.viewDetails} &rarr;
           </a>
         </div>
       `);
 
-      marker.bindPopup(popup).addTo(map);
+      marker.bindPopup(popup);
+      marker.on('popupopen', () => marker.setIcon(selectedIcon));
+      marker.on('popupclose', () => marker.setIcon(defaultIcon));
+      marker.addTo(map);
     });
 
     mapRef.current = map;
@@ -125,7 +113,9 @@ export default function PlacesMap({ places }: PlacesMapProps) {
     <div
       ref={containerRef}
       className="h-full w-full"
-      aria-label="Kuzey Kıbrıs interaktif haritası"
+      role="application"
+      aria-roledescription="harita"
+      aria-label="Kuzey Kıbrıs interaktif haritası — yer listesi haritanın altında da mevcuttur"
     />
   );
 }

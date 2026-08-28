@@ -3,18 +3,22 @@
 
 import { Place } from '@/types/place';
 import { PlaceCard } from './PlaceCard';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { SearchIcon } from '@/components/ui/icons';
 
 interface PlaceGridProps {
   places: Place[];
   emptyMessage?: string;
 }
 
-export function PlaceGrid({ places, emptyMessage = 'No places found.' }: PlaceGridProps) {
+export function PlaceGrid({ places, emptyMessage = 'Yer bulunamadı.' }: PlaceGridProps) {
   if (places.length === 0) {
     return (
-      <div className="py-16 text-center">
-        <p className="text-[#6b7280]">{emptyMessage}</p>
-      </div>
+      <EmptyState
+        icon={<SearchIcon className="h-6 w-6" />}
+        title="Sonuç yok"
+        description={emptyMessage}
+      />
     );
   }
 

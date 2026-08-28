@@ -2,8 +2,7 @@
 
 import { MetadataRoute } from 'next';
 import { getAllPlaceSlugs } from '@/lib/places';
-
-const BASE_URL = 'https://cyprus-discovery.com';
+import { SITE_URL as BASE_URL } from '@/lib/config';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const placeSlugs = getAllPlaceSlugs();
@@ -44,6 +43,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 0.8,
+    },
+    {
+      url: `${BASE_URL}/harita`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    },
+    {
+      url: `${BASE_URL}/gezi-planla`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.6,
     },
   ];
 

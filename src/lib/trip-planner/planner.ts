@@ -3,7 +3,7 @@
 // Selects, clusters, schedules, and returns a full TripItinerary.
 
 import { getAllPlaces } from '@/lib/places';
-import { Place } from '@/types/place';
+import { Place, Region } from '@/types/place';
 import { PlannerInput, TripItinerary, ItineraryDay } from './types';
 import { scorePlaceForInput } from './scoring';
 import { scheduleDay } from './scheduleDay';
@@ -102,11 +102,11 @@ export function generateItinerary(input: PlannerInput): TripItinerary {
     if (dayPlaces.length === 0) continue;
 
     // Determine the dominant region for the day
-    const regionCounts: Record<string, number> = {};
+    const regionCounts: Partial<Record<Region, number>> = {};
     dayPlaces.forEach((p) => {
       regionCounts[p.region] = (regionCounts[p.region] ?? 0) + 1;
     });
-    const dominantRegion = Object.entries(regionCounts).sort(
+    const dominantRegion = (Object.entries(regionCounts) as [Region, number][]).sort(
       (a, b) => b[1] - a[1]
     )[0][0];
 

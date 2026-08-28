@@ -3,7 +3,9 @@
 import { Suspense } from 'react';
 import { Metadata } from 'next';
 import { getPlacesByCategory, getAllRegions } from '@/lib/places';
-import { PlaceFilters } from '@/components/places/PlaceFilters';
+import { PlaceFilters, PlaceFiltersSkeleton } from '@/components/places/PlaceFilters';
+import { PlaceListingHeader } from '@/components/places/PlaceListingHeader';
+import { Container } from '@/components/ui/Container';
 
 export const metadata: Metadata = {
   title: 'Kuzey Kıbrıs Tarihi Yerler — Ziyaretçi Rehberi',
@@ -20,20 +22,13 @@ export default function HistoricalPlacesPage() {
   const regions = getAllRegions();
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
-      <header className="mb-10 border-b border-[#f5f2ee] pb-8">
-        <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-[#e8651a]">
-          Tarihi Yerler
-        </p>
-        <h1 className="font-display text-3xl font-bold text-[#1a1a1a] sm:text-4xl">
-          Kuzey Kıbrıs Tarihi Yerleri
-        </h1>
-        <p className="mt-2 max-w-2xl text-[#6b7280]">
-          Osmanlı hanları, ortaçağ şehirleri ve tarihin taşa kazındığı alanlar —
-          Kuzey Kıbrıs&apos;ın yüzyıllar öncesine uzanan mirası.
-        </p>
-      </header>
-      <Suspense>
+    <Container className="py-12 sm:py-16">
+      <PlaceListingHeader
+        eyebrow="Tarihi Yerler"
+        title="Kuzey Kıbrıs Tarihi Yerleri"
+        subtitle="Osmanlı hanları, ortaçağ şehirleri ve tarihin taşa kazındığı alanlar — Kuzey Kıbrıs'ın yüzyıllar öncesine uzanan mirası."
+      />
+      <Suspense fallback={<PlaceFiltersSkeleton />}>
         <PlaceFilters
           places={places}
           categories={['Historical Place']}
@@ -41,6 +36,6 @@ export default function HistoricalPlacesPage() {
           lockedCategory="Historical Place"
         />
       </Suspense>
-    </div>
+    </Container>
   );
 }

@@ -2,13 +2,30 @@
 // components/trip/PlannerWizardClient.tsx
 // 5-step wizard that collects PlannerInput and generates a TripItinerary.
 // Steps: Accommodation → Duration → Transport → Interests → Pace → Result
+// Wizard logic is unchanged from the original — this pass redesigns the
+// presentation: a real icon system (no emoji), larger touch targets, and a
+// restrained forward/back slide between steps.
 
 import { useState } from 'react';
-import { Place } from '@/types/place';
 import { Category } from '@/types/place';
 import { PlannerInput, TripItinerary } from '@/lib/trip-planner/types';
 import { generateItinerary } from '@/lib/trip-planner/planner';
+import { useTripSelection } from '@/hooks/useTripSelection';
 import { ItineraryView } from './ItineraryView';
+import { Surface } from '@/components/ui/Surface';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { tr } from '@/lib/i18n/tr';
+import {
+  ArrowRightIcon,
+  ArrowLeftIcon,
+  CheckIcon,
+  PinIcon,
+  CarIcon,
+  WalkIcon,
+  BusIcon,
+  CompassIcon,
+} from '@/components/ui/icons';
 
 // Preset accommodation options (city centres of KKTC)
 const ACCOMMODATION_OPTIONS = [
@@ -21,9 +38,9 @@ const ACCOMMODATION_OPTIONS = [
 ];
 
 const TRANSPORT_OPTIONS = [
-  { value: 'car', label: 'Araç', icon: '🚗', desc: 'En esnek ulaşım' },
-  { value: 'walking', label: 'Yürüyüş', icon: '🚶', desc: 'Kısa mesafeler için' },
-  { value: 'public', label: 'Toplu Taşıma', icon: '🚌', desc: 'Dolmuş ve otobüs' },
+  { value: 'car', label: 'Araç', icon: CarIcon, desc: 'En esnek ulaşım' },
+  { value: 'walking', label: 'Yürüyüş', icon: WalkIcon, desc: 'Kısa mesafeler için' },
+  { value: 'public', label: 'Toplu Taşıma', icon: BusIcon, desc: 'Dolmuş ve otobüs' },
 ] as const;
 
 const PACE_OPTIONS = [
@@ -33,47 +50,44 @@ const PACE_OPTIONS = [
 ] as const;
 
 interface Props {
-  allPlaces: Place[];
   categories: Category[];
 }
 
 type Step = 'accommodation' | 'duration' | 'transport' | 'interests' | 'pace' | 'result';
 
 const STEPS: Step[] = ['accommodation', 'duration', 'transport', 'interests', 'pace', 'result'];
+const STEP_LABELS = ['Konaklama', 'Süre', 'Ulaşım', 'İlgi', 'Tempo', 'Plan'];
 
 function StepIndicator({ current }: { current: Step }) {
   const stepIdx = STEPS.indexOf(current);
-  const labels = ['Konaklama', 'Süre', 'Ulaşım', 'İlgi', 'Tempo', 'Plan'];
   return (
     <nav aria-label="Adımlar" className="mb-8">
       <ol className="flex items-center gap-1">
-        {labels.map((label, i) => (
-          <li key={label} className="flex items-center gap-1">
+        {STEP_LABELS.map((label, i) => (
+          <li key={label} className="flex flex-1 items-center gap-1 last:flex-none">
             <span
-              className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold transition-colors ${
-                i < stepIdx
-                  ? 'bg-[#e8651a] text-white'
-                  : i === stepIdx
-                  ? 'bg-[#1a1a1a] text-white'
-                  : 'bg-[#f5f2ee] text-[#9ca3af]'
+              className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold transition-colors duration-[var(--duration-base)] ${
+                i < stepIdx ? 'bg-brand text-white' : i === stepIdx ? 'bg-ink text-white' : 'bg-surface-muted text-subtle'
               }`}
               aria-current={i === stepIdx ? 'step' : undefined}
             >
-              {i < stepIdx ? '✓' : i + 1}
+              {i < stepIdx ? <CheckIcon className="h-3.5 w-3.5" /> : i + 1}
             </span>
-            {i < labels.length - 1 && (
-              <span className={`h-px w-6 flex-1 sm:w-10 ${i < stepIdx ? 'bg-[#e8651a]' : 'bg-[#e8e4de]'}`} aria-hidden="true" />
+            {i < STEP_LABELS.length - 1 && (
+              <span className={`h-px flex-1 ${i < stepIdx ? 'bg-brand' : 'bg-line'}`} aria-hidden="true" />
             )}
           </li>
         ))}
       </ol>
-      <p className="mt-2 text-xs text-[#9ca3af]">{labels[stepIdx]}</p>
+      <p className="mt-2 text-meta text-subtle">{STEP_LABELS[stepIdx]}</p>
     </nav>
   );
 }
 
 export function PlannerWizardClient({ categories }: Props) {
+  const { selected: selectedTripSlugs, hydrated: tripHydrated } = useTripSelection();
   const [step, setStep] = useState<Step>('accommodation');
+  const [direction, setDirection] = useState<'forward' | 'back'>('forward');
   const [accommodationIdx, setAccommodationIdx] = useState(0);
   const [days, setDays] = useState(2);
   const [transport, setTransport] = useState<PlannerInput['transport']>('car');
@@ -83,6 +97,11 @@ export function PlannerWizardClient({ categories }: Props) {
   const [itinerary, setItinerary] = useState<TripItinerary | null>(null);
 
   const accommodation = ACCOMMODATION_OPTIONS[accommodationIdx];
+
+  function goTo(next: Step, dir: 'forward' | 'back') {
+    setDirection(dir);
+    setStep(next);
+  }
 
   function handleGenerate() {
     const input: PlannerInput = {
@@ -97,11 +116,11 @@ export function PlannerWizardClient({ categories }: Props) {
       pace,
       preferredCategories,
       onlyFree,
-      mustVisitSlugs: [],
+      mustVisitSlugs: selectedTripSlugs,
     };
     const result = generateItinerary(input);
     setItinerary(result);
-    setStep('result');
+    goTo('result', 'forward');
   }
 
   function toggleCategory(cat: Category) {
@@ -110,24 +129,22 @@ export function PlannerWizardClient({ categories }: Props) {
     );
   }
 
-  const inputClass =
-    'w-full rounded-sm border border-[#e8e4de] bg-white px-4 py-3 text-sm text-[#1a1a1a] focus:border-[#e8651a] focus:outline-none focus:ring-1 focus:ring-[#e8651a]';
+  const motionAttr = { 'data-step-motion': direction === 'forward' ? 'forward-enter' : 'back-enter' } as const;
 
-  const btnPrimary =
-    'rounded-sm bg-[#e8651a] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#c9540e] disabled:opacity-40';
-
-  const btnSecondary =
-    'rounded-sm border border-[#e8e4de] px-6 py-3 text-sm font-medium text-[#4b5563] transition-colors hover:border-[#1a1a1a]';
+  const choiceBase =
+    'rounded-sm border px-4 py-3.5 text-left text-sm transition-colors duration-[var(--duration-fast)]';
+  const choiceActive = 'border-brand bg-brand/5 font-medium text-brand';
+  const choiceInactive = 'border-line text-muted hover:border-brand/40';
 
   if (step === 'result' && itinerary) {
     return (
-      <div>
+      <div {...motionAttr}>
         <button
           type="button"
-          onClick={() => { setStep('pace'); setItinerary(null); }}
-          className="mb-6 flex items-center gap-2 text-sm text-[#9ca3af] transition-colors hover:text-[#1a1a1a]"
+          onClick={() => { goTo('pace', 'back'); setItinerary(null); }}
+          className="mb-6 flex items-center gap-2 text-sm text-subtle transition-colors hover:text-strong"
         >
-          ← Yeniden Planla
+          <ArrowLeftIcon className="h-4 w-4" /> Yeniden Planla
         </button>
         <ItineraryView itinerary={itinerary} />
       </div>
@@ -135,187 +152,187 @@ export function PlannerWizardClient({ categories }: Props) {
   }
 
   return (
-    <div className="rounded-md border border-[#e8e4de] bg-white p-6 sm:p-8">
+    <Surface tone="surface" padding="lg" radius="md" className="mx-auto max-w-2xl">
       <StepIndicator current={step} />
+
+      {tripHydrated && selectedTripSlugs.length > 0 && (
+        <div className="mb-6 flex items-center gap-2 rounded-sm border border-brand/30 bg-brand/5 px-4 py-2.5 text-meta text-brand-strong">
+          <CheckIcon className="h-4 w-4 shrink-0" />
+          <span>
+            &quot;Geziye Ekle&quot; ile işaretlediğiniz <strong className="font-semibold">{selectedTripSlugs.length}</strong>{' '}
+            yer bu planda önceliklendirilecek.
+          </span>
+        </div>
+      )}
 
       {/* Step 1: Accommodation */}
       {step === 'accommodation' && (
-        <div>
-          <h2 className="mb-1 font-display text-xl font-semibold text-[#1a1a1a]">Nerede kalıyorsunuz?</h2>
-          <p className="mb-5 text-sm text-[#9ca3af]">Konaklamanıza en yakın şehri seçin.</p>
+        <div {...motionAttr}>
+          <h2 className="mb-1 font-display text-block-title font-semibold text-strong">Nerede kalıyorsunuz?</h2>
+          <p className="mb-5 text-body-sm text-subtle">Konaklamanıza en yakın şehri seçin.</p>
           <div className="grid gap-2 sm:grid-cols-2">
             {ACCOMMODATION_OPTIONS.map((opt, i) => (
               <button
                 key={opt.label}
                 type="button"
                 onClick={() => setAccommodationIdx(i)}
-                className={`flex items-center gap-3 rounded-sm border px-4 py-3 text-left text-sm transition-colors ${
-                  accommodationIdx === i
-                    ? 'border-[#e8651a] bg-[#e8651a]/5 font-medium text-[#e8651a]'
-                    : 'border-[#e8e4de] text-[#4b5563] hover:border-[#e8651a]/40'
-                }`}
+                className={`flex items-center gap-3 ${choiceBase} ${accommodationIdx === i ? choiceActive : choiceInactive}`}
               >
-                <svg className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
+                <PinIcon className="h-4 w-4 shrink-0" />
                 {opt.label}
               </button>
             ))}
           </div>
           <div className="mt-6 flex justify-end">
-            <button type="button" className={btnPrimary} onClick={() => setStep('duration')}>
-              Devam →
-            </button>
+            <Button size="lg" icon={<ArrowRightIcon className="h-4 w-4" />} onClick={() => goTo('duration', 'forward')}>
+              Devam
+            </Button>
           </div>
         </div>
       )}
 
       {/* Step 2: Duration */}
       {step === 'duration' && (
-        <div>
-          <h2 className="mb-1 font-display text-xl font-semibold text-[#1a1a1a]">Kaç gün gezeceğiniz?</h2>
-          <p className="mb-5 text-sm text-[#9ca3af]">Tam gün sayısını girin (1–14).</p>
+        <div {...motionAttr}>
+          <h2 className="mb-1 font-display text-block-title font-semibold text-strong">Kaç gün gezeceksiniz?</h2>
+          <p className="mb-5 text-body-sm text-subtle">Tam gün sayısını girin (1–14).</p>
           <div className="flex items-center gap-4">
             <button
               type="button"
               onClick={() => setDays(Math.max(1, days - 1))}
-              className="flex h-10 w-10 items-center justify-center rounded-sm border border-[#e8e4de] text-lg font-bold text-[#1a1a1a] transition-colors hover:border-[#e8651a] hover:text-[#e8651a]"
+              className="flex h-11 w-11 items-center justify-center rounded-sm border border-line text-lg font-bold text-strong transition-colors hover:border-brand hover:text-brand"
               aria-label="Gün azalt"
             >
               −
             </button>
-            <input
+            <Input
               type="number"
               min={1}
               max={14}
               value={days}
               onChange={(e) => setDays(Math.min(14, Math.max(1, Number(e.target.value))))}
-              className={`${inputClass} w-24 text-center text-lg font-bold`}
+              className="w-24 text-center text-lg font-bold"
               aria-label="Gün sayısı"
             />
             <button
               type="button"
               onClick={() => setDays(Math.min(14, days + 1))}
-              className="flex h-10 w-10 items-center justify-center rounded-sm border border-[#e8e4de] text-lg font-bold text-[#1a1a1a] transition-colors hover:border-[#e8651a] hover:text-[#e8651a]"
+              className="flex h-11 w-11 items-center justify-center rounded-sm border border-line text-lg font-bold text-strong transition-colors hover:border-brand hover:text-brand"
               aria-label="Gün artır"
             >
               +
             </button>
-            <span className="text-sm text-[#9ca3af]">
-              {days === 1 ? 'gün' : 'gün'}
-            </span>
+            <span className="text-sm text-subtle">gün</span>
           </div>
           <div className="mt-6 flex justify-between">
-            <button type="button" className={btnSecondary} onClick={() => setStep('accommodation')}>← Geri</button>
-            <button type="button" className={btnPrimary} onClick={() => setStep('transport')}>Devam →</button>
+            <Button variant="secondary" size="lg" icon={<ArrowLeftIcon className="h-4 w-4" />} iconPosition="leading" onClick={() => goTo('accommodation', 'back')}>
+              Geri
+            </Button>
+            <Button size="lg" icon={<ArrowRightIcon className="h-4 w-4" />} onClick={() => goTo('transport', 'forward')}>
+              Devam
+            </Button>
           </div>
         </div>
       )}
 
       {/* Step 3: Transport */}
       {step === 'transport' && (
-        <div>
-          <h2 className="mb-1 font-display text-xl font-semibold text-[#1a1a1a]">Nasıl ulaşacaksınız?</h2>
-          <p className="mb-5 text-sm text-[#9ca3af]">Birincil ulaşım aracınızı seçin.</p>
+        <div {...motionAttr}>
+          <h2 className="mb-1 font-display text-block-title font-semibold text-strong">Nasıl ulaşacaksınız?</h2>
+          <p className="mb-5 text-body-sm text-subtle">Birincil ulaşım aracınızı seçin.</p>
           <div className="grid gap-2 sm:grid-cols-3">
-            {TRANSPORT_OPTIONS.map((opt) => (
-              <button
-                key={opt.value}
-                type="button"
-                onClick={() => setTransport(opt.value)}
-                className={`flex flex-col items-center gap-1 rounded-sm border px-4 py-4 text-sm transition-colors ${
-                  transport === opt.value
-                    ? 'border-[#e8651a] bg-[#e8651a]/5 font-medium text-[#e8651a]'
-                    : 'border-[#e8e4de] text-[#4b5563] hover:border-[#e8651a]/40'
-                }`}
-              >
-                <span className="text-2xl">{opt.icon}</span>
-                <span className="font-semibold">{opt.label}</span>
-                <span className="text-[11px] text-[#9ca3af]">{opt.desc}</span>
-              </button>
-            ))}
+            {TRANSPORT_OPTIONS.map((opt) => {
+              const Icon = opt.icon;
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => setTransport(opt.value)}
+                  className={`flex flex-col items-center gap-1.5 py-5 ${choiceBase} ${transport === opt.value ? choiceActive : choiceInactive}`}
+                >
+                  <Icon className="h-6 w-6" />
+                  <span className="font-semibold">{opt.label}</span>
+                  <span className="text-[11px] text-subtle">{opt.desc}</span>
+                </button>
+              );
+            })}
           </div>
           <div className="mt-6 flex justify-between">
-            <button type="button" className={btnSecondary} onClick={() => setStep('duration')}>← Geri</button>
-            <button type="button" className={btnPrimary} onClick={() => setStep('interests')}>Devam →</button>
+            <Button variant="secondary" size="lg" icon={<ArrowLeftIcon className="h-4 w-4" />} iconPosition="leading" onClick={() => goTo('duration', 'back')}>
+              Geri
+            </Button>
+            <Button size="lg" icon={<ArrowRightIcon className="h-4 w-4" />} onClick={() => goTo('interests', 'forward')}>
+              Devam
+            </Button>
           </div>
         </div>
       )}
 
       {/* Step 4: Interests */}
       {step === 'interests' && (
-        <div>
-          <h2 className="mb-1 font-display text-xl font-semibold text-[#1a1a1a]">Neleri seviyorsunuz?</h2>
-          <p className="mb-5 text-sm text-[#9ca3af]">Birden fazla seçebilirsiniz. Boş bırakırsanız her şeyi dahil ederiz.</p>
+        <div {...motionAttr}>
+          <h2 className="mb-1 font-display text-block-title font-semibold text-strong">Neleri seviyorsunuz?</h2>
+          <p className="mb-5 text-body-sm text-subtle">Birden fazla seçebilirsiniz. Boş bırakırsanız her şeyi dahil ederiz.</p>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
             {categories.map((cat) => (
               <button
                 key={cat}
                 type="button"
                 onClick={() => toggleCategory(cat)}
-                className={`rounded-sm border px-3 py-2 text-left text-sm transition-colors ${
-                  preferredCategories.includes(cat)
-                    ? 'border-[#e8651a] bg-[#e8651a]/5 font-medium text-[#e8651a]'
-                    : 'border-[#e8e4de] text-[#4b5563] hover:border-[#e8651a]/40'
-                }`}
+                className={`${choiceBase} ${preferredCategories.includes(cat) ? choiceActive : choiceInactive}`}
               >
-                {cat}
+                {tr.categories[cat]}
               </button>
             ))}
           </div>
-          <div className="mt-4">
-            <label className="flex cursor-pointer items-center gap-2 text-sm text-[#4b5563]">
-              <input
-                type="checkbox"
-                checked={onlyFree}
-                onChange={(e) => setOnlyFree(e.target.checked)}
-                className="h-4 w-4 rounded-sm border-[#e8e4de] accent-[#e8651a]"
-              />
-              Yalnızca ücretsiz yerler
-            </label>
-          </div>
+          <label className="mt-4 flex cursor-pointer items-center gap-2 text-sm text-muted">
+            <input
+              type="checkbox"
+              checked={onlyFree}
+              onChange={(e) => setOnlyFree(e.target.checked)}
+              className="h-4 w-4 rounded-sm border-line accent-brand"
+            />
+            Yalnızca ücretsiz yerler
+          </label>
           <div className="mt-6 flex justify-between">
-            <button type="button" className={btnSecondary} onClick={() => setStep('transport')}>← Geri</button>
-            <button type="button" className={btnPrimary} onClick={() => setStep('pace')}>Devam →</button>
+            <Button variant="secondary" size="lg" icon={<ArrowLeftIcon className="h-4 w-4" />} iconPosition="leading" onClick={() => goTo('transport', 'back')}>
+              Geri
+            </Button>
+            <Button size="lg" icon={<ArrowRightIcon className="h-4 w-4" />} onClick={() => goTo('pace', 'forward')}>
+              Devam
+            </Button>
           </div>
         </div>
       )}
 
       {/* Step 5: Pace */}
       {step === 'pace' && (
-        <div>
-          <h2 className="mb-1 font-display text-xl font-semibold text-[#1a1a1a]">Gezi temponuz?</h2>
-          <p className="mb-5 text-sm text-[#9ca3af]">Günde kaç yer görmek istiyorsunuz?</p>
+        <div {...motionAttr}>
+          <h2 className="mb-1 font-display text-block-title font-semibold text-strong">Gezi temponuz?</h2>
+          <p className="mb-5 text-body-sm text-subtle">Günde kaç yer görmek istiyorsunuz?</p>
           <div className="grid gap-2 sm:grid-cols-3">
             {PACE_OPTIONS.map((opt) => (
               <button
                 key={opt.value}
                 type="button"
                 onClick={() => setPace(opt.value)}
-                className={`flex flex-col gap-1 rounded-sm border px-4 py-4 text-left text-sm transition-colors ${
-                  pace === opt.value
-                    ? 'border-[#e8651a] bg-[#e8651a]/5 font-medium text-[#e8651a]'
-                    : 'border-[#e8e4de] text-[#4b5563] hover:border-[#e8651a]/40'
-                }`}
+                className={`flex flex-col gap-1 py-4 ${choiceBase} ${pace === opt.value ? choiceActive : choiceInactive}`}
               >
                 <span className="font-semibold">{opt.label}</span>
-                <span className="text-[11px] text-[#9ca3af]">{opt.desc}</span>
+                <span className="text-[11px] text-subtle">{opt.desc}</span>
               </button>
             ))}
           </div>
           <div className="mt-6 flex justify-between">
-            <button type="button" className={btnSecondary} onClick={() => setStep('interests')}>← Geri</button>
-            <button
-              type="button"
-              className={btnPrimary}
-              onClick={handleGenerate}
-            >
-              Plan Oluştur 🗺
-            </button>
+            <Button variant="secondary" size="lg" icon={<ArrowLeftIcon className="h-4 w-4" />} iconPosition="leading" onClick={() => goTo('interests', 'back')}>
+              Geri
+            </Button>
+            <Button size="lg" icon={<CompassIcon className="h-4 w-4" />} onClick={handleGenerate}>
+              Plan Oluştur
+            </Button>
           </div>
         </div>
       )}
-    </div>
+    </Surface>
   );
 }

@@ -3,6 +3,7 @@ import { Inter, Playfair_Display } from 'next/font/google';
 import './globals.css';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
+import { SITE_URL } from '@/lib/config';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -17,46 +18,46 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://cyprus-discovery.com'),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: 'Cyprus Discovery — Explore Museums, Castles, Beaches & Culture',
-    template: '%s | Cyprus Discovery',
+    default: 'Kuzey Kıbrıs Discovery — Müzeler, Kaleler, Plajlar ve Kültür',
+    template: '%s | Kuzey Kıbrıs Discovery',
   },
   description:
-    'Discover the best places to visit in Cyprus — museums, castles, archaeological sites, beaches, monasteries, and cultural destinations. Opening hours, prices, locations, and visitor guides.',
+    'Kuzey Kıbrıs\'taki en iyi gezilecek yerleri keşfedin — müzeler, kaleler, arkeolojik alanlar, plajlar, manastırlar ve kültürel destinasyonlar. Açılış saatleri, fiyatlar, konumlar ve ziyaretçi rehberleri.',
   keywords: [
-    'Cyprus tourism',
-    'places to visit in Cyprus',
-    'Cyprus museums',
-    'Cyprus castles',
-    'Cyprus beaches',
-    'Cyprus archaeological sites',
-    'Cyprus travel guide',
-    'what to see in Cyprus',
+    'Kuzey Kıbrıs gezilecek yerler',
+    'KKTC turizm',
+    'Kuzey Kıbrıs müzeleri',
+    'Kuzey Kıbrıs kaleleri',
+    'Kuzey Kıbrıs plajları',
+    'Kuzey Kıbrıs arkeolojik alanları',
+    'Kuzey Kıbrıs gezi rehberi',
+    'Kuzey Kıbrıs\'ta ne görülür',
   ],
-  authors: [{ name: 'Cyprus Discovery' }],
-  creator: 'Cyprus Discovery',
+  authors: [{ name: 'Kuzey Kıbrıs Discovery' }],
+  creator: 'Kuzey Kıbrıs Discovery',
   openGraph: {
     type: 'website',
-    locale: 'en_GB',
-    siteName: 'Cyprus Discovery',
-    title: 'Cyprus Discovery — Explore Museums, Castles, Beaches & Culture',
+    locale: 'tr_TR',
+    siteName: 'Kuzey Kıbrıs Discovery',
+    title: 'Kuzey Kıbrıs Discovery — Müzeler, Kaleler, Plajlar ve Kültür',
     description:
-      'Discover the best places to visit in Cyprus. Museums, castles, beaches, monasteries, archaeological sites and more — with opening hours, prices and visitor guides.',
+      'Kuzey Kıbrıs\'taki en iyi gezilecek yerleri keşfedin. Müzeler, kaleler, plajlar, manastırlar, arkeolojik alanlar ve daha fazlası — açılış saatleri, fiyatlar ve ziyaretçi rehberleriyle.',
     images: [
       {
         url: '/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'Cyprus Discovery — Explore the island',
+        alt: 'Kuzey Kıbrıs Discovery — Adayı keşfedin',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Cyprus Discovery — Explore Museums, Castles, Beaches & Culture',
+    title: 'Kuzey Kıbrıs Discovery — Müzeler, Kaleler, Plajlar ve Kültür',
     description:
-      'Find museums, castles, beaches, monasteries and cultural sites across Cyprus.',
+      'Kuzey Kıbrıs\'taki müzeleri, kaleleri, plajları, manastırları ve kültürel alanları keşfedin.',
     images: ['/og-image.jpg'],
   },
   robots: {
@@ -71,8 +72,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${playfair.variable}`} data-scroll-behavior="smooth">
-      <body className="flex min-h-screen flex-col bg-[#fafaf8] text-[#1a1a1a]">
+    <html lang="tr" className={`${inter.variable} ${playfair.variable}`} data-scroll-behavior="smooth">
+      <body className="flex min-h-screen flex-col bg-paper text-strong">
         <Navbar />
         <main id="main-content" className="flex-1">
           {children}

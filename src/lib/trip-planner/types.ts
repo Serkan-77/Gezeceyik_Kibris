@@ -75,10 +75,3 @@ export interface TripItinerary {
   generatedAt: string;
 }
 
-// ── Cost Types ────────────────────────────────────────────────
-
-export interface TripCostSummary {
-  admission: number;
-  fuel?: number;
-  currency: 'TRY' | 'EUR';
-}

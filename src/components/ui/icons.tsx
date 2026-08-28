@@ -1,0 +1,210 @@
+// components/ui/icons.tsx
+// Centralized inline-SVG icon set. One family, one stroke width (1.5),
+// 24x24 viewBox, currentColor — replaces ad hoc per-component SVGs and
+// the emoji used in the trip planner. No icon-library dependency needed
+// for a set this small and stable.
+
+import { SVGProps } from 'react';
+
+export type IconProps = SVGProps<SVGSVGElement>;
+
+function base(props: IconProps) {
+  return {
+    fill: 'none',
+    stroke: 'currentColor',
+    viewBox: '0 0 24 24',
+    'aria-hidden': true,
+    ...props,
+  };
+}
+
+export function ArrowRightIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+    </svg>
+  );
+}
+
+export function ArrowLeftIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+    </svg>
+  );
+}
+
+export function SearchIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+    </svg>
+  );
+}
+
+export function HeartIcon({ filled, ...props }: IconProps & { filled?: boolean }) {
+  return (
+    <svg {...base(props)} fill={filled ? 'currentColor' : 'none'}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+    </svg>
+  );
+}
+
+export function PlusIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+    </svg>
+  );
+}
+
+export function CheckIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+    </svg>
+  );
+}
+
+export function CloseIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  );
+}
+
+export function MenuIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
+    </svg>
+  );
+}
+
+export function ChevronDownIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 9l6 6 6-6" />
+    </svg>
+  );
+}
+
+export function PinIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+    </svg>
+  );
+}
+
+export function ClockIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+  );
+}
+
+export function TicketIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+    </svg>
+  );
+}
+
+export function TimerIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+  );
+}
+
+export function PhoneIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+    </svg>
+  );
+}
+
+export function GlobeIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M12 21a9 9 0 100-18 9 9 0 000 18zM3.6 9h16.8M3.6 15h16.8M12 3a14 14 0 010 18 14 14 0 010-18z" />
+    </svg>
+  );
+}
+
+export function AccessibilityIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+    </svg>
+  );
+}
+
+export function DirectionsIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+    </svg>
+  );
+}
+
+export function CarIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M3 13l1.5-4.5A2 2 0 016.4 7h11.2a2 2 0 011.9 1.5L21 13m-18 0v5a1 1 0 001 1h1a1 1 0 001-1v-1h12v1a1 1 0 001 1h1a1 1 0 001-1v-5m-18 0h18M7 16.5h.01M17 16.5h.01" />
+    </svg>
+  );
+}
+
+export function WalkIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <circle cx="13" cy="4.5" r="1.6" strokeWidth={1.7} />
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M10.5 8l-3 3 1.5 5.5M10.5 8l3.5 1 2 3M10.5 8l-1.5 4 4 1.5-1 5.5M14 12l3 1.5-1 4" />
+    </svg>
+  );
+}
+
+export function BusIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <rect x="4" y="5" width="16" height="12" rx="2" strokeWidth={1.7} />
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M4 11h16M8 17v2M16 17v2" />
+      <circle cx="8" cy="14" r="0.6" fill="currentColor" strokeWidth={0} />
+      <circle cx="16" cy="14" r="0.6" fill="currentColor" strokeWidth={0} />
+    </svg>
+  );
+}
+
+export function CompassIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <circle cx="12" cy="12" r="9" strokeWidth={1.7} />
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M15.5 8.5l-2 5-5 2 2-5 5-2z" />
+    </svg>
+  );
+}
+
+export function FlagStartIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M6 3v18m0-16.5h10l-2 3 2 3H6" />
+    </svg>
+  );
+}
+
+export function FlagEndIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M6 3v18" />
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M6 4.5h10l-2 3 2 3H6" fill="currentColor" fillOpacity="0.12" />
+    </svg>
+  );
+}

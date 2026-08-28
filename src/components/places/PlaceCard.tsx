@@ -1,15 +1,19 @@
 'use client';
 // components/places/PlaceCard.tsx
-// Kuzey Kıbrıs Discovery — travel editorial card.
-// Turkish labels, favorite button, add-to-trip button.
-// Client component because it reads favorites/trip state from localStorage.
+// Destination-first card: image → name → location/category → light visitor
+// info. Favorite/trip actions stay reachable but visually secondary — small
+// icon toggles stacked on the image, never competing with the destination itself.
 
 import Image from 'next/image';
 import Link from 'next/link';
 import { Place } from '@/types/place';
-import { CategoryBadge } from '@/components/ui/Badge';
+import { Badge, CategoryBadge } from '@/components/ui/Badge';
 import { FavoriteButton } from '@/components/ui/FavoriteButton';
 import { AddToTripButton } from '@/components/ui/AddToTripButton';
+import { useTodayKey } from '@/hooks/useTodayKey';
+import { tr } from '@/lib/i18n/tr';
+import { formatDistance } from '@/lib/places';
+import { PinIcon } from '@/components/ui/icons';
 
 interface PlaceCardProps {
   place: Place;
@@ -17,29 +21,22 @@ interface PlaceCardProps {
   distanceMeters?: number;
 }
 
-function formatDistance(m: number): string {
-  return m < 1000 ? `${Math.round(m)} m` : `${(m / 1000).toFixed(1)} km`;
-}
-
 export function PlaceCard({ place, distanceMeters }: PlaceCardProps) {
   const admissionLabel = place.admission?.isFree
-    ? 'Ücretsiz'
+    ? tr.place.free
     : place.admission?.adultPrice !== undefined
     ? `${place.admission.adultPrice.toLocaleString('tr-TR')} ${place.admission.currency ?? 'TRY'}`
     : null;
 
-  const todayKey = [
-    'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday',
-  ][new Date().getDay()] as keyof NonNullable<Place['openingHours']>;
-
-  const todayHours = place.openingHours?.[todayKey];
+  const todayKey = useTodayKey();
+  const todayHours = todayKey ? place.openingHours?.[todayKey] : undefined;
 
   return (
-    <article className="group relative flex flex-col overflow-hidden rounded-md border border-[#e8e4de] bg-white transition-shadow hover:shadow-md">
+    <article className="group relative flex flex-col overflow-hidden rounded-md border border-line bg-surface shadow-[var(--shadow-card)] transition-shadow duration-[var(--duration-base)] hover:shadow-[var(--shadow-lift)]">
       {/* Image */}
       <Link
         href={`/places/${place.slug}`}
-        className="relative block aspect-[4/3] overflow-hidden bg-[#f5f2ee]"
+        className="relative block aspect-[4/3] overflow-hidden bg-surface-muted"
         tabIndex={-1}
         aria-hidden="true"
       >
@@ -49,94 +46,63 @@ export function PlaceCard({ place, distanceMeters }: PlaceCardProps) {
             alt={`${place.name}, ${place.city}`}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="object-cover transition-transform duration-[var(--duration-slow)] ease-[var(--ease-out-editorial)] group-hover:scale-[1.04]"
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-[#c4bdb4] text-sm">
+          <div className="flex h-full items-center justify-center text-body-sm text-faint">
             Fotoğraf yok
           </div>
         )}
 
-        {/* Category badge */}
         <div className="absolute left-3 top-3">
           <CategoryBadge category={place.category} overlay />
         </div>
-
-        {/* Free badge */}
-        {place.admission?.isFree && (
-          <div className="absolute right-3 top-3">
-            <span className="inline-block rounded-sm bg-emerald-700/90 px-2 py-0.5 text-[11px] font-semibold text-white backdrop-blur-sm">
-              Ücretsiz
-            </span>
-          </div>
-        )}
       </Link>
 
-      {/* Action buttons — absolute top-right on image when NOT free */}
-      {!place.admission?.isFree && (
-        <div className="absolute right-3 top-3 flex gap-1.5">
-          <FavoriteButton placeSlug={place.slug} placeName={place.name} />
-        </div>
-      )}
-      {place.admission?.isFree && (
-        <div className="absolute right-3 bottom-[calc(100%-theme(spacing.10))] flex gap-1.5" />
-      )}
-
-      {/* Fav + Trip buttons overlay when free (right side below free badge) */}
-      <div className="absolute right-3 top-11 flex flex-col gap-1.5">
+      {/* Fav + trip actions — secondary, stacked with the free badge if present */}
+      <div className="absolute right-3 top-3 flex flex-col items-end gap-1.5">
+        {place.admission?.isFree && <Badge label={tr.place.free} variant="success" />}
         <FavoriteButton placeSlug={place.slug} placeName={place.name} />
         <AddToTripButton placeSlug={place.slug} placeName={place.name} />
       </div>
 
       {/* Content */}
       <div className="flex flex-1 flex-col px-4 pb-4 pt-3.5">
-        {/* Location */}
-        <p className="flex items-center gap-1 text-xs font-medium text-[#9ca3af]">
-          <svg className="h-3 w-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-          {place.city}, {place.region}
-          {distanceMeters !== undefined && (
-            <span className="ml-1 text-[#e8651a]">· {formatDistance(distanceMeters)}</span>
-          )}
-        </p>
-
-        {/* Title */}
-        <h3 className="mt-1.5 font-display text-base font-semibold leading-snug text-[#1a1a1a]">
+        <h3 className="font-display text-card-title font-semibold leading-snug text-strong">
           <Link
             href={`/places/${place.slug}`}
-            className="hover:text-[#e8651a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#e8651a] focus-visible:ring-offset-2"
+            className="hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
           >
             {place.name}
           </Link>
         </h3>
 
-        {/* Description */}
-        <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-[#6b7280]">
+        <p className="mt-1 flex items-center gap-1 text-meta text-subtle">
+          <PinIcon className="h-3 w-3 shrink-0" />
+          {place.city}, {place.region}
+          {distanceMeters !== undefined && (
+            <span className="text-brand">· {formatDistance(distanceMeters)}</span>
+          )}
+        </p>
+
+        <p className="mt-2 line-clamp-2 text-body-sm leading-relaxed text-muted">
           {place.shortDescription}
         </p>
 
-        {/* Footer meta */}
-        <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1 pt-3.5">
-          {admissionLabel && (
-            <span
-              className={`text-xs font-medium ${
-                place.admission?.isFree ? 'text-emerald-700' : 'text-[#4b5563]'
-              }`}
-            >
-              {admissionLabel}
-            </span>
-          )}
-          {admissionLabel && todayHours !== undefined && (
-            <span className="text-[#e8e4de]" aria-hidden="true">·</span>
-          )}
-          {todayHours !== undefined && (
-            <span className="text-xs text-[#9ca3af]">
-              {todayHours === null ? 'Bugün kapalı' : `Bugün ${todayHours}`}
-            </span>
-          )}
-        </div>
+        {/* Footer meta — light touch, not a data table */}
+        {(admissionLabel || todayHours !== undefined) && (
+          <div className="mt-auto flex flex-wrap items-center gap-x-2 gap-y-1 pt-3.5 text-meta text-subtle">
+            {admissionLabel && (
+              <span className={place.admission?.isFree ? 'font-medium text-success' : 'font-medium text-muted'}>
+                {admissionLabel}
+              </span>
+            )}
+            {admissionLabel && todayHours !== undefined && <span aria-hidden="true">·</span>}
+            {todayHours !== undefined && (
+              <span>{todayHours === null ? 'Bugün kapalı' : `Bugün ${todayHours}`}</span>
+            )}
+          </div>
+        )}
       </div>
     </article>
   );

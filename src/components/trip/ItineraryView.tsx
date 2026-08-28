@@ -1,10 +1,27 @@
 'use client';
 // components/trip/ItineraryView.tsx
-// Renders a full TripItinerary — day tabs + timeline cards + summary metrics.
+// Renders a full TripItinerary — day tabs, a route map (the signature
+// "sightseeing route" visualization), and a timed timeline underneath it.
+// All numbers come straight from the planner's output; nothing invented.
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { TripItinerary, ItineraryDay } from '@/lib/trip-planner/types';
+import { TripItinerary, ItineraryDay, AccommodationLocation, TransportMode } from '@/lib/trip-planner/types';
+import { RouteMapWrapper } from './RouteMapWrapper';
+import { FlagStartIcon, FlagEndIcon, CarIcon, WalkIcon, BusIcon, ArrowRightIcon } from '@/components/ui/icons';
+import { tr } from '@/lib/i18n/tr';
+
+const TRANSPORT_LABEL: Record<TransportMode, string> = {
+  car: 'Araç',
+  walking: 'Yürüyüş',
+  public: 'Toplu Taşıma',
+};
+
+const TRANSPORT_ICON: Record<TransportMode, typeof CarIcon> = {
+  car: CarIcon,
+  walking: WalkIcon,
+  public: BusIcon,
+};
 
 function formatMinutes(min: number): string {
   const h = Math.floor(min / 60);
@@ -14,79 +31,112 @@ function formatMinutes(min: number): string {
   return `${h}sa ${m}dk`;
 }
 
-function DaySummary({ day }: { day: ItineraryDay }) {
+interface DaySummaryProps {
+  day: ItineraryDay;
+  accommodation: AccommodationLocation;
+  transport: TransportMode;
+}
+
+function DaySummary({ day, accommodation, transport }: DaySummaryProps) {
+  const TransportIcon = TRANSPORT_ICON[transport];
+
   return (
     <div className="mt-6">
-      {/* Day metrics strip */}
-      <div className="mb-4 flex flex-wrap gap-4 rounded-sm bg-[#f5f2ee] px-4 py-3 text-xs">
-        <div>
-          <span className="text-[#9ca3af]">Toplam ziyaret</span>{' '}
-          <span className="font-semibold text-[#1a1a1a]">{formatMinutes(day.totalVisitMin)}</span>
+      {/* Route summary strip */}
+      <div className="mb-4 flex flex-wrap gap-x-6 gap-y-2 rounded-sm bg-surface-muted px-4 py-3 text-meta">
+        <Metric label="Toplam ziyaret" value={formatMinutes(day.totalVisitMin)} />
+        <Metric label="Seyahat" value={formatMinutes(day.totalTravelMin)} />
+        <Metric label="Mesafe" value={`${day.totalKm} km`} />
+        {day.totalCost > 0 && <Metric label="Giriş ücreti" value={`${day.totalCost.toLocaleString('tr-TR')} TRY`} />}
+        <div className="ml-auto flex items-center gap-1.5 font-medium text-strong">
+          <TransportIcon className="h-4 w-4 text-brand" />
+          {TRANSPORT_LABEL[transport]}
         </div>
-        <div>
-          <span className="text-[#9ca3af]">Seyahat</span>{' '}
-          <span className="font-semibold text-[#1a1a1a]">{formatMinutes(day.totalTravelMin)}</span>
-        </div>
-        <div>
-          <span className="text-[#9ca3af]">Mesafe</span>{' '}
-          <span className="font-semibold text-[#1a1a1a]">{day.totalKm} km</span>
-        </div>
-        {day.totalCost > 0 && (
-          <div>
-            <span className="text-[#9ca3af]">Giriş ücreti</span>{' '}
-            <span className="font-semibold text-[#1a1a1a]">{day.totalCost.toLocaleString('tr-TR')} TRY</span>
-          </div>
-        )}
       </div>
 
-      {/* Timeline */}
-      <ol className="space-y-0" aria-label={`${day.dayNumber}. Gün programı`}>
-        {day.stops.map((stop, i) => (
-          <li key={stop.place.slug} className="relative flex gap-4">
-            {/* Timeline line */}
-            <div className="flex flex-col items-center">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-[#e8651a] bg-white text-xs font-bold text-[#e8651a] z-10">
-                {i + 1}
-              </div>
-              {i < day.stops.length - 1 && (
-                <div className="mt-1 mb-1 w-px flex-1 bg-[#e8e4de]" aria-hidden="true" />
-              )}
-            </div>
+      {/* Route map — the day's sightseeing route at a glance */}
+      <div className="mb-6 h-72 w-full overflow-hidden rounded-lg border border-line sm:h-96">
+        <RouteMapWrapper day={day} accommodation={accommodation} />
+      </div>
 
-            {/* Card */}
-            <div className="mb-4 min-w-0 flex-1 rounded-sm border border-[#e8e4de] bg-white px-4 py-3">
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <p className="text-[10px] font-semibold uppercase tracking-widest text-[#9ca3af]">
-                    {stop.arrivalTime} — {stop.departureTime}
-                  </p>
-                  <h3 className="mt-0.5 font-display text-base font-semibold leading-tight text-[#1a1a1a]">
-                    <Link href={`/places/${stop.place.slug}`} className="hover:text-[#e8651a]">
-                      {stop.place.name}
-                    </Link>
-                  </h3>
-                  <p className="text-xs text-[#9ca3af]">{stop.place.city} · {stop.place.category}</p>
+      {/* Timeline: start → numbered stops → end of day */}
+      <ol className="space-y-0" aria-label={`${day.dayNumber}. Gün programı`}>
+        {/* Start node */}
+        <li className="relative flex gap-4">
+          <div className="flex flex-col items-center">
+            <div className="z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-ink bg-ink text-white">
+              <FlagStartIcon className="h-3.5 w-3.5" />
+            </div>
+            <div className="mb-1 mt-1 w-px flex-1 bg-line" aria-hidden="true" />
+          </div>
+          <div className="mb-4 min-w-0 flex-1 pt-1">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-subtle">Başlangıç</p>
+            <p className="mt-0.5 font-display text-body-sm font-semibold text-strong">{accommodation.label}</p>
+          </div>
+        </li>
+
+        {day.stops.map((stop, i) => {
+          const isLast = i === day.stops.length - 1;
+          return (
+            <li key={stop.place.slug} className="relative flex gap-4">
+              <div className="flex flex-col items-center">
+                <div className="z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-brand bg-white text-xs font-bold text-brand">
+                  {i + 1}
                 </div>
-                {stop.admissionCost > 0 ? (
-                  <span className="shrink-0 text-xs font-medium text-[#4b5563]">
-                    {stop.admissionCost.toLocaleString('tr-TR')} TRY
-                  </span>
-                ) : (
-                  <span className="shrink-0 text-xs font-medium text-emerald-700">Ücretsiz</span>
+                {!isLast && <div className="mb-1 mt-1 w-px flex-1 bg-line" aria-hidden="true" />}
+              </div>
+
+              <div className={`min-w-0 flex-1 rounded-sm border border-line bg-surface px-4 py-3 ${isLast ? 'mb-4' : 'mb-4'}`}>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-subtle">
+                      {stop.arrivalTime} — {stop.departureTime}
+                    </p>
+                    <h3 className="mt-0.5 font-display text-card-title font-semibold leading-tight text-strong">
+                      <Link href={`/places/${stop.place.slug}`} className="hover:text-brand">
+                        {stop.place.name}
+                      </Link>
+                    </h3>
+                    <p className="text-meta text-subtle">{stop.place.city} · {tr.categories[stop.place.category]}</p>
+                  </div>
+                  {stop.admissionCost > 0 ? (
+                    <span className="shrink-0 text-meta font-medium text-muted">
+                      {stop.admissionCost.toLocaleString('tr-TR')} TRY
+                    </span>
+                  ) : (
+                    <span className="shrink-0 text-meta font-medium text-success">Ücretsiz</span>
+                  )}
+                </div>
+                <p className="mt-1.5 line-clamp-2 text-meta text-muted">{stop.place.shortDescription}</p>
+
+                {stop.travelToNextMin > 0 && (
+                  <p className="mt-2 flex items-center gap-1 text-[10px] text-faint">
+                    <ArrowRightIcon className="h-3 w-3 rotate-90" />
+                    {formatMinutes(stop.travelToNextMin)} seyahat ({stop.distanceToNextKm} km)
+                  </p>
                 )}
               </div>
-              <p className="mt-1.5 line-clamp-2 text-xs text-[#6b7280]">{stop.place.shortDescription}</p>
+            </li>
+          );
+        })}
 
-              {/* Travel to next */}
-              {stop.travelToNextMin > 0 && (
-                <p className="mt-2 text-[10px] text-[#c4bdb4]">
-                  ↓ {formatMinutes(stop.travelToNextMin)} seyahat ({stop.distanceToNextKm} km)
-                </p>
-              )}
-            </div>
-          </li>
-        ))}
+        {/* End of day cap */}
+        <li className="flex gap-4">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-line bg-surface-muted text-subtle">
+            <FlagEndIcon className="h-3.5 w-3.5" />
+          </div>
+          <p className="pt-1.5 text-meta text-subtle">Gün sonu</p>
+        </li>
       </ol>
+    </div>
+  );
+}
+
+function Metric({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <span className="text-subtle">{label}</span>{' '}
+      <span className="font-semibold text-strong">{value}</span>
     </div>
   );
 }
@@ -111,39 +161,41 @@ export function ItineraryView({ itinerary }: Props) {
             value: itinerary.totalCost > 0 ? `${itinerary.totalCost.toLocaleString('tr-TR')} TRY` : 'Ücretsiz',
           },
         ].map(({ label, value }) => (
-          <div key={label} className="rounded-sm border border-[#e8e4de] bg-white px-4 py-3 text-center">
-            <p className="text-xs text-[#9ca3af]">{label}</p>
-            <p className="mt-0.5 font-display text-xl font-bold text-[#1a1a1a]">{value}</p>
+          <div key={label} className="rounded-sm border border-line bg-surface px-4 py-3 text-center">
+            <p className="text-meta text-subtle">{label}</p>
+            <p className="mt-0.5 font-display text-block-title font-bold text-strong">{value}</p>
           </div>
         ))}
       </div>
 
       {/* Day tabs */}
-      <div className="flex gap-1 overflow-x-auto rounded-sm border border-[#e8e4de] bg-[#f5f2ee] p-1">
+      <div className="flex gap-1 overflow-x-auto rounded-sm border border-line bg-surface-muted p-1">
         {itinerary.days.map((day, i) => (
           <button
             key={day.dayNumber}
             type="button"
             onClick={() => setActiveDay(i)}
-            className={`shrink-0 rounded-sm px-4 py-2 text-sm font-medium transition-colors ${
-              activeDay === i
-                ? 'bg-white text-[#1a1a1a] shadow-sm'
-                : 'text-[#6b7280] hover:text-[#1a1a1a]'
+            className={`shrink-0 rounded-sm px-4 py-2 text-sm font-medium transition-colors duration-[var(--duration-fast)] ${
+              activeDay === i ? 'bg-surface text-strong shadow-[var(--shadow-card)]' : 'text-muted hover:text-strong'
             }`}
           >
             {day.dayNumber}. Gün
-            <span className="ml-1.5 text-[11px] text-[#9ca3af]">{day.region}</span>
+            <span className="ml-1.5 text-[11px] text-subtle">{day.region}</span>
           </button>
         ))}
       </div>
 
       {/* Active day */}
       {itinerary.days[activeDay] && (
-        <DaySummary day={itinerary.days[activeDay]} />
+        <DaySummary
+          day={itinerary.days[activeDay]}
+          accommodation={itinerary.input.accommodation}
+          transport={itinerary.input.transport}
+        />
       )}
 
       {/* Note */}
-      <p className="mt-6 rounded-sm border border-amber-200/60 bg-amber-50/70 px-4 py-3 text-xs leading-relaxed text-amber-800">
+      <p className="mt-6 rounded-sm border border-warning/20 bg-warning-soft px-4 py-3 text-meta leading-relaxed text-warning">
         Bu program tahmini süreler ve örnek veriler kullanılarak otomatik oluşturulmuştur.
         Ziyaret öncesi açılış saatlerini ve fiyatları resmi kaynaklardan doğrulayın.
       </p>

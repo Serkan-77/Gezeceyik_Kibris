@@ -1,9 +1,13 @@
 // app/gezi-planla/page.tsx — Gezi Planla (/gezi-planla)
-// Server Component wrapper — actual wizard is client-side.
+// Server Component wrapper — actual wizard is client-side. Container stays
+// full-width so the itinerary result (and its route map) has room; the
+// wizard card itself constrains to a narrow, focused column internally.
 
 import { Metadata } from 'next';
 import { PlannerWizardClient } from '@/components/trip/PlannerWizardClient';
-import { getAllPlaces, getAllCategories } from '@/lib/places';
+import { SectionHeader } from '@/components/ui/SectionHeader';
+import { Container } from '@/components/ui/Container';
+import { getAllCategories } from '@/lib/places';
 
 export const metadata: Metadata = {
   title: 'Gezi Planla — Kuzey Kıbrıs Discovery',
@@ -16,24 +20,22 @@ export const metadata: Metadata = {
 };
 
 export default function GeziPlanlaPage() {
-  const allPlaces = getAllPlaces();
   const categories = getAllCategories();
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
-      <header className="mb-10 text-center">
-        <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-[#e8651a]">
-          Gezi Planlayıcı
-        </p>
-        <h1 className="font-display text-3xl font-bold text-[#1a1a1a] sm:text-4xl">
-          Kuzey Kıbrıs Gezi Planı
-        </h1>
-        <p className="mt-3 text-[#6b7280]">
-          Bilgilerinizi girin, sizin için optimize edilmiş bir program oluşturalım.
-        </p>
-      </header>
+    <Container className="py-12 sm:py-16">
+      <div className="mb-10 text-center">
+        <SectionHeader
+          as="h1"
+          size="page"
+          align="center"
+          eyebrow="Gezi Planlayıcı"
+          title="Kuzey Kıbrıs Gezi Planı"
+          subtitle="Bilgilerinizi girin, sizin için optimize edilmiş bir program oluşturalım."
+        />
+      </div>
 
-      <PlannerWizardClient allPlaces={allPlaces} categories={categories} />
-    </div>
+      <PlannerWizardClient categories={categories} />
+    </Container>
   );
 }

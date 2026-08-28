@@ -53,6 +53,13 @@ export const tr = {
     'Lefke': 'Tarihi kasaba dokusu ve arkeolojik kalıntılar',
   } as Record<Region, string>,
 
+  // ─── Verification status ───────────────────────────────────────
+  verification: {
+    sample: 'Örnek Veri',
+    unverified: 'Doğrulanmamış',
+    verified: 'Doğrulanmış',
+  } as Record<'sample' | 'unverified' | 'verified', string>,
+
   // ─── Place / visitor info ─────────────────────────────────────
   place: {
     visitorInfo: 'Ziyaret Bilgileri',
@@ -197,10 +204,10 @@ export const tr = {
     endOfDay: 'Günün Sonu',
     approximateTime: 'Tahmini süre',
     walkingSegment: (m: number, min: number) =>
-      `🚶 ${m < 1000 ? `${m} m` : `${(m / 1000).toFixed(1)} km`} · yaklaşık ${min} dk`,
+      `Yürüyüş · ${m < 1000 ? `${m} m` : `${(m / 1000).toFixed(1)} km`} · yaklaşık ${min} dk`,
     drivingSegment: (km: number, min: number) =>
-      `🚗 ${km.toFixed(1)} km · yaklaşık ${min} dk`,
-    transitSegment: (min: number) => `🚌 Toplu taşıma · yaklaşık ${min} dk`,
+      `Araç · ${km.toFixed(1)} km · yaklaşık ${min} dk`,
+    transitSegment: (min: number) => `Toplu taşıma · yaklaşık ${min} dk`,
     visitDuration: (min: number) =>
       `Ziyaret · ${min < 60 ? `${min} dk` : `${Math.floor(min / 60)} sa${min % 60 ? ` ${min % 60} dk` : ''}`}`,
     fallbackWarning: (found: number) =>
@@ -253,5 +260,3 @@ export const tr = {
     learnMore: 'Daha Fazla Bilgi',
   },
 } as const;
-
-export type TrKeys = typeof tr;
