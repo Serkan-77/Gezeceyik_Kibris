@@ -22,8 +22,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function HaritaPage() {
-  const places = getAllPlaces();
+export const revalidate = 3600;
+
+export default async function HaritaPage() {
+  const places = await getAllPlaces();
   const sortedPlaces = [...places].sort((a, b) => a.name.localeCompare(b.name, 'tr'));
 
   return (

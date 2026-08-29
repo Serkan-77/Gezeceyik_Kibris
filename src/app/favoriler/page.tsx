@@ -5,13 +5,18 @@ import { Metadata } from 'next';
 import { FavorilerClient } from '@/components/pages/FavorilerClient';
 import { PlaceListingHeader } from '@/components/places/PlaceListingHeader';
 import { Container } from '@/components/ui/Container';
+import { getAllPlaces } from '@/lib/places';
 
 export const metadata: Metadata = {
   title: 'Favorilerim — Kuzey Kıbrıs Discovery',
   description: 'Kaydettiğiniz Kuzey Kıbrıs yerleri.',
 };
 
-export default function FavorilerPage() {
+export const revalidate = 3600;
+
+export default async function FavorilerPage() {
+  const places = await getAllPlaces();
+
   return (
     <Container className="py-12 sm:py-16">
       <PlaceListingHeader
@@ -19,7 +24,7 @@ export default function FavorilerPage() {
         title="Kaydettiğim Yerler"
         subtitle="Favorilerinize eklediğiniz Kuzey Kıbrıs yerleri."
       />
-      <FavorilerClient />
+      <FavorilerClient places={places} />
     </Container>
   );
 }

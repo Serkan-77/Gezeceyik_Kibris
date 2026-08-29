@@ -17,9 +17,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function MuseumsPage() {
-  const museums = getPlacesByCategory('Museum');
-  const regions = getAllRegions();
+export const revalidate = 3600;
+
+export default async function MuseumsPage() {
+  const [museums, regions] = await Promise.all([getPlacesByCategory('Museum'), getAllRegions()]);
 
   return (
     <Container className="py-12 sm:py-16">

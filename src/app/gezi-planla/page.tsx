@@ -7,7 +7,7 @@ import { Metadata } from 'next';
 import { PlannerWizardClient } from '@/components/trip/PlannerWizardClient';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { Container } from '@/components/ui/Container';
-import { getAllCategories } from '@/lib/places';
+import { getAllCategories, getAllPlaces } from '@/lib/places';
 
 export const metadata: Metadata = {
   title: 'Gezi Planla — Kuzey Kıbrıs Discovery',
@@ -19,8 +19,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function GeziPlanlaPage() {
-  const categories = getAllCategories();
+export const revalidate = 3600;
+
+export default async function GeziPlanlaPage() {
+  const [categories, places] = await Promise.all([getAllCategories(), getAllPlaces()]);
 
   return (
     <Container className="py-12 sm:py-16">
@@ -35,7 +37,7 @@ export default function GeziPlanlaPage() {
         />
       </div>
 
-      <PlannerWizardClient categories={categories} />
+      <PlannerWizardClient categories={categories} places={places} />
     </Container>
   );
 }

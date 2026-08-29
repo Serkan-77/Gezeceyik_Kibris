@@ -1,8 +1,13 @@
 // lib/trip-planner/planner.ts
 // Main planner entry-point.
 // Selects, clusters, schedules, and returns a full TripItinerary.
+//
+// Takes the candidate place list as a parameter rather than reading it
+// itself: this runs inside PlannerWizardClient, a Client Component, and
+// lib/places.ts is now a server-only MongoDB-backed module that a client
+// bundle can't import. The server page (app/gezi-planla/page.tsx) fetches
+// places once and passes them down.
 
-import { getAllPlaces } from '@/lib/places';
 import { Place, Region } from '@/types/place';
 import { PlannerInput, TripItinerary, ItineraryDay } from './types';
 import { scorePlaceForInput } from './scoring';
@@ -57,11 +62,10 @@ function nearestNeighbourSort(
 }
 
 /**
- * Generate a deterministic trip itinerary from PlannerInput.
+ * Generate a deterministic trip itinerary from PlannerInput and the pool of
+ * candidate places to schedule from.
  */
-export function generateItinerary(input: PlannerInput): TripItinerary {
-  const allPlaces = getAllPlaces();
-
+export function generateItinerary(input: PlannerInput, allPlaces: Place[]): TripItinerary {
   // 1. Score and filter
   const scored = allPlaces
     .map((place) => ({ place, score: scorePlaceForInput(place, input) }))

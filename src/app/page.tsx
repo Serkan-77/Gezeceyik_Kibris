@@ -21,8 +21,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function HomePage() {
-  const featured = getFeaturedPlaces();
+export const revalidate = 3600;
+
+export default async function HomePage() {
+  const featured = await getFeaturedPlaces();
 
   return (
     <>

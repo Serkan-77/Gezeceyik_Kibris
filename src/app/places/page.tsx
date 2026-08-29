@@ -17,10 +17,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default function PlacesPage() {
-  const places = getAllPlaces();
-  const categories = getAllCategories();
-  const regions = getAllRegions();
+export const revalidate = 3600;
+
+export default async function PlacesPage() {
+  const [places, categories, regions] = await Promise.all([
+    getAllPlaces(),
+    getAllCategories(),
+    getAllRegions(),
+  ]);
 
   return (
     <Container className="py-12 sm:py-16">

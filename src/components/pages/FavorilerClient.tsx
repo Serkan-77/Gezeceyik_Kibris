@@ -1,19 +1,25 @@
 'use client';
 // components/pages/FavorilerClient.tsx
-// Client component — reads favorites from localStorage and renders filtered place grid.
+// Client component — reads favorites from localStorage and renders filtered
+// place grid. Receives the full place list as a prop from its Server
+// Component parent (app/favoriler/page.tsx) rather than fetching it itself
+// — lib/places.ts is server-only (MongoDB-backed) now.
 
 import { useFavorites } from '@/hooks/useFavorites';
-import { getAllPlaces } from '@/lib/places';
+import { Place } from '@/types/place';
 import { PlaceGrid } from '@/components/places/PlaceGrid';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Button } from '@/components/ui/Button';
 import { HeartIcon } from '@/components/ui/icons';
 import { tr } from '@/lib/i18n/tr';
 
-export function FavorilerClient() {
+interface FavorilerClientProps {
+  places: Place[];
+}
+
+export function FavorilerClient({ places }: FavorilerClientProps) {
   const { favorites, hydrated, clear } = useFavorites();
-  const allPlaces = getAllPlaces();
-  const favoritePlaces = allPlaces.filter((p) => favorites.includes(p.slug));
+  const favoritePlaces = places.filter((p) => favorites.includes(p.slug));
 
   if (!hydrated) {
     return (

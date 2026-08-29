@@ -52,8 +52,8 @@ const regions: RegionCard[] = [
   },
 ];
 
-export function RegionGrid() {
-  const counts = getPlaceCountByRegion();
+export async function RegionGrid() {
+  const counts = await getPlaceCountByRegion();
   const [flagship, ...rest] = regions;
   const flagshipCount = counts[flagship.region] ?? 0;
 

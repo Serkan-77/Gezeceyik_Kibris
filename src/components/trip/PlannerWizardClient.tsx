@@ -7,10 +7,11 @@
 // restrained forward/back slide between steps.
 
 import { useState } from 'react';
-import { Category } from '@/types/place';
+import { Category, Place } from '@/types/place';
 import { PlannerInput, TripItinerary } from '@/lib/trip-planner/types';
 import { generateItinerary } from '@/lib/trip-planner/planner';
 import { useTripSelection } from '@/hooks/useTripSelection';
+import { useSavedTrips } from '@/hooks/useSavedTrips';
 import { ItineraryView } from './ItineraryView';
 import { Surface } from '@/components/ui/Surface';
 import { Button } from '@/components/ui/Button';
@@ -51,6 +52,7 @@ const PACE_OPTIONS = [
 
 interface Props {
   categories: Category[];
+  places: Place[];
 }
 
 type Step = 'accommodation' | 'duration' | 'transport' | 'interests' | 'pace' | 'result';
@@ -84,8 +86,10 @@ function StepIndicator({ current }: { current: Step }) {
   );
 }
 
-export function PlannerWizardClient({ categories }: Props) {
+export function PlannerWizardClient({ categories, places }: Props) {
   const { selected: selectedTripSlugs, hydrated: tripHydrated } = useTripSelection();
+  const { saveTrip } = useSavedTrips();
+  const [savedTripId, setSavedTripId] = useState<string | null>(null);
   const [step, setStep] = useState<Step>('accommodation');
   const [direction, setDirection] = useState<'forward' | 'back'>('forward');
   const [accommodationIdx, setAccommodationIdx] = useState(0);
@@ -118,9 +122,15 @@ export function PlannerWizardClient({ categories }: Props) {
       onlyFree,
       mustVisitSlugs: selectedTripSlugs,
     };
-    const result = generateItinerary(input);
+    const result = generateItinerary(input, places);
     setItinerary(result);
+    setSavedTripId(null);
     goTo('result', 'forward');
+  }
+
+  function handleSaveTrip() {
+    if (!itinerary || savedTripId) return;
+    setSavedTripId(saveTrip(itinerary));
   }
 
   function toggleCategory(cat: Category) {
@@ -139,13 +149,24 @@ export function PlannerWizardClient({ categories }: Props) {
   if (step === 'result' && itinerary) {
     return (
       <div {...motionAttr}>
-        <button
-          type="button"
-          onClick={() => { goTo('pace', 'back'); setItinerary(null); }}
-          className="mb-6 flex items-center gap-2 text-sm text-subtle transition-colors hover:text-strong"
-        >
-          <ArrowLeftIcon className="h-4 w-4" /> Yeniden Planla
-        </button>
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <button
+            type="button"
+            onClick={() => { goTo('pace', 'back'); setItinerary(null); setSavedTripId(null); }}
+            className="flex items-center gap-2 text-sm text-subtle transition-colors hover:text-strong"
+          >
+            <ArrowLeftIcon className="h-4 w-4" /> Yeniden Planla
+          </button>
+          {savedTripId ? (
+            <span className="flex items-center gap-1.5 text-sm font-medium text-success">
+              <CheckIcon className="h-4 w-4" /> Gezilerim&apos;e kaydedildi
+            </span>
+          ) : (
+            <Button variant="secondary" size="sm" icon={<CheckIcon className="h-4 w-4" />} onClick={handleSaveTrip}>
+              Bu Geziyi Kaydet
+            </Button>
+          )}
+        </div>
         <ItineraryView itinerary={itinerary} />
       </div>
     );

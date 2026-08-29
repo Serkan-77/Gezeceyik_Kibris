@@ -1,10 +1,13 @@
 // data/places.ts
 // ============================================================
-// SAMPLE DATA — KKTC (Northern Cyprus) Mock Places
-// All opening hours, prices, coordinates, and contact details
-// are ILLUSTRATIVE and have NOT been verified against official sources.
-// verificationStatus: 'sample' on every record.
-// Replace with verified data in the Supabase/production phase.
+// KKTC (Northern Cyprus) Places dataset.
+// Opening hours / admission fees / contact details were verified against
+// the KKTC Department of Antiquities and Museums (eemd.gov.ct.tr) and other
+// public sources where noted via `sourceUrl` and `lastVerifiedAt`. Prices
+// in TRY are volatile due to inflation — treat as indicative, not exact.
+// Records without a confirmed official source remain verificationStatus:
+// 'unverified'; free/open-access sites confirmed by multiple independent
+// sources are marked 'verified'.
 // ============================================================
 
 import { Place } from '@/types/place';
@@ -31,22 +34,22 @@ export const places: Place[] = [
     image: 'https://images.unsplash.com/photo-1533154683836-84ea7a0bc310?w=800&q=80',
     gallery: [],
     openingHours: {
-      monday: '08:00\u201317:00',
-      tuesday: '08:00\u201317:00',
-      wednesday: '08:00\u201317:00',
-      thursday: '08:00\u201317:00',
-      friday: '08:00\u201317:00',
-      saturday: '08:00\u201317:00',
-      sunday: '08:00\u201317:00',
+      monday: '08:00–19:00',
+      tuesday: '08:00–19:00',
+      wednesday: '08:00–19:00',
+      thursday: '08:00–19:00',
+      friday: '08:00–19:00',
+      saturday: '08:00–19:00',
+      sunday: '08:00–19:00',
     },
     admission: {
       isFree: false,
-      adultPrice: 250,
-      childPrice: 100,
+      adultPrice: 150,
+      childPrice: 50,
       currency: 'TRY',
-      notes: 'Örnek fiyat \u2014 ziyaret öncesi doğrulayın.',
+      notes:
+        'KKTC Eski Eserler ve Müzeler Dairesi resmi tarifesi (yetişkin/öğrenci); ayrı çocuk tarifesi yok. Son giriş kapanıştan 1 saat öncedir. Fiyatlar TL enflasyonu nedeniyle sık değişebilir, ziyaret öncesi teyit edin.',
     },
-    phone: '+90 392 815 2145',
     address: 'Girne Kalesi, Girne Limanı, Girne, KKTC',
     latitude: 35.3403,
     longitude: 33.3187,
@@ -58,7 +61,9 @@ export const places: Place[] = [
     estimatedVisitMinutes: 90,
     featured: true,
     nearbyPlaceSlugs: ['bellapais-manastiri', 'girne-limani-seyir'],
-    verificationStatus: 'sample',
+    sourceUrl: 'https://eemd.gov.ct.tr/Ziyaret-Saatleri',
+    lastVerifiedAt: '2026-08-29',
+    verificationStatus: 'unverified',
   },
 
   {
@@ -77,20 +82,21 @@ export const places: Place[] = [
     image: 'https://images.unsplash.com/photo-1548115184-bc6544d06a58?w=800&q=80',
     gallery: [],
     openingHours: {
-      monday: '08:00\u201317:00',
-      tuesday: '08:00\u201317:00',
-      wednesday: '08:00\u201317:00',
-      thursday: '08:00\u201317:00',
-      friday: '08:00\u201317:00',
-      saturday: '08:00\u201317:00',
-      sunday: '08:00\u201317:00',
+      monday: '08:00–19:00',
+      tuesday: '08:00–19:00',
+      wednesday: '08:00–19:00',
+      thursday: '08:00–19:00',
+      friday: '08:00–19:00',
+      saturday: '08:00–19:00',
+      sunday: '08:00–19:00',
     },
     admission: {
       isFree: false,
-      adultPrice: 180,
-      childPrice: 80,
+      adultPrice: 150,
+      childPrice: 50,
       currency: 'TRY',
-      notes: 'Örnek fiyat.',
+      notes:
+        'KKTC Eski Eserler ve Müzeler Dairesi resmi tarifesi (yetişkin/öğrenci); ayrı çocuk tarifesi yok. Son giriş kapanıştan 1 saat öncedir. Mevsimsel saat değişikliği olabilir, teyit edin.',
     },
     address: 'Bellapais Köyü, Girne, KKTC',
     latitude: 35.3093,
@@ -102,7 +108,9 @@ export const places: Place[] = [
     estimatedVisitMinutes: 60,
     featured: true,
     nearbyPlaceSlugs: ['girne-kalesi', 'st-hilarion-kalesi'],
-    verificationStatus: 'sample',
+    sourceUrl: 'https://eemd.gov.ct.tr/Ziyaret-Saatleri',
+    lastVerifiedAt: '2026-08-29',
+    verificationStatus: 'unverified',
   },
 
   {
@@ -121,20 +129,21 @@ export const places: Place[] = [
     image: 'https://images.unsplash.com/photo-1590089415225-401ed6f9db8e?w=800&q=80',
     gallery: [],
     openingHours: {
-      monday: '09:00\u201317:00',
-      tuesday: '09:00\u201317:00',
-      wednesday: '09:00\u201317:00',
-      thursday: '09:00\u201317:00',
-      friday: '09:00\u201317:00',
-      saturday: '09:00\u201317:00',
-      sunday: '09:00\u201317:00',
+      monday: '09:00–18:30',
+      tuesday: '09:00–18:30',
+      wednesday: '09:00–18:30',
+      thursday: '09:00–18:30',
+      friday: '09:00–18:30',
+      saturday: '09:00–18:30',
+      sunday: '09:00–18:30',
     },
     admission: {
       isFree: false,
-      adultPrice: 200,
-      childPrice: 80,
+      adultPrice: 150,
+      childPrice: 50,
       currency: 'TRY',
-      notes: 'Örnek fiyat.',
+      notes:
+        'KKTC Eski Eserler ve Müzeler Dairesi resmi tarifesi (yetişkin/öğrenci); son giriş 16:30. Kalenin askeri bölgeye yakınlığı nedeniyle saatler önceden haber verilmeden değişebilir.',
     },
     address: 'St. Hilarion, Girne, KKTC',
     latitude: 35.3170,
@@ -146,7 +155,9 @@ export const places: Place[] = [
     estimatedVisitMinutes: 120,
     featured: true,
     nearbyPlaceSlugs: ['bellapais-manastiri'],
-    verificationStatus: 'sample',
+    sourceUrl: 'https://eemd.gov.ct.tr/Ziyaret-Saatleri',
+    lastVerifiedAt: '2026-08-29',
+    verificationStatus: 'unverified',
   },
 
   {
@@ -162,13 +173,18 @@ export const places: Place[] = [
       'Girne\'nin tarihi limanı, balık restoranları, Osmanlı dönemi binaları ve su içinde yansıyan kale siluetiyle her mevsim büyüleyici bir manzara sunar. Özellikle gün batımı saatlerinde limana hâkim tepelerden ya da kale surlarından izlenen görüntü, Kuzey Kıbrıs\'ın en fotoğraf çekilen sahnelerinden birini oluşturur.',
     image: 'https://images.unsplash.com/photo-1543872084-c7bd3822856f?w=800&q=80',
     gallery: [],
+    admission: {
+      isFree: true,
+      notes: 'Açık kamusal alan; giriş ücreti ve sabit ziyaret saati yoktur.',
+    },
     address: 'Girne Limanı, Girne, KKTC',
     latitude: 35.3421,
     longitude: 33.3181,
     estimatedVisitMinutes: 30,
     featured: false,
     nearbyPlaceSlugs: ['girne-kalesi'],
-    verificationStatus: 'sample',
+    lastVerifiedAt: '2026-08-29',
+    verificationStatus: 'verified',
   },
 
   // ══════════════════════════════════════════════════════════════
@@ -191,22 +207,22 @@ export const places: Place[] = [
     image: 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=800&q=80',
     gallery: [],
     openingHours: {
-      monday: '09:00\u201317:00',
-      tuesday: '09:00\u201317:00',
-      wednesday: '09:00\u201317:00',
-      thursday: '09:00\u201317:00',
-      friday: '09:00\u201317:00',
-      saturday: '09:00\u201317:00',
-      sunday: '09:00\u201317:00',
+      monday: null,
+      tuesday: null,
+      wednesday: null,
+      thursday: null,
+      friday: null,
+      saturday: null,
+      sunday: null,
     },
     admission: {
       isFree: false,
-      adultPrice: 200,
-      childPrice: 80,
+      adultPrice: 150,
+      childPrice: 50,
       currency: 'TRY',
-      notes: 'Örnek fiyat.',
+      notes:
+        'Restorasyon çalışmaları nedeniyle 2026 itibarıyla ziyarete kapalıdır; yetkililer güncel bir açılış tarihi paylaşmamıştır. Belirtilen fiyatlar, kale yeniden açıldığında geçerli olacak resmi tarifedir.',
     },
-    phone: '+90 392 366 2244',
     address: 'Liman Caddesi, Gazimağusa Suriçi, KKTC',
     latitude: 35.1243,
     longitude: 33.9416,
@@ -216,8 +232,10 @@ export const places: Place[] = [
     },
     estimatedVisitMinutes: 75,
     featured: true,
-    nearbyPlaceSlugs: ['lala-mustafa-pasa-camii', 'namik-kemal-zindani', 'gazimağusa-surlari'],
-    verificationStatus: 'sample',
+    nearbyPlaceSlugs: ['lala-mustafa-pasa-camii', 'namik-kemal-zindani', 'gazimagusa-surlari'],
+    sourceUrl: 'https://bugunkibris.com/2026/04/01/tarihi-kale-kapali-yetkililer-suskun-othello-icin-aciklama-cagrisi/',
+    lastVerifiedAt: '2026-08-29',
+    verificationStatus: 'verified',
   },
 
   {
@@ -236,20 +254,21 @@ export const places: Place[] = [
     image: 'https://images.unsplash.com/photo-1568402102990-bc541580b59f?w=800&q=80',
     gallery: [],
     openingHours: {
-      monday: '08:00\u201317:00',
-      tuesday: '08:00\u201317:00',
-      wednesday: '08:00\u201317:00',
-      thursday: '08:00\u201317:00',
-      friday: '08:00\u201317:00',
-      saturday: '08:00\u201317:00',
-      sunday: '08:00\u201317:00',
+      monday: '08:00–19:00',
+      tuesday: '08:00–19:00',
+      wednesday: '08:00–19:00',
+      thursday: '08:00–19:00',
+      friday: '08:00–19:00',
+      saturday: '08:00–19:00',
+      sunday: '08:00–19:00',
     },
     admission: {
       isFree: false,
-      adultPrice: 250,
-      childPrice: 100,
+      adultPrice: 150,
+      childPrice: 50,
       currency: 'TRY',
-      notes: 'Örnek fiyat.',
+      notes:
+        'KKTC Eski Eserler ve Müzeler Dairesi resmi tarifesi (yetişkin/öğrenci); ayrı çocuk tarifesi yok. Son giriş kapanıştan 1 saat öncedir. Geniş ve çoğunlukla gölgesiz bir alan, 2-3 saat ayırın.',
     },
     address: 'Salamis Yolu, Gazimağusa, KKTC',
     latitude: 35.1795,
@@ -261,7 +280,9 @@ export const places: Place[] = [
     estimatedVisitMinutes: 150,
     featured: true,
     nearbyPlaceSlugs: ['st-barnabas-manastiri', 'othello-kalesi'],
-    verificationStatus: 'sample',
+    sourceUrl: 'https://eemd.gov.ct.tr/Ziyaret-Saatleri',
+    lastVerifiedAt: '2026-08-29',
+    verificationStatus: 'unverified',
   },
 
   {
@@ -280,20 +301,21 @@ export const places: Place[] = [
     image: 'https://images.unsplash.com/photo-1543872084-c7bd3822856f?w=800&q=80',
     gallery: [],
     openingHours: {
-      monday: '09:00\u201317:00',
-      tuesday: '09:00\u201317:00',
-      wednesday: '09:00\u201317:00',
-      thursday: '09:00\u201317:00',
-      friday: '09:00\u201317:00',
-      saturday: '09:00\u201317:00',
+      monday: '08:00–18:00',
+      tuesday: '08:00–18:00',
+      wednesday: '08:00–18:00',
+      thursday: '08:00–18:00',
+      friday: '08:00–18:00',
+      saturday: '08:00–18:00',
       sunday: null,
     },
     admission: {
       isFree: false,
       adultPrice: 150,
-      childPrice: 60,
+      childPrice: 50,
       currency: 'TRY',
-      notes: 'Örnek fiyat.',
+      notes:
+        'KKTC Eski Eserler ve Müzeler Dairesi resmi tarifesi (yetişkin/öğrenci). Pazar kapanışı bazı ikincil kaynaklarda belirtiliyor ancak resmi sayfada ayrıca teyit edilemedi; ihtiyaten kapalı varsayılmıştır.',
     },
     address: 'Salamis Yolu, Gazimağusa, KKTC',
     latitude: 35.1763,
@@ -305,7 +327,9 @@ export const places: Place[] = [
     estimatedVisitMinutes: 60,
     featured: false,
     nearbyPlaceSlugs: ['salamis-antik-kenti'],
-    verificationStatus: 'sample',
+    sourceUrl: 'https://eemd.gov.ct.tr/Ziyaret-Saatleri',
+    lastVerifiedAt: '2026-08-29',
+    verificationStatus: 'unverified',
   },
 
   {
@@ -324,17 +348,18 @@ export const places: Place[] = [
     image: 'https://images.unsplash.com/photo-1590069261209-f8e9b8642343?w=800&q=80',
     gallery: [],
     openingHours: {
-      monday: '09:00\u201312:30',
-      tuesday: '09:00\u201312:30',
-      wednesday: '09:00\u201312:30',
-      thursday: '09:00\u201312:30',
+      monday: null,
+      tuesday: null,
+      wednesday: null,
+      thursday: null,
       friday: null,
-      saturday: '09:00\u201312:30',
+      saturday: null,
       sunday: null,
     },
     admission: {
       isFree: true,
-      notes: 'Ücretsiz. Namaz vakitlerinde ziyarete kapalı.',
+      notes:
+        'Ücretsiz. Sabit ziyaret saati resmi olarak doğrulanamadı; aktif bir cami olduğundan namaz vakitlerinde ziyarete kapatılır, dışındaki saatlerde genellikle açıktır. Mütevazı kıyafet önerilir.',
     },
     address: 'Lala Mustafa Paşa Meydanı, Gazimağusa Suriçi, KKTC',
     latitude: 35.1241,
@@ -344,8 +369,10 @@ export const places: Place[] = [
     },
     estimatedVisitMinutes: 30,
     featured: false,
-    nearbyPlaceSlugs: ['othello-kalesi', 'namik-kemal-zindani', 'gazimağusa-surlari'],
-    verificationStatus: 'sample',
+    nearbyPlaceSlugs: ['othello-kalesi', 'namik-kemal-zindani', 'gazimagusa-surlari'],
+    sourceUrl: 'https://www.visitncy.com/kesfet/lala-mustafa-pasa-camii/',
+    lastVerifiedAt: '2026-08-29',
+    verificationStatus: 'unverified',
   },
 
   {
@@ -362,19 +389,21 @@ export const places: Place[] = [
     image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80',
     gallery: [],
     openingHours: {
-      monday: '09:00\u201317:00',
-      tuesday: '09:00\u201317:00',
-      wednesday: '09:00\u201317:00',
-      thursday: '09:00\u201317:00',
-      friday: '09:00\u201317:00',
-      saturday: '09:00\u201317:00',
+      monday: '08:00–15:30',
+      tuesday: '08:00–15:30',
+      wednesday: '08:00–15:30',
+      thursday: '08:00–15:30',
+      friday: '08:00–15:30',
+      saturday: null,
       sunday: null,
     },
     admission: {
       isFree: false,
-      adultPrice: 80,
+      adultPrice: 100,
+      childPrice: 0,
       currency: 'TRY',
-      notes: 'Örnek fiyat.',
+      notes:
+        '12 yaş altı ücretsizdir; öğrenci ücreti 50 TRY. KKTC Eski Eserler ve Müzeler Dairesi resmi tarifesi; hafta sonu ve resmi tatillerde kapalıdır. 9 Mayıs 2023\'te restorasyon sonrası yeniden açılmıştır.',
     },
     address: 'Namık Kemal Meydanı, Gazimağusa Suriçi, KKTC',
     latitude: 35.1244,
@@ -382,13 +411,15 @@ export const places: Place[] = [
     estimatedVisitMinutes: 30,
     featured: false,
     nearbyPlaceSlugs: ['lala-mustafa-pasa-camii', 'othello-kalesi'],
-    verificationStatus: 'sample',
+    sourceUrl: 'https://eemd.gov.ct.tr/Ziyaret-Saatleri',
+    lastVerifiedAt: '2026-08-29',
+    verificationStatus: 'unverified',
   },
 
   {
     id: 'f6',
     name: 'Gazimağusa Venedik Surları',
-    slug: 'gazimağusa-surlari',
+    slug: 'gazimagusa-surlari',
     category: 'Historical Place',
     city: 'Gazimağusa',
     region: 'Gazimağusa',
@@ -400,6 +431,7 @@ export const places: Place[] = [
     gallery: [],
     admission: {
       isFree: true,
+      notes: 'Açık kentsel alan; giriş ücreti ve sabit ziyaret saati yoktur.',
     },
     address: 'Gazimağusa Surları, Gazimağusa, KKTC',
     latitude: 35.1233,
@@ -407,7 +439,8 @@ export const places: Place[] = [
     estimatedVisitMinutes: 60,
     featured: false,
     nearbyPlaceSlugs: ['othello-kalesi', 'lala-mustafa-pasa-camii'],
-    verificationStatus: 'sample',
+    lastVerifiedAt: '2026-08-29',
+    verificationStatus: 'verified',
   },
 
   // ══════════════════════════════════════════════════════════════
@@ -430,17 +463,18 @@ export const places: Place[] = [
     image: 'https://images.unsplash.com/photo-1564507592333-c60657eea523?w=800&q=80',
     gallery: [],
     openingHours: {
-      monday: '09:30\u201317:30',
-      tuesday: '09:30\u201317:30',
-      wednesday: '09:30\u201317:30',
-      thursday: '09:30\u201317:30',
-      friday: '09:30\u201317:30',
-      saturday: '09:30\u201317:30',
+      monday: '09:30–17:30',
+      tuesday: '09:30–17:30',
+      wednesday: '09:30–17:30',
+      thursday: '09:30–17:30',
+      friday: '09:30–17:30',
+      saturday: '09:30–17:30',
       sunday: null,
     },
     admission: {
       isFree: true,
-      notes: 'Atölyeler ücretli olabilir.',
+      notes:
+        'Avlu ücretsiz gezilebilir; içindeki atölye ve dükkanlar kendi saatlerinde ve ücretleriyle hizmet verir. Belirtilen saatler genel bir tahmindir, resmi olarak doğrulanamadı.',
     },
     address: 'Asmaaltı, Lefkoşa, KKTC',
     latitude: 35.1766,
@@ -451,7 +485,9 @@ export const places: Place[] = [
     estimatedVisitMinutes: 45,
     featured: true,
     nearbyPlaceSlugs: ['selimiye-camii', 'mevlevi-tekke-muzesi', 'kumarcilar-hani'],
-    verificationStatus: 'sample',
+    sourceUrl: 'https://www.tripadvisor.com/Attraction_Review-g190383-d2253694-Reviews-Buyuk_Han-Nicosia_Nicosia_District.html',
+    lastVerifiedAt: '2026-08-29',
+    verificationStatus: 'unverified',
   },
 
   {
@@ -470,17 +506,18 @@ export const places: Place[] = [
     image: 'https://images.unsplash.com/photo-1548013146-72479768bada?w=800&q=80',
     gallery: [],
     openingHours: {
-      monday: '09:00\u201312:00',
-      tuesday: '09:00\u201312:00',
-      wednesday: '09:00\u201312:00',
-      thursday: '09:00\u201312:00',
+      monday: null,
+      tuesday: null,
+      wednesday: null,
+      thursday: null,
       friday: null,
-      saturday: '09:00\u201312:00',
+      saturday: null,
       sunday: null,
     },
     admission: {
       isFree: true,
-      notes: 'Namaz vakitlerinde ziyarete kapalı. Başörtüsü gereklidir.',
+      notes:
+        'Ücretsiz. Sabit ziyaret saati yoktur; aktif bir cami olduğundan günde 5 kez namaz vakitlerinde ziyarete kapatılır. Baş örtüsü/mütevazı kıyafet gereklidir, ayakkabılar girişte çıkarılır.',
     },
     address: 'Selimiye Meydanı, Lefkoşa, KKTC',
     latitude: 35.1744,
@@ -491,7 +528,9 @@ export const places: Place[] = [
     estimatedVisitMinutes: 30,
     featured: false,
     nearbyPlaceSlugs: ['buyuk-han', 'mevlevi-tekke-muzesi'],
-    verificationStatus: 'sample',
+    sourceUrl: 'https://www.tripadvisor.com/Attraction_Review-g190383-d2314145-Reviews-Selimiye_Camii-Nicosia_Nicosia_District.html',
+    lastVerifiedAt: '2026-08-29',
+    verificationStatus: 'unverified',
   },
 
   {
@@ -510,20 +549,21 @@ export const places: Place[] = [
     image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80',
     gallery: [],
     openingHours: {
-      monday: '09:00\u201317:00',
-      tuesday: '09:00\u201317:00',
-      wednesday: '09:00\u201317:00',
-      thursday: '09:00\u201317:00',
-      friday: '09:00\u201317:00',
-      saturday: '09:00\u201317:00',
+      monday: '08:00–15:30',
+      tuesday: '08:00–15:30',
+      wednesday: '08:00–15:30',
+      thursday: '08:00–15:30',
+      friday: '08:00–15:30',
+      saturday: null,
       sunday: null,
     },
     admission: {
       isFree: false,
-      adultPrice: 120,
-      childPrice: 50,
+      adultPrice: 100,
+      childPrice: 0,
       currency: 'TRY',
-      notes: 'Örnek fiyat.',
+      notes:
+        '12 yaş altı ücretsizdir; öğrenci ücreti 50 TRY. KKTC Eski Eserler ve Müzeler Dairesi resmi tarifesi; hafta sonu kapalıdır.',
     },
     address: 'Girne Caddesi, Lefkoşa, KKTC',
     latitude: 35.1751,
@@ -534,7 +574,9 @@ export const places: Place[] = [
     estimatedVisitMinutes: 45,
     featured: false,
     nearbyPlaceSlugs: ['buyuk-han', 'selimiye-camii'],
-    verificationStatus: 'sample',
+    sourceUrl: 'https://eemd.gov.ct.tr/Ziyaret-Saatleri',
+    lastVerifiedAt: '2026-08-29',
+    verificationStatus: 'unverified',
   },
 
   {
@@ -552,6 +594,8 @@ export const places: Place[] = [
     gallery: [],
     admission: {
       isFree: true,
+      notes:
+        'Avlu ücretsiz gezilebilir. 2018 restorasyonu sonrası yapı büyük ölçüde bir kafe/restoran (MekHan) olarak işletilmektedir; ziyaretçi genelde ücretli kafeyle karşılaşır, avlunun kendisi ücretsizdir.',
     },
     address: 'Asmaaltı, Lefkoşa, KKTC',
     latitude: 35.1758,
@@ -559,7 +603,9 @@ export const places: Place[] = [
     estimatedVisitMinutes: 20,
     featured: false,
     nearbyPlaceSlugs: ['buyuk-han', 'selimiye-camii'],
-    verificationStatus: 'sample',
+    sourceUrl: 'https://en.wikipedia.org/wiki/Kumarcilar_Han',
+    lastVerifiedAt: '2026-08-29',
+    verificationStatus: 'unverified',
   },
 
   {
@@ -577,17 +623,10 @@ export const places: Place[] = [
       'MS 10. yüzyılda Bizanslılar tarafından inşa edilen kale, sonradan Lüzinyanların eline geçmiş ve kraliyet ailesinin hapsedilmesinde kullanılan bir zindan olarak da işlev görmüştür.',
     image: 'https://images.unsplash.com/photo-1519046904884-53103b34b206?w=800&q=80',
     gallery: [],
-    openingHours: {
-      monday: '09:00\u201316:00',
-      tuesday: '09:00\u201316:00',
-      wednesday: '09:00\u201316:00',
-      thursday: '09:00\u201316:00',
-      friday: '09:00\u201316:00',
-      saturday: '09:00\u201316:00',
-      sunday: '09:00\u201316:00',
-    },
     admission: {
       isFree: true,
+      notes:
+        'Bakımsız, girişi ücretsiz bir harabe; sabit ziyaret saati veya görevlisi yoktur (KKTC Eski Eserler ve Müzeler Dairesi\'nin resmi tarife listesinde yer almaz). Sadece gündüz saatlerinde ve sağlam ayakkabıyla tırmanılması önerilir; patika gece güvenli değildir.',
     },
     address: 'Beşparmak Dağları, Lefkoşa Bölgesi, KKTC',
     latitude: 35.2934,
@@ -598,7 +637,9 @@ export const places: Place[] = [
     estimatedVisitMinutes: 120,
     featured: false,
     nearbyPlaceSlugs: ['st-hilarion-kalesi'],
-    verificationStatus: 'sample',
+    sourceUrl: 'https://www.sightsofnorthcyprus.com/buffavento-castle',
+    lastVerifiedAt: '2026-08-29',
+    verificationStatus: 'verified',
   },
 
   // ══════════════════════════════════════════════════════════════
@@ -620,6 +661,8 @@ export const places: Place[] = [
     gallery: [],
     admission: {
       isFree: true,
+      notes:
+        'Açık, gelişmemiş kumsal; giriş ücreti ve gişesi yoktur. Deniz kaplumbağası yuvalama alanı olarak koruma altındadır; çevresinde kamp yapmak yasaktır.',
     },
     address: 'Karpaz Yarımadası, İskele, KKTC',
     latitude: 35.6012,
@@ -627,7 +670,9 @@ export const places: Place[] = [
     estimatedVisitMinutes: 180,
     featured: true,
     nearbyPlaceSlugs: ['apostolos-andreas-manastiri'],
-    verificationStatus: 'sample',
+    sourceUrl: 'https://en.wikipedia.org/wiki/Golden_Beach,_Cyprus',
+    lastVerifiedAt: '2026-08-29',
+    verificationStatus: 'verified',
   },
 
   {
@@ -646,16 +691,18 @@ export const places: Place[] = [
     image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80',
     gallery: [],
     openingHours: {
-      monday: '09:00\u201317:00',
-      tuesday: '09:00\u201317:00',
-      wednesday: '09:00\u201317:00',
-      thursday: '09:00\u201317:00',
-      friday: '09:00\u201317:00',
-      saturday: '09:00\u201317:00',
-      sunday: '09:00\u201317:00',
+      monday: null,
+      tuesday: null,
+      wednesday: null,
+      thursday: null,
+      friday: null,
+      saturday: null,
+      sunday: null,
     },
     admission: {
       isFree: true,
+      notes:
+        'Ücretsiz, bağış kutusu bulunur. Sabit ziyaret saati resmi olarak doğrulanamadı; aktif bir hac/ibadet yeri olarak genellikle gündüz saatlerinde açıktır.',
     },
     address: 'Zafer Burnu, Karpaz, İskele, KKTC',
     latitude: 35.6558,
@@ -663,7 +710,9 @@ export const places: Place[] = [
     estimatedVisitMinutes: 60,
     featured: false,
     nearbyPlaceSlugs: ['altin-sahil-karpaz'],
-    verificationStatus: 'sample',
+    sourceUrl: 'https://en.wikipedia.org/wiki/Apostolos_Andreas_Monastery',
+    lastVerifiedAt: '2026-08-29',
+    verificationStatus: 'unverified',
   },
 
   // ══════════════════════════════════════════════════════════════
@@ -684,20 +733,21 @@ export const places: Place[] = [
     image: 'https://images.unsplash.com/photo-1564507592333-c60657eea523?w=800&q=80',
     gallery: [],
     openingHours: {
-      monday: '08:00\u201317:00',
-      tuesday: '08:00\u201317:00',
-      wednesday: '08:00\u201317:00',
-      thursday: '08:00\u201317:00',
-      friday: '08:00\u201317:00',
-      saturday: null,
-      sunday: null,
+      monday: '08:00–18:00',
+      tuesday: '08:00–18:00',
+      wednesday: '08:00–18:00',
+      thursday: '08:00–18:00',
+      friday: '08:00–18:00',
+      saturday: '08:00–18:00',
+      sunday: '08:00–18:00',
     },
     admission: {
       isFree: false,
-      adultPrice: 100,
-      childPrice: 40,
+      adultPrice: 150,
+      childPrice: 50,
       currency: 'TRY',
-      notes: 'Örnek fiyat.',
+      notes:
+        'KKTC Eski Eserler ve Müzeler Dairesi resmi tarifesi (yetişkin/öğrenci). Bazı ikincil kaynaklar hafta sonu kapalı olduğunu belirtiyor; resmi sayfa kapalı gün belirtmiyor, ziyaret öncesi teyit edin.',
     },
     address: 'Atatürk Caddesi, Güzelyurt, KKTC',
     latitude: 35.2013,
@@ -708,7 +758,9 @@ export const places: Place[] = [
     estimatedVisitMinutes: 60,
     featured: false,
     nearbyPlaceSlugs: ['soli-antik-kenti'],
-    verificationStatus: 'sample',
+    sourceUrl: 'https://eemd.gov.ct.tr/Ziyaret-Saatleri',
+    lastVerifiedAt: '2026-08-29',
+    verificationStatus: 'unverified',
   },
 
   {
@@ -727,20 +779,21 @@ export const places: Place[] = [
     image: 'https://images.unsplash.com/photo-1590089415225-401ed6f9db8e?w=800&q=80',
     gallery: [],
     openingHours: {
-      monday: '08:00\u201317:00',
-      tuesday: '08:00\u201317:00',
-      wednesday: '08:00\u201317:00',
-      thursday: '08:00\u201317:00',
-      friday: '08:00\u201317:00',
-      saturday: '08:00\u201317:00',
-      sunday: '08:00\u201317:00',
+      monday: '08:00–18:00',
+      tuesday: '08:00–18:00',
+      wednesday: '08:00–18:00',
+      thursday: '08:00–18:00',
+      friday: '08:00–18:00',
+      saturday: '08:00–18:00',
+      sunday: '08:00–18:00',
     },
     admission: {
       isFree: false,
       adultPrice: 150,
-      childPrice: 60,
+      childPrice: 50,
       currency: 'TRY',
-      notes: 'Örnek fiyat.',
+      notes:
+        'KKTC Eski Eserler ve Müzeler Dairesi resmi tarifesi (yetişkin/öğrenci); ayrı çocuk tarifesi yok. Son giriş kapanıştan 1 saat öncedir.',
     },
     address: 'Soli Yolu, Güzelyurt, KKTC',
     latitude: 35.1620,
@@ -751,7 +804,9 @@ export const places: Place[] = [
     estimatedVisitMinutes: 90,
     featured: false,
     nearbyPlaceSlugs: ['guzelyurt-muzesi'],
-    verificationStatus: 'sample',
+    sourceUrl: 'https://eemd.gov.ct.tr/Ziyaret-Saatleri',
+    lastVerifiedAt: '2026-08-29',
+    verificationStatus: 'unverified',
   },
 
   // ══════════════════════════════════════════════════════════════
@@ -773,6 +828,8 @@ export const places: Place[] = [
     gallery: [],
     admission: {
       isFree: true,
+      notes:
+        'Açık kasaba dokusu, giriş ücreti yoktur. Yakındaki Şeyh Nazım Dergahı ayrı ve ücretsiz ziyaret edilebilen bir mekandır (mütevazı kıyafet gereklidir).',
     },
     address: 'Lefke Çarşısı, Lefke, KKTC',
     latitude: 35.1183,
@@ -780,7 +837,9 @@ export const places: Place[] = [
     estimatedVisitMinutes: 90,
     featured: false,
     nearbyPlaceSlugs: ['soli-antik-kenti'],
-    verificationStatus: 'sample',
+    sourceUrl: 'https://www.lefkebelediyesi.com/en/about-lefke/historical-places/item/14-soli-antik-kenti.html',
+    lastVerifiedAt: '2026-08-29',
+    verificationStatus: 'verified',
   },
 
   // ══════════════════════════════════════════════════════════════
@@ -802,6 +861,8 @@ export const places: Place[] = [
     gallery: [],
     admission: {
       isFree: true,
+      notes:
+        'Ücretsiz, sınırlandırılmamış doğal koruma alanı; gişesi veya sabit saati yoktur. Erişim yolu bazı kesimlerde bakımsız olabilir.',
     },
     address: 'Karpaz Yarımadası, İskele, KKTC',
     latitude: 35.5500,
@@ -809,6 +870,8 @@ export const places: Place[] = [
     estimatedVisitMinutes: 240,
     featured: true,
     nearbyPlaceSlugs: ['altin-sahil-karpaz', 'apostolos-andreas-manastiri'],
-    verificationStatus: 'sample',
+    sourceUrl: 'https://www.tripadvisor.com/Attraction_Review-g190375-d6211321-Reviews-Dipkarpaz_Milli_Parki_Karpaz_National_Park_Wild_Donkey_Protection_Area-Famagusta_.html',
+    lastVerifiedAt: '2026-08-29',
+    verificationStatus: 'verified',
   },
 ];

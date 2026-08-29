@@ -4,8 +4,21 @@ import { MetadataRoute } from 'next';
 import { getAllPlaceSlugs } from '@/lib/places';
 import { SITE_URL as BASE_URL } from '@/lib/config';
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const placeSlugs = getAllPlaceSlugs();
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  // Same reasoning as generateStaticParams in places/[slug]/page.tsx: an
+  // unreachable database shouldn't take down sitemap generation (and with
+  // it, the build) entirely — a sitemap missing place URLs is a degraded
+  // but real result, not a silent lie the way serving fake place content
+  // would be.
+  let placeSlugs: string[] = [];
+  try {
+    placeSlugs = await getAllPlaceSlugs();
+  } catch (err) {
+    console.warn(
+      '[sitemap] Could not list place slugs — sitemap will include static pages only. ' +
+        `Reason: ${err instanceof Error ? err.message : String(err)}`
+    );
+  }
 
   const staticPages: MetadataRoute.Sitemap = [
     {

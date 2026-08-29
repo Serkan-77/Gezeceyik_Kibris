@@ -19,13 +19,34 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
+export const revalidate = 3600;
+
 export async function generateStaticParams() {
-  return getAllPlaceSlugs().map((slug) => ({ slug }));
+  // Deliberately tolerant of a failed/unreachable database at build time:
+  // this only decides which pages get *pre*-rendered at build time, not
+  // whether a page can render at all — dynamicParams stays at its default
+  // (true), so any slug not returned here still renders on-demand at
+  // request time. Letting this throw would fail the entire production
+  // build over a single enumeration query, which is a worse outcome than
+  // building with zero pre-rendered place pages. Actual page requests
+  // still fail loudly in production if the database is unreachable (see
+  // lib/places.ts) — this only softens the build-time optimization step.
+  try {
+    const slugs = await getAllPlaceSlugs();
+    return slugs.map((slug) => ({ slug }));
+  } catch (err) {
+    console.warn(
+      '[generateStaticParams] Could not enumerate place slugs at build time — building with zero ' +
+        'statically pre-rendered place pages; each will render on-demand at request time instead. ' +
+        `Reason: ${err instanceof Error ? err.message : String(err)}`
+    );
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const place = getPlaceBySlug(slug);
+  const place = await getPlaceBySlug(slug);
   if (!place) return {};
 
   return {
@@ -46,10 +67,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function PlaceDetailPage({ params }: Props) {
   const { slug } = await params;
-  const place = getPlaceBySlug(slug);
+  const place = await getPlaceBySlug(slug);
   if (!place) notFound();
 
-  const nearby = getNearbyPlaces(place);
+  const nearby = await getNearbyPlaces(place);
 
   return (
     <article className="pb-20 lg:pb-0">

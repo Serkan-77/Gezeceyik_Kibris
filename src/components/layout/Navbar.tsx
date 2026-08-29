@@ -8,7 +8,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
-import { HeartIcon, MenuIcon, CloseIcon } from '@/components/ui/icons';
+import { HeartIcon, CompassIcon, MenuIcon, CloseIcon } from '@/components/ui/icons';
 
 interface NavLink {
   href: string;
@@ -76,6 +76,15 @@ export function Navbar() {
         {/* Desktop right-side actions */}
         <div className="hidden items-center gap-2 lg:flex">
           <Link
+            href="/gezilerim"
+            aria-label="Gezilerim"
+            className={`flex h-9 w-9 items-center justify-center rounded-sm transition-colors hover:bg-surface-muted ${
+              isActive('/gezilerim') ? 'text-brand' : 'text-muted'
+            }`}
+          >
+            <CompassIcon className="h-5 w-5" />
+          </Link>
+          <Link
             href="/favoriler"
             aria-label="Favorilerim"
             className={`flex h-9 w-9 items-center justify-center rounded-sm transition-colors hover:bg-surface-muted ${
@@ -120,6 +129,19 @@ export function Navbar() {
                   </Link>
                 </li>
               ))}
+              <li>
+                <Link
+                  href="/gezilerim"
+                  className={`flex items-center rounded-sm px-3 py-2.5 text-sm font-medium transition-colors ${
+                    isActive('/gezilerim')
+                      ? 'bg-surface-muted text-brand'
+                      : 'text-muted hover:bg-surface-muted hover:text-strong'
+                  }`}
+                  onClick={() => setOpen(false)}
+                >
+                  Gezilerim
+                </Link>
+              </li>
               <li>
                 <Link
                   href="/favoriler"

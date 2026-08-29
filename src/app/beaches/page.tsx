@@ -17,9 +17,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function BeachesPage() {
-  const beaches = getPlacesByCategory('Beach');
-  const regions = getAllRegions();
+export const revalidate = 3600;
+
+export default async function BeachesPage() {
+  const [beaches, regions] = await Promise.all([getPlacesByCategory('Beach'), getAllRegions()]);
 
   return (
     <Container className="py-12 sm:py-16">

@@ -8,8 +8,9 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      // Personal, localStorage-backed page — empty and identical for every crawler, no SEO value.
-      disallow: ['/favoriler'],
+      // Personal, localStorage-backed pages — empty and identical for every crawler, no SEO value.
+      // /admin is also access-controlled (see src/proxy.ts) and must never be indexed.
+      disallow: ['/favoriler', '/gezilerim', '/admin'],
     },
     sitemap: `${SITE_URL}/sitemap.xml`,
   };

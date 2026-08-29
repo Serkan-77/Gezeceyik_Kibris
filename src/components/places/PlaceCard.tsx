@@ -12,7 +12,7 @@ import { FavoriteButton } from '@/components/ui/FavoriteButton';
 import { AddToTripButton } from '@/components/ui/AddToTripButton';
 import { useTodayKey } from '@/hooks/useTodayKey';
 import { tr } from '@/lib/i18n/tr';
-import { formatDistance } from '@/lib/places';
+import { formatDistance } from '@/lib/format';
 import { PinIcon } from '@/components/ui/icons';
 
 interface PlaceCardProps {
