@@ -43,9 +43,6 @@ export function DiscoveryIndex({ counts, places }: DiscoveryIndexProps) {
     <section className="bg-paper py-14 sm:py-20" aria-labelledby="discovery-heading">
       <Container>
         <Reveal className="mb-10 max-w-xl">
-          <p className="mb-3 text-label font-semibold uppercase tracking-[0.16em] text-brand">
-            Sana Ne İlham Veriyor?
-          </p>
           <h2 id="discovery-heading" className="font-display text-section-title font-semibold text-strong text-balance">
             Keşfet, hisset, planla.
           </h2>
@@ -64,8 +61,16 @@ export function DiscoveryIndex({ counts, places }: DiscoveryIndexProps) {
                       activeIdx === i ? 'text-brand' : 'text-strong hover:text-brand'
                     }`}
                   >
-                    <span className="font-display text-2xl font-semibold sm:text-3xl">
-                      {tr.categories[category]}
+                    <span className="flex items-baseline gap-3">
+                      <span
+                        aria-hidden="true"
+                        className={`h-2 w-2 shrink-0 translate-y-[-2px] rounded-[1px] transition-colors duration-[var(--duration-fast)] ${
+                          activeIdx === i ? 'bg-gold' : 'bg-line group-hover:bg-gold'
+                        }`}
+                      />
+                      <span className="font-display text-2xl font-semibold sm:text-3xl">
+                        {tr.categories[category]}
+                      </span>
                     </span>
                     <span className="flex shrink-0 items-center gap-2 font-mono text-sm tabular-nums text-subtle">
                       {counts[category] ?? 0}
@@ -83,7 +88,7 @@ export function DiscoveryIndex({ counts, places }: DiscoveryIndexProps) {
 
           <Reveal
             delayMs={120}
-            className="relative min-h-[280px] overflow-hidden rounded-md bg-surface-muted sm:min-h-[380px]"
+            className="relative min-h-[280px] overflow-hidden bg-surface-muted sm:min-h-[380px]"
           >
             {images.map((image, i) =>
               image ? (

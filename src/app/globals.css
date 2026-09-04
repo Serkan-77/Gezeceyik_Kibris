@@ -7,80 +7,85 @@
    instead of raw hex arbitrary values.
    ══════════════════════════════════════════════════════════════════ */
 @theme inline {
-  /* ── Brand — "Blue Coastal Kinetic Atlas" ─────────────────────────────
-     Clear Coastal Blue is the one true brand action color: links, primary
-     buttons, active nav, default map markers, route lines, selected
-     states, focus rings. Deep Mediterranean / Aegean are rationed for a
-     small set of specific immersive/secondary geographic moments — they
-     are not general-purpose backgrounds. Blue stays geographic and
-     interactive, never decorative UI paint — category color, badges and
-     other purely descriptive chrome stay neutral (see cat-* below). */
-  --color-brand:            #0389BE; /* Clear Coastal Blue */
-  --color-brand-hover:      #04729F;
-  --color-brand-strong:     #0B6E93; /* Aegean — darker, for small text needing extra contrast */
+  /* ── Brand — "Layered Light" ───────────────────────────────────────────
+     Direction: Cyprus's own Byzantine mosaic and fresco heritage (gold
+     tesserae, mineral pigment, lapis ground) carries the app icon's warm
+     illustrated-poster feel structurally, not just decoratively. Terracotta
+     is the one true brand action color (buttons, links, active states,
+     focus rings) — a fresco/roof-tile pigment, not a generic travel blue.
+     Gold is spent structurally (hairlines, dividers, featured/verified
+     accents) never as a background wash. Lapis is the immersive-dark
+     register (hero scrim, footer, map scene) and doubles as the
+     geographic/water accent — category color stays neutral (icon-led,
+     see cat-* below), never hue-led. */
+  --color-brand:            #B5502A; /* Terracotta — fresco pigment */
+  --color-brand-hover:      #9A4222;
+  --color-brand-strong:     #8A3B1F; /* darker, for small text needing extra contrast */
   /* Large-scale decoration only (glows, gradients at size, on-dark
      accents) — never small text on a light background. */
-  --color-brand-bright:     #3AA9D6;
+  --color-brand-bright:     #E08152;
 
-  --color-sun:              #0B6E93;
-  --color-sun-hover:        #04729F;
-  --color-sun-soft:         #E3F1F8;
-  /* Sea-Light tint — the on-dark equivalent of --color-brand: eyebrows
-     and fine accents over photography/ink surfaces. */
-  --color-gold:             #BFE3F1;
+  --color-sun:              #9A4222;
+  --color-sun-hover:        #8A3B1F;
+  --color-sun-soft:         #F3E4D8;
+  /* Antique gold — mosaic tesserae / manuscript gilding. Structural accent:
+     hairlines, dividers, featured badges, eyebrows over ink. Spent
+     sparingly, never as a fill. */
+  --color-gold:             #B8862E;
+  --color-gold-soft:        #F1E6CC;
 
-  --gradient-sea:    linear-gradient(135deg, #0B6E93 0%, #0A3D5C 100%);
-  --gradient-sunset: linear-gradient(135deg, #0389BE 0%, #0A3D5C 100%);
+  --gradient-sea:    linear-gradient(135deg, #1F5C6B 0%, #13233D 100%);
+  --gradient-sunset: linear-gradient(135deg, #B5502A 0%, #13233D 100%);
 
-  /* Geographic/map contexts reuse the brand blue directly. */
-  --color-geo:              #0389BE;
-  --color-geo-soft:         #E3F1F8;
+  /* Geographic/map contexts — a deep teal-lapis, distinct from the
+     terracotta brand action color (mosaic sea, not travel-app blue). */
+  --color-geo:              #1F5C6B;
+  --color-geo-soft:         #DEEAEA;
 
-  /* Deep Mediterranean — rationed for full-bleed immersive sections only
-     (homepage map scene, footer's closing dark note). Never a general
-     dark-surface substitute for --color-ink. */
-  --color-deep:             #0A3D5C;
+  /* Lapis — rationed for full-bleed immersive sections only (homepage map
+     scene, footer's closing dark note). Never a general dark-surface
+     substitute for --color-ink. */
+  --color-deep:             #13233D;
 
-  /* ── Category palette — deliberately kept OUT of the blue system.
-     Blue means geographic/interactive on this site; category is read
-     from icon + label, not hue, so every category shares one neutral
-     ink pair — see components/ui/CategoryIcon.tsx. ── */
-  --color-cat-museum:            #17191C;
-  --color-cat-museum-soft:       #ECE7DC;
-  --color-cat-castle:            #17191C;
-  --color-cat-castle-soft:       #ECE7DC;
-  --color-cat-archaeological:    #17191C;
-  --color-cat-archaeological-soft: #ECE7DC;
-  --color-cat-monastery:         #17191C;
-  --color-cat-monastery-soft:    #ECE7DC;
-  --color-cat-beach:             #17191C;
-  --color-cat-beach-soft:        #ECE7DC;
-  --color-cat-nature:            #17191C;
-  --color-cat-nature-soft:       #ECE7DC;
-  --color-cat-historical:        #17191C;
-  --color-cat-historical-soft:   #ECE7DC;
-  --color-cat-viewpoint:         #17191C;
-  --color-cat-viewpoint-soft:    #ECE7DC;
-  --color-cat-cultural:          #17191C;
-  --color-cat-cultural-soft:     #ECE7DC;
-  --color-cat-church:            #17191C;
-  --color-cat-church-soft:       #ECE7DC;
-  --color-cat-family:            #17191C;
-  --color-cat-family-soft:       #ECE7DC;
+  /* ── Category palette — deliberately kept OUT of the hue system.
+     Category is read from icon + label, not color, so every category
+     shares one neutral ink pair — see components/ui/CategoryIcon.tsx. ── */
+  --color-cat-museum:            #211B15;
+  --color-cat-museum-soft:       #EFE3D2;
+  --color-cat-castle:            #211B15;
+  --color-cat-castle-soft:       #EFE3D2;
+  --color-cat-archaeological:    #211B15;
+  --color-cat-archaeological-soft: #EFE3D2;
+  --color-cat-monastery:         #211B15;
+  --color-cat-monastery-soft:    #EFE3D2;
+  --color-cat-beach:             #211B15;
+  --color-cat-beach-soft:        #EFE3D2;
+  --color-cat-nature:            #211B15;
+  --color-cat-nature-soft:       #EFE3D2;
+  --color-cat-historical:        #211B15;
+  --color-cat-historical-soft:   #EFE3D2;
+  --color-cat-viewpoint:         #211B15;
+  --color-cat-viewpoint-soft:    #EFE3D2;
+  --color-cat-cultural:          #211B15;
+  --color-cat-cultural-soft:     #EFE3D2;
+  --color-cat-church:            #211B15;
+  --color-cat-church-soft:       #EFE3D2;
+  --color-cat-family:            #211B15;
+  --color-cat-family-soft:       #EFE3D2;
 
-  /* ── Neutrals — warm family throughout (limestone/ink), never cool
-     gray, so nothing reads as SaaS-dashboard neutral. ── */
-  --color-ink:              #17191C;
-  --color-ink-soft:         #22262B;
-  --color-paper:            #F6F3EC; /* Warm Limestone — default page background */
-  --color-surface:          #FCFBF8; /* Warm White — rows/cards/panels on limestone */
-  --color-surface-muted:    #EFEADF;
-  --color-line:             #DED8C8; /* warm hairline */
+  /* ── Neutrals — warm stone family throughout (limewash/plaster,
+     never cool SaaS gray). ── */
+  --color-ink:              #211B15;
+  --color-ink-soft:         #2C241C;
+  --color-paper:            #F3F0E6; /* Limewash Plaster — default page background */
+  --color-surface:          #FBF9F2; /* Warm White — rows/cards/panels on plaster */
+  --color-surface-muted:    #EBE4D3;
+  --color-line:             #DBD1B9; /* warm hairline */
 
-  --color-strong:           #17191C;
-  --color-muted:            #5C5C58;
-  --color-subtle:           #8A8A82;
-  --color-faint:            #B7B2A6;
+  --color-strong:           #211B15;
+  --color-muted:            #5E564A;
+  --color-subtle:           #8C8272;
+  --color-faint:            #BBAF98;
   --color-on-ink-muted:     rgb(255 255 255 / 62%);
   --color-on-ink-subtle:    rgb(255 255 255 / 40%);
 
@@ -92,14 +97,16 @@
   --color-danger:           #b91c1c;
   --color-danger-soft:      #fef2f2;
 
-  /* ── Typography ─────────────────────────────────────────────── */
-  /* Blue Coastal Kinetic Atlas: an editorial serif carries place, story
-     and emotion; the UI sans carries navigation/utility; mono carries
-     only measured facts (Phase 8 §2). */
+  /* ── Typography — "Layered Light" ──────────────────────────────
+     Spectral: a lapidary, inscribed-feeling serif (its ink traps and
+     angled stress read closer to carved/gilded lettering than a bookish
+     editorial face) carries place, story and emotion. Public Sans is the
+     workhorse UI voice. Roboto Mono carries only measured facts — hours,
+     prices, coordinates, distances — never a "technical" costume. */
   --font-display: var(--font-serif), Georgia, serif;
   --font-sans:    var(--font-inter), system-ui, sans-serif;
   /* Numeral/technical face — coordinates, prices, hours, distances only. */
-  --font-mono:    var(--font-plex-mono), 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
+  --font-mono:    var(--font-plex-mono), ui-monospace, SFMono-Regular, monospace;
 
   /* Fluid type scale — one utility class, no breakpoint staircase.
      Named by role, not by size, so usage stays meaningful. */

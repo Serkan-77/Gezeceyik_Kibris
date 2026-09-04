@@ -443,7 +443,7 @@ export const places: Place[] = [
     shortDescription: 'Kıbrıs\'ın en büyük Osmanlı han yapısı; restorasyon sonrası kültür ve zanaat atölyelerine dönüştürülmüş tarihi bir mekân.',
     description: 'Büyük Han, Kıbrıs\'ta inşa edilen ilk Osmanlı yapılarından biri olup 1572\'de Lala Mustafa Paşa\'nın emriyle yaptırılmıştır. Lefkoşa\'nın kuzey kesiminde bulunan ve kare planlı bir iç avlu etrafında şekillenen iki katlı yapı, kervan hanı olarak tasarlanmıştır. Günümüzde çarşamba akşamları kurulan antika pazarı ve zanaat atölyeleriyle kültürel yaşamın canlı bir parçası olmaya devam etmektedir.',
     history: '1572\'de, Osmanlı\'nın Kıbrıs\'ı fethinin hemen ardından inşa edilen Büyük Han, yüzyıllar boyunca önce caravan sarayı, ardından Kıbrıs kolonisi döneminde kadın hapishanesi, daha sonra düşkünler yurdu olarak kullanılmıştır. 1991\'de restore edilerek kültür merkezi işlevi kazanmıştır.',
-    image: 'https://images.unsplash.com/photo-1564507592333-c60657eea523?w=800&q=80',
+    image: '/places/buyuk-han.jpg',
     gallery: [],
     openingHours: {
       monday: '09:30–17:30',

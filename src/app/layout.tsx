@@ -1,26 +1,29 @@
 import type { Metadata } from 'next';
-import { Inter, Source_Serif_4, IBM_Plex_Mono } from 'next/font/google';
+import { Public_Sans, Spectral, Roboto_Mono } from 'next/font/google';
 import './globals.css';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { Analytics } from '@/components/layout/Analytics';
+import { SmoothScroll } from '@/components/layout/SmoothScroll';
 import { SITE_URL } from '@/lib/config';
 
 // 'latin-ext' is required for correct Turkish glyphs (ı, ğ, ş, ç, ö, ü) —
 // the 'latin' subset alone silently falls back to a system font for these,
 // which is why display type has looked subtly inconsistent on Turkish copy.
-const inter = Inter({
+const inter = Public_Sans({
   subsets: ['latin', 'latin-ext'],
   variable: '--font-inter',
   display: 'swap',
 });
 
-// Display face — "Blue Coastal Kinetic Atlas" art direction. A warm
-// editorial serif carries place, story and emotion (headlines, place
-// names, history prose); UI chrome (nav, buttons, labels, filters) stays
-// on Inter for legibility at small sizes. Italic is used for in-family
-// emphasis in display type, so both styles are loaded.
-const editorialSerif = Source_Serif_4({
+// Display face — "Layered Light" art direction. Spectral's ink traps and
+// angled stress read closer to carved/gilded lettering (mosaic captions,
+// manuscript titling) than a bookish editorial face — it carries place,
+// story and emotion (headlines, place names, history prose); UI chrome
+// (nav, buttons, labels, filters) stays on the sans for legibility at
+// small sizes. Italic is used for in-family emphasis in display type, so
+// both styles are loaded.
+const editorialSerif = Spectral({
   subsets: ['latin', 'latin-ext'],
   weight: ['400', '500', '600', '700'],
   style: ['normal', 'italic'],
@@ -30,8 +33,8 @@ const editorialSerif = Source_Serif_4({
 
 // Numeral/technical face — coordinates, prices, hours, distances only.
 // Never used for prose or UI copy.
-const plexMono = IBM_Plex_Mono({
-  subsets: ['latin'],
+const plexMono = Roboto_Mono({
+  subsets: ['latin', 'latin-ext'],
   weight: ['400', '500'],
   variable: '--font-plex-mono',
   display: 'swap',
@@ -94,7 +97,22 @@ export default function RootLayout({
   return (
     <html lang="tr" className={`${inter.variable} ${editorialSerif.variable} ${plexMono.variable}`} data-scroll-behavior="smooth">
       <body className="flex min-h-screen flex-col bg-paper text-strong">
+        <div
+          style={{ display: 'contents' }}
+          dangerouslySetInnerHTML={{
+            __html:
+              '<!-- DESIGN DIRECTION CONTRACT (revision 2 — supersedes seed 0e117ca0)\n' +
+              'THESIS: A confident, cinematic editorial travel brand — one strong authored photograph per moment, huge quiet type, real motion — not a mosaic-pattern concept, not a token recolor of the incumbent template.\n' +
+              'OWN-WORLD: Terracotta action color, antique-gold as a single restrained hairline (never a repeating pattern), lapis-ink immersive dark register, Spectral display serif over Public Sans UI, Roboto Mono for measured facts, GSAP + Lenis choreography.\n' +
+              'STORY: A visitor reads "this is a premium, art-directed guide" within the first viewport, not "a listings template with a coat of paint."\n' +
+              'FIRST VIEWPORT: Full-bleed single verified photo, GSAP word-stagger headline reveal, minimal chrome, terracotta primary CTA, no decorative pattern competing with the photo.\n' +
+              'FORM: "Cinematic Editorial" — replaces the abandoned tile-mosaic execution; palette and type carried forward, composition and motion rebuilt from zero per explicit user direction.\n' +
+              'FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance.\n' +
+              '-->',
+          }}
+        />
         <Analytics />
+        <SmoothScroll />
         <Navbar />
         <main id="main-content" className="flex-1">
           {children}
