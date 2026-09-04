@@ -111,14 +111,18 @@
   --duration-base: 240ms;
   --duration-slow: 420ms;
 
-  /* ── Z-index scale ──────────────────────────────────────────────── */
-  --z-base: 0;
-  --z-sticky: 10;
-  --z-map-controls: 20;
-  --z-disclosure: 30;
-  --z-preview: 40;
-  --z-nav: 50;
-  --z-overlay: 60;
+  /* ── Z-index scale — must live under the --z-index-* namespace for
+     Tailwind v4 to generate matching z-* utilities (z-nav, z-overlay,
+     …); --z-nav etc. on their own are not recognized as z-index theme
+     values and silently produce no CSS, which is exactly the bug that
+     let a sticky Navbar lose its stacking priority. ── */
+  --z-index-base: 0;
+  --z-index-sticky: 10;
+  --z-index-map-controls: 20;
+  --z-index-disclosure: 30;
+  --z-index-preview: 40;
+  --z-index-nav: 50;
+  --z-index-overlay: 60;
 }
 
 :root {

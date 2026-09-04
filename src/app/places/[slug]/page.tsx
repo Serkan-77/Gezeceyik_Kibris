@@ -15,7 +15,6 @@ import { PlaceOpenStatus } from '@/components/places/PlaceOpenStatus';
 import { DiscoveryRow } from '@/components/places/DiscoveryRow';
 import { MobileActionBar } from '@/components/places/MobileActionBar';
 import { PlaceGeoContextWrapper } from '@/components/map/PlaceGeoContextWrapper';
-import { AddToTripButton } from '@/components/ui/AddToTripButton';
 import { Container } from '@/components/ui/Container';
 import { tr } from '@/lib/i18n/tr';
 import { isImageRepresentative } from '@/lib/format';
@@ -123,98 +122,99 @@ export default async function PlaceDetailPage({ params }: Props) {
         </div>
       </div>
 
-      <PlaceEssentials place={place} />
-
-      <Container className="pt-4">
-        {place.verificationStatus === 'verified' ? (
-          <p className="max-w-2xl text-caption leading-relaxed text-subtle">
-            <span className="text-success">✓</span> Resmi kaynaklarla doğrulandı
-            {place.lastVerifiedAt && ` · ${new Date(place.lastVerifiedAt).toLocaleDateString('tr-TR')}`}
-            {place.sourceUrl && (
-              <>
-                {' '}
-                <a href={place.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-brand hover:underline">
-                  Kaynak ↗
-                </a>
-              </>
-            )}
-          </p>
-        ) : (
-          <p className="max-w-2xl text-caption leading-relaxed text-warning">
-            Açılış saatleri, fiyatlar ve iletişim bilgileri <strong className="font-semibold">örnek veridir</strong>, bağımsız olarak
-            doğrulanmamıştır. Ziyaret öncesi resmi kaynaklara başvurun.
-            {place.sourceUrl && (
-              <>
-                {' '}
-                <a href={place.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:opacity-80">
-                  Resmi web sitesi ↗
-                </a>
-              </>
-            )}
-          </p>
-        )}
-      </Container>
-
       <Container className="py-10">
-        <div className="max-w-2xl">
-          <p className="font-display text-block-title leading-relaxed text-ink-soft text-pretty">{place.description}</p>
-        </div>
+        <div className="grid gap-10 lg:grid-cols-[1fr_320px] lg:items-start">
+          <div className="min-w-0">
+            {place.verificationStatus === 'verified' ? (
+              <p className="max-w-2xl text-caption leading-relaxed text-subtle">
+                <span className="text-success">✓</span> Resmi kaynaklarla doğrulandı
+                {place.lastVerifiedAt && ` · ${new Date(place.lastVerifiedAt).toLocaleDateString('tr-TR')}`}
+                {place.sourceUrl && (
+                  <>
+                    {' '}
+                    <a href={place.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-brand hover:underline">
+                      Kaynak ↗
+                    </a>
+                  </>
+                )}
+              </p>
+            ) : (
+              <p className="max-w-2xl text-caption leading-relaxed text-warning">
+                Açılış saatleri, fiyatlar ve iletişim bilgileri <strong className="font-semibold">örnek veridir</strong>, bağımsız
+                olarak doğrulanmamıştır. Ziyaret öncesi resmi kaynaklara başvurun.
+                {place.sourceUrl && (
+                  <>
+                    {' '}
+                    <a href={place.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:opacity-80">
+                      Resmi web sitesi ↗
+                    </a>
+                  </>
+                )}
+              </p>
+            )}
 
-        <div className="mt-10">
-          <PlaceHistoryEssay place={place} />
-        </div>
+            <div className="mt-6 max-w-2xl">
+              <p className="font-display text-block-title leading-relaxed text-ink-soft text-pretty">{place.description}</p>
+            </div>
 
-        {place.gallery && place.gallery.length > 0 && (
-          <div className="mt-10 flex gap-4 overflow-x-auto">
-            {place.gallery.map((src, i) => (
-              <div key={src} className={`relative aspect-[4/3] shrink-0 overflow-hidden rounded-sm bg-surface-muted ${i === 0 ? 'w-72 sm:w-96' : 'w-56 sm:w-72'}`}>
-                <Image src={src} alt={`${place.name} — ${i + 2}`} fill sizes="400px" className="object-cover" />
+            <div className="mt-10">
+              <PlaceHistoryEssay place={place} />
+            </div>
+
+            {place.gallery && place.gallery.length > 0 && (
+              <div className="mt-10 flex gap-4 overflow-x-auto">
+                {place.gallery.map((src, i) => (
+                  <div key={src} className={`relative aspect-[4/3] shrink-0 overflow-hidden rounded-sm bg-surface-muted ${i === 0 ? 'w-72 sm:w-96' : 'w-56 sm:w-72'}`}>
+                    <Image src={src} alt={`${place.name} — ${i + 2}`} fill sizes="400px" className="object-cover" />
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        )}
+            )}
 
-        {hasLocation && (
-          <section id="geo" className="mt-16 scroll-mt-24 border-t border-line pt-12" aria-labelledby="geo-heading">
-            <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <h2 id="geo-heading" className="font-display text-block-title font-semibold text-strong">
-                  Konum ve Çevre
+            {hasLocation && (
+              <section id="geo" className="mt-16 scroll-mt-24 border-t border-line pt-12" aria-labelledby="geo-heading">
+                <div className="mb-6">
+                  <h2 id="geo-heading" className="font-display text-block-title font-semibold text-strong">
+                    Konum ve Çevre
+                  </h2>
+                  <p className="mt-1.5 text-body-sm text-subtle">
+                    {nearbyPoints.length > 0 ? `Yakında ${nearbyPoints.length} yer daha var.` : place.address}
+                  </p>
+                </div>
+                <div className="h-80 w-full overflow-hidden rounded-lg border border-line sm:h-96">
+                  <PlaceGeoContextWrapper
+                    place={{ slug: place.slug, name: place.name, lat: place.latitude, lng: place.longitude }}
+                    nearby={nearbyPoints}
+                  />
+                </div>
+              </section>
+            )}
+
+            {nearby.length > 0 && (
+              <section className="mt-16 border-t border-line pt-12" aria-labelledby="nearby-heading">
+                <h2 id="nearby-heading" className="font-display text-block-title font-semibold text-strong">
+                  Madem buradasın…
                 </h2>
-                <p className="mt-1.5 text-body-sm text-subtle">
-                  {nearbyPoints.length > 0 ? `Yakında ${nearbyPoints.length} yer daha var.` : place.address}
-                </p>
-              </div>
-              <AddToTripButton slug={place.slug} name={place.name} large />
-            </div>
-            <div className="h-80 w-full overflow-hidden rounded-lg border border-line sm:h-96">
-              <PlaceGeoContextWrapper
-                place={{ slug: place.slug, name: place.name, lat: place.latitude, lng: place.longitude }}
-                nearby={nearbyPoints}
-              />
-            </div>
-          </section>
-        )}
+                <p className="mt-1.5 max-w-lg text-body-sm text-subtle">Bölgedeyken ziyaret etmeye değer diğer yerler.</p>
+                <div className="mt-6">
+                  {nearby.slice(0, 4).map((p) => (
+                    <DiscoveryRow key={p.slug} place={p} />
+                  ))}
+                </div>
+              </section>
+            )}
 
-        {nearby.length > 0 && (
-          <section className="mt-16 border-t border-line pt-12" aria-labelledby="nearby-heading">
-            <h2 id="nearby-heading" className="font-display text-block-title font-semibold text-strong">
-              Madem buradasın…
-            </h2>
-            <p className="mt-1.5 max-w-lg text-body-sm text-subtle">Bölgedeyken ziyaret etmeye değer diğer yerler.</p>
-            <div className="mt-6">
-              {nearby.slice(0, 4).map((p) => (
-                <DiscoveryRow key={p.slug} place={p} />
-              ))}
+            <div className="mt-14 border-t border-line pt-8">
+              <p className="font-display text-block-title text-strong">Bu durağı gördün. Sırada ne var?</p>
+              <Link href="/gezi-planla" className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:underline">
+                Tüm rotanı oluştur →
+              </Link>
             </div>
-          </section>
-        )}
+          </div>
 
-        <div className="mt-14 border-t border-line pt-8">
-          <p className="font-display text-block-title text-strong">Bu durağı gördün. Sırada ne var?</p>
-          <Link href="/gezi-planla" className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:underline">
-            Tüm rotanı oluştur →
-          </Link>
+          <div className="lg:sticky lg:top-20">
+            <PlaceEssentials place={place} />
+          </div>
         </div>
       </Container>
 
