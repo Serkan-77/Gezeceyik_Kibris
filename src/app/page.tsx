@@ -5,6 +5,7 @@
 import { Metadata } from 'next';
 import { Hero } from '@/components/home/Hero';
 import { DiscoveryTeaser } from '@/components/home/DiscoveryTeaser';
+import { HistoryScene } from '@/components/home/HistoryScene';
 import { GeographyBand } from '@/components/home/GeographyBand';
 import { PlanTripBand } from '@/components/home/PlanTripBand';
 import { getAllPlaces, getFeaturedPlaces, getAllRegions } from '@/lib/places';
@@ -34,6 +35,7 @@ export default async function HomePage() {
     <>
       <Hero placeCount={places.length} regionCount={regions.length} feature={heroFeature} />
       <DiscoveryTeaser places={places} />
+      <HistoryScene places={places} />
       <GeographyBand placeCount={places.length} regionCount={regions.length} />
       <PlanTripBand feature={planFeature} />
     </>
