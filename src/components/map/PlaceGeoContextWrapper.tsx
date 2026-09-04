@@ -15,5 +15,13 @@ const PlaceGeoContext = dynamic(() => import('./PlaceGeoContext'), {
 });
 
 export function PlaceGeoContextWrapper({ place, nearby }: { place: GeoContextPoint; nearby: GeoContextPoint[] }) {
-  return <PlaceGeoContext place={place} nearby={nearby} />;
+  // isolate: Leaflet's own panes (markers, popups, controls) use internal
+  // z-index values well above the page's own scale (600-1000+); without
+  // a new stacking context here they compare directly against page
+  // chrome like the sticky Navbar and can paint over it while scrolling.
+  return (
+    <div className="relative isolate h-full w-full">
+      <PlaceGeoContext place={place} nearby={nearby} />
+    </div>
+  );
 }

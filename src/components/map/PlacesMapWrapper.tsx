@@ -36,5 +36,11 @@ interface PlacesMapWrapperProps {
 }
 
 export function PlacesMapWrapper(props: PlacesMapWrapperProps) {
-  return <PlacesMap {...props} />;
+  // isolate: keeps Leaflet's internal pane z-indexes (600-1000+) from
+  // comparing against page-level chrome like the sticky Navbar.
+  return (
+    <div className="relative isolate h-full w-full">
+      <PlacesMap {...props} />
+    </div>
+  );
 }

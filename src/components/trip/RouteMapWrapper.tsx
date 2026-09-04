@@ -24,5 +24,11 @@ interface RouteMapWrapperProps {
 }
 
 export function RouteMapWrapper(props: RouteMapWrapperProps) {
-  return <RouteMap {...props} />;
+  // isolate: keeps Leaflet's internal pane z-indexes (600-1000+) from
+  // comparing against page-level chrome like the sticky Navbar.
+  return (
+    <div className="relative isolate h-full w-full">
+      <RouteMap {...props} />
+    </div>
+  );
 }

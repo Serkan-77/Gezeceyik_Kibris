@@ -189,12 +189,13 @@ type Basemap = 'street' | 'satellite';
 
 const BASEMAPS: Record<Basemap, { url: string; attribution: string; maxZoom: number }> = {
   street: {
-    // CARTO Voyager — a warm, muted basemap (not raw OSM's saturated
-    // green/orange default) so the map reads as this product's own
-    // surface, not a generic developer-tool embed.
-    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-    attribution:
-      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> katkıda bulunanlar &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    // Standard OpenStreetMap tiles — reverted from CARTO Voyager, which
+    // turned out to require an API key in the browser despite working
+    // over a bare curl request (see commit history). Reliability over
+    // polish here: pick a properly free, verified basemap later rather
+    // than risk another silent breakage.
+    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> katkıda bulunanlar',
     maxZoom: 19,
   },
   satellite: {
