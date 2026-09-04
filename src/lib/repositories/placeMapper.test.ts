@@ -1,12 +1,11 @@
 import { describe, it, expect, vi } from 'vitest';
-import { ObjectId } from 'mongodb';
-import { toDomainPlace, toDomainPlaces, fromDomainPlace, toGeoPoint } from './placeMapper';
-import { PlaceDocument } from '@/lib/db/placeDocument';
+import { toDomainPlace, toDomainPlaces, fromDomainPlace } from './placeMapper';
+import { PlaceRow } from '@/lib/db/placeSchema';
 import { Place } from '@/types/place';
 
-function makeDoc(overrides: Partial<PlaceDocument> = {}): PlaceDocument {
+function makeRow(overrides: Partial<PlaceRow> = {}): PlaceRow {
   return {
-    _id: new ObjectId(),
+    id: 'a1111111-1111-1111-1111-111111111111',
     slug: 'girne-kalesi',
     name: 'Girne Kalesi',
     shortDescription: 'A castle.',
@@ -15,54 +14,46 @@ function makeDoc(overrides: Partial<PlaceDocument> = {}): PlaceDocument {
     region: 'Girne',
     city: 'Girne',
     address: 'Girne Harbour',
-    location: { type: 'Point', coordinates: [33.318, 35.341] },
-    images: { cover: '/images/girne-kalesi.jpg', gallery: [] },
-    contact: {},
+    latitude: 35.341,
+    longitude: 33.318,
+    image: '/images/girne-kalesi.jpg',
+    gallery: [],
     featured: false,
     published: true,
     archived: false,
     verificationStatus: 'sample',
-    sources: [],
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
     ...overrides,
-  } as PlaceDocument;
+  } as PlaceRow;
 }
 
-describe('toGeoPoint', () => {
-  it('stores coordinates as [longitude, latitude], not [latitude, longitude]', () => {
-    const point = toGeoPoint(35.341, 33.318); // (lat, lng)
-    expect(point).toEqual({ type: 'Point', coordinates: [33.318, 35.341] });
-  });
-});
-
 describe('toDomainPlace', () => {
-  it('maps a well-formed document to the domain Place shape', () => {
-    const doc = makeDoc();
-    const place = toDomainPlace(doc);
+  it('maps a well-formed row to the domain Place shape', () => {
+    const row = makeRow();
+    const place = toDomainPlace(row);
 
     expect(place.slug).toBe('girne-kalesi');
     expect(place.image).toBe('/images/girne-kalesi.jpg');
-    // location.coordinates is [lng, lat]; domain Place stores them separately.
-    expect(place.longitude).toBe(33.318);
     expect(place.latitude).toBe(35.341);
+    expect(place.longitude).toBe(33.318);
   });
 
-  it('throws when location is missing', () => {
-    const doc = makeDoc({ location: undefined as unknown as PlaceDocument['location'] });
-    expect(() => toDomainPlace(doc)).toThrow(/missing required fields/);
+  it('throws when latitude/longitude is missing', () => {
+    const row = makeRow({ latitude: undefined as unknown as number });
+    expect(() => toDomainPlace(row)).toThrow(/missing required fields/);
   });
 
-  it('throws when images.cover is missing', () => {
-    const doc = makeDoc({ images: { cover: '', gallery: [] } });
-    expect(() => toDomainPlace(doc)).toThrow(/missing required fields/);
+  it('throws when image is missing', () => {
+    const row = makeRow({ image: '' });
+    expect(() => toDomainPlace(row)).toThrow(/missing required fields/);
   });
 });
 
 describe('toDomainPlaces', () => {
-  it('skips malformed documents instead of throwing, keeping well-formed ones', () => {
-    const good = makeDoc({ slug: 'good-place' });
-    const bad = makeDoc({ slug: 'bad-place', images: { cover: '', gallery: [] } });
+  it('skips malformed rows instead of throwing, keeping well-formed ones', () => {
+    const good = makeRow({ slug: 'good-place' });
+    const bad = makeRow({ slug: 'bad-place', image: '' });
 
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const result = toDomainPlaces([good, bad]);
@@ -77,7 +68,7 @@ describe('toDomainPlaces', () => {
 });
 
 describe('fromDomainPlace', () => {
-  it('round-trips a domain Place into a valid MongoDB input shape', () => {
+  it('round-trips a domain Place into a valid Supabase input shape', () => {
     const place: Place = {
       id: '1',
       slug: 'girne-kalesi',
@@ -98,8 +89,9 @@ describe('fromDomainPlace', () => {
     const input = fromDomainPlace(place, { published: true });
 
     expect(input.slug).toBe('girne-kalesi');
-    expect(input.location).toEqual({ type: 'Point', coordinates: [33.318, 35.341] });
-    expect(input.images.cover).toBe('/images/girne-kalesi.jpg');
+    expect(input.latitude).toBe(35.341);
+    expect(input.longitude).toBe(33.318);
+    expect(input.image).toBe('/images/girne-kalesi.jpg');
     expect(input.published).toBe(true);
     expect(input.archived).toBe(false);
   });

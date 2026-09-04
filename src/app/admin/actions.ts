@@ -17,8 +17,9 @@ import {
   isValidSessionToken,
 } from '@/lib/admin/session';
 import * as placeRepository from '@/lib/repositories/placeRepository';
-import { toGeoPoint } from '@/lib/repositories/placeMapper';
-import { PlaceInput } from '@/lib/db/placeDocument';
+import * as transitRouteRepository from '@/lib/repositories/transitRouteRepository';
+import { PlaceInput } from '@/lib/db/placeSchema';
+import { TransitRouteInput } from '@/lib/db/transitRouteSchema';
 import { Category, Region, VerificationStatus } from '@/types/place';
 
 async function requireAdminSession(): Promise<void> {
@@ -84,14 +85,12 @@ function dayHours(formData: FormData, day: string): string | null {
 }
 
 function parseGallery(formData: FormData): string[] {
-  const raw = optionalString(formData, 'galleryJson');
+  const raw = optionalString(formData, 'gallery');
   if (!raw) return [];
-  try {
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed.filter((item): item is string => typeof item === 'string') : [];
-  } catch {
-    return [];
-  }
+  return raw
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean);
 }
 
 /** Builds a PlaceInput from the admin form's FormData. Validation happens in the repository (Zod). */
@@ -114,14 +113,10 @@ function parsePlaceForm(formData: FormData): PlaceInput {
     region: String(formData.get('region') ?? '') as Region,
     city: String(formData.get('city') ?? '').trim(),
     address: String(formData.get('address') ?? '').trim(),
-    location: toGeoPoint(
-      optionalNumber(formData, 'latitude') ?? 0,
-      optionalNumber(formData, 'longitude') ?? 0
-    ),
-    images: {
-      cover: String(formData.get('imageCover') ?? '').trim(),
-      gallery: parseGallery(formData),
-    },
+    latitude: optionalNumber(formData, 'latitude') ?? 0,
+    longitude: optionalNumber(formData, 'longitude') ?? 0,
+    image: String(formData.get('imageCover') ?? '').trim(),
+    gallery: parseGallery(formData),
     openingHours: {
       monday: dayHours(formData, 'monday'),
       tuesday: dayHours(formData, 'tuesday'),
@@ -131,18 +126,16 @@ function parsePlaceForm(formData: FormData): PlaceInput {
       saturday: dayHours(formData, 'saturday'),
       sunday: dayHours(formData, 'sunday'),
     },
-    entranceFee: {
+    admission: {
       isFree,
       adultPrice: isFree ? undefined : optionalNumber(formData, 'adultPrice'),
       childPrice: isFree ? undefined : optionalNumber(formData, 'childPrice'),
       currency: isFree ? undefined : (optionalString(formData, 'currency') as 'TRY' | 'EUR' | undefined),
       notes: optionalString(formData, 'admissionNotes'),
     },
-    contact: {
-      phone: optionalString(formData, 'phone'),
-      website: optionalString(formData, 'website'),
-    },
-    visitDuration: optionalNumber(formData, 'visitDuration'),
+    phone: optionalString(formData, 'phone'),
+    website: optionalString(formData, 'website'),
+    estimatedVisitMinutes: optionalNumber(formData, 'visitDuration'),
     accessibility: {
       wheelchairAccessible: formData.get('wheelchairAccessible') === 'on',
       guidedTours: formData.get('guidedTours') === 'on',
@@ -154,7 +147,7 @@ function parsePlaceForm(formData: FormData): PlaceInput {
     published: formData.get('published') === 'on',
     archived: false,
     verificationStatus: String(formData.get('verificationStatus') ?? 'sample') as VerificationStatus,
-    sources: sourceUrl ? [sourceUrl] : [],
+    sourceUrl,
     lastVerifiedAt: optionalString(formData, 'lastVerifiedAt'),
   };
 }
@@ -226,4 +219,120 @@ export async function togglePublishAction(formData: FormData): Promise<void> {
   }
   revalidatePath('/admin');
   revalidatePath('/places');
+}
+
+// ─── Transit route mutations ────────────────────────────────────
+
+export interface TransitRouteFormState {
+  error?: string;
+}
+
+/** Builds a TransitRouteInput from the admin form's FormData. Validation happens in the repository (Zod). */
+function parseTransitRouteForm(formData: FormData): TransitRouteInput {
+  const scheduleType = String(formData.get('scheduleType') ?? 'unpublished');
+  let schedule: TransitRouteInput['schedule'];
+
+  if (scheduleType === 'fixed') {
+    const times = String(formData.get('fixedTimes') ?? '')
+      .split(',')
+      .map((t) => t.trim())
+      .filter(Boolean);
+    schedule = { type: 'fixed', times };
+  } else if (scheduleType === 'frequency') {
+    schedule = {
+      type: 'frequency',
+      firstDeparture: String(formData.get('firstDeparture') ?? '').trim(),
+      lastDeparture: String(formData.get('lastDeparture') ?? '').trim(),
+      intervalMinutes: Number(formData.get('intervalMinutes') ?? 0),
+    };
+  } else {
+    schedule = { type: 'unpublished' };
+  }
+
+  const phone = String(formData.get('phone') ?? '')
+    .split(',')
+    .map((p) => p.trim())
+    .filter(Boolean);
+
+  return {
+    operator: String(formData.get('operator') ?? '').trim(),
+    fromRegion: String(formData.get('fromRegion') ?? '') as Region,
+    toRegion: String(formData.get('toRegion') ?? '') as Region,
+    fromStop: {
+      name: String(formData.get('fromStopName') ?? '').trim(),
+      city: String(formData.get('fromStopCity') ?? '').trim(),
+    },
+    toStop: {
+      name: String(formData.get('toStopName') ?? '').trim(),
+      city: String(formData.get('toStopCity') ?? '').trim(),
+    },
+    durationMinutes: Number(formData.get('durationMinutes') ?? 0),
+    fareTRY: optionalNumber(formData, 'fareTRY'),
+    schedule,
+    phone,
+    notes: optionalString(formData, 'notes'),
+    sourceUrl: String(formData.get('sourceUrl') ?? '').trim(),
+    lastVerifiedAt: String(formData.get('lastVerifiedAt') ?? '').trim(),
+    verificationStatus: String(formData.get('verificationStatus') ?? 'unverified') as VerificationStatus,
+    active: formData.get('active') === 'on',
+  };
+}
+
+export async function createTransitRouteAction(
+  _prevState: TransitRouteFormState,
+  formData: FormData
+): Promise<TransitRouteFormState> {
+  await requireAdminSession();
+
+  const input = parseTransitRouteForm(formData);
+  try {
+    await transitRouteRepository.createRoute(input);
+  } catch (err) {
+    return { error: zodErrorMessage(err) };
+  }
+
+  revalidatePath('/admin/transit');
+  revalidatePath('/gezi-planla');
+  redirect('/admin/transit');
+}
+
+export async function updateTransitRouteAction(
+  id: string,
+  _prevState: TransitRouteFormState,
+  formData: FormData
+): Promise<TransitRouteFormState> {
+  await requireAdminSession();
+
+  const input = parseTransitRouteForm(formData);
+  try {
+    const updated = await transitRouteRepository.updateRoute(id, input);
+    if (!updated) {
+      return { error: 'Bu id ile bir otobüs hattı bulunamadı.' };
+    }
+  } catch (err) {
+    return { error: zodErrorMessage(err) };
+  }
+
+  revalidatePath('/admin/transit');
+  revalidatePath('/gezi-planla');
+  redirect('/admin/transit');
+}
+
+export async function deleteTransitRouteAction(formData: FormData): Promise<void> {
+  await requireAdminSession();
+  const id = String(formData.get('id') ?? '');
+  if (!id) return;
+  await transitRouteRepository.deleteRoute(id);
+  revalidatePath('/admin/transit');
+  revalidatePath('/gezi-planla');
+}
+
+export async function toggleTransitRouteActiveAction(formData: FormData): Promise<void> {
+  await requireAdminSession();
+  const id = String(formData.get('id') ?? '');
+  const nextActive = formData.get('nextActive') === 'true';
+  if (!id) return;
+  await transitRouteRepository.setActive(id, nextActive);
+  revalidatePath('/admin/transit');
+  revalidatePath('/gezi-planla');
 }

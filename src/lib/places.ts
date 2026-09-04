@@ -1,10 +1,10 @@
 import 'server-only';
 // lib/places.ts
-// Data-access seam for the Cyprus Discovery platform. Every page/component
-// reads place data through these functions — never directly from MongoDB
+// Data-access seam for the Gezeceyik Kıbrıs platform. Every page/component
+// reads place data through these functions — never directly from Supabase
 // and never directly from the local dataset.
 //
-// Each function tries MongoDB first (via src/lib/repositories/placeRepository.ts).
+// Each function tries Supabase first (via src/lib/repositories/placeRepository.ts).
 //
 //   - In development, if that read fails (misconfigured/unreachable DB),
 //     it falls back to the local static dataset (src/data/places.ts) and
@@ -17,9 +17,9 @@ import 'server-only';
 // This file is server-only (see the `server-only` import above): it's a
 // build-time error, not a broken client bundle, if a Client Component ever
 // tries to import it. Client Components that need place data receive it as
-// a prop from a Server Component parent instead — see PlaceCard.tsx /
-// lib/format.ts for the one pure, non-data helper (formatDistance) that
-// client code is allowed to import directly.
+// a prop from a Server Component parent instead — see lib/format.ts for
+// the one pure, non-data helper (formatDistance) that client code is
+// allowed to import directly.
 
 import { places as localPlaces } from '@/data/places';
 import { Category, Place, Region } from '@/types/place';
@@ -33,13 +33,13 @@ const isProduction = process.env.NODE_ENV === 'production';
 function warnFallback(context: string, err: unknown): void {
   const message = err instanceof Error ? err.message : String(err);
   console.warn(
-    `[lib/places] MongoDB read failed (${context}) — falling back to local sample data. ` +
+    `[lib/places] Supabase read failed (${context}) — falling back to local sample data. ` +
       `This fallback only runs outside production. Reason: ${message}`
   );
 }
 
 /**
- * Runs a MongoDB-backed read, falling back to the equivalent local-data read
+ * Runs a Supabase-backed read, falling back to the equivalent local-data read
  * in development if it fails. In production, failures propagate instead of
  * silently serving local data.
  */
@@ -153,6 +153,19 @@ export async function getPlaceCountByRegion(): Promise<Record<string, number>> {
     () => {
       const counts: Record<string, number> = {};
       for (const p of localPlaces) counts[p.region] = (counts[p.region] ?? 0) + 1;
+      return counts;
+    }
+  );
+}
+
+/** Get place count per category. */
+export async function getPlaceCountByCategory(): Promise<Record<string, number>> {
+  return withFallback(
+    'getPlaceCountByCategory',
+    () => placeRepository.countByCategory(),
+    () => {
+      const counts: Record<string, number> = {};
+      for (const p of localPlaces) counts[p.category] = (counts[p.category] ?? 0) + 1;
       return counts;
     }
   );

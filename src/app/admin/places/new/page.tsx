@@ -6,7 +6,7 @@ import { createPlaceAction } from '@/app/admin/actions';
 import { Container } from '@/components/ui/Container';
 
 export const metadata: Metadata = {
-  title: 'Yeni Yer Ekle — Admin',
+  title: 'Yeni Yer Ekle: Admin',
   robots: { index: false, follow: false },
 };
 

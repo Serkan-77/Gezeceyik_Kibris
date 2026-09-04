@@ -6,7 +6,7 @@
 // "Passing actions as props" in Next.js's mutating-data guide.
 
 import { useActionState } from 'react';
-import { PlaceInput, CATEGORIES, REGIONS, VERIFICATION_STATUSES } from '@/lib/db/placeDocument';
+import { PlaceInput, CATEGORIES, REGIONS, VERIFICATION_STATUSES } from '@/lib/db/placeSchema';
 import { PlaceFormState } from '@/app/admin/actions';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -16,10 +16,8 @@ import { tr } from '@/lib/i18n/tr';
 type PlaceAction = (prevState: PlaceFormState, formData: FormData) => Promise<PlaceFormState>;
 
 interface Props {
-  // PlaceInput, not PlaceDocument: the page passes a plain object with the
-  // Mongo-only fields (_id, createdAt, updatedAt) stripped out. A Client
-  // Component prop must be a plain serializable value — an ObjectId (and
-  // its toJSON) is not, and passing one straight through fails at runtime.
+  // PlaceInput, not the raw PlaceRow: the page passes a plain object with
+  // any non-input fields (id, createdAt, updatedAt) simply ignored below.
   place: PlaceInput | null;
   action: PlaceAction;
 }
@@ -121,33 +119,28 @@ export function PlaceForm({ place, action }: Props) {
           <textarea id="history" name="history" defaultValue={place?.history} rows={3} className={textareaClass} />
         </Field>
         <Field label="Kapak Görseli URL" htmlFor="imageCover">
-          <Input id="imageCover" name="imageCover" defaultValue={place?.images.cover} required />
+          <Input id="imageCover" name="imageCover" defaultValue={place?.image} required />
         </Field>
-        <input type="hidden" name="galleryJson" defaultValue={JSON.stringify(place?.images.gallery ?? [])} />
+        <Field label="Galeri (her satıra bir görsel URL'i, opsiyonel)" htmlFor="gallery">
+          <textarea
+            id="gallery"
+            name="gallery"
+            defaultValue={place?.gallery?.join('\n')}
+            rows={4}
+            placeholder={'https://...jpg\nhttps://...jpg'}
+            className={textareaClass}
+          />
+        </Field>
       </section>
 
       <section className="space-y-4">
         <h2 className="font-display text-card-title font-semibold text-strong">Konum</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Enlem (latitude)" htmlFor="latitude">
-            <Input
-              id="latitude"
-              name="latitude"
-              type="number"
-              step="any"
-              required
-              defaultValue={place?.location.coordinates[1]}
-            />
+            <Input id="latitude" name="latitude" type="number" step="any" required defaultValue={place?.latitude} />
           </Field>
           <Field label="Boylam (longitude)" htmlFor="longitude">
-            <Input
-              id="longitude"
-              name="longitude"
-              type="number"
-              step="any"
-              required
-              defaultValue={place?.location.coordinates[0]}
-            />
+            <Input id="longitude" name="longitude" type="number" step="any" required defaultValue={place?.longitude} />
           </Field>
         </div>
       </section>
@@ -173,20 +166,20 @@ export function PlaceForm({ place, action }: Props) {
           <input
             type="checkbox"
             name="isFree"
-            defaultChecked={place?.entranceFee?.isFree ?? false}
+            defaultChecked={place?.admission?.isFree ?? false}
             className="h-4 w-4 rounded-sm border-line accent-brand"
           />
           Ücretsiz
         </label>
         <div className="grid gap-4 sm:grid-cols-3">
           <Field label="Yetişkin Ücreti" htmlFor="adultPrice">
-            <Input id="adultPrice" name="adultPrice" type="number" step="any" defaultValue={place?.entranceFee?.adultPrice} />
+            <Input id="adultPrice" name="adultPrice" type="number" step="any" defaultValue={place?.admission?.adultPrice} />
           </Field>
           <Field label="Çocuk Ücreti" htmlFor="childPrice">
-            <Input id="childPrice" name="childPrice" type="number" step="any" defaultValue={place?.entranceFee?.childPrice} />
+            <Input id="childPrice" name="childPrice" type="number" step="any" defaultValue={place?.admission?.childPrice} />
           </Field>
           <Field label="Para Birimi" htmlFor="currency">
-            <Select id="currency" name="currency" defaultValue={place?.entranceFee?.currency ?? 'TRY'}>
+            <Select id="currency" name="currency" defaultValue={place?.admission?.currency ?? 'TRY'}>
               <option value="TRY">TRY</option>
               <option value="EUR">EUR</option>
             </Select>
@@ -196,7 +189,7 @@ export function PlaceForm({ place, action }: Props) {
           <textarea
             id="admissionNotes"
             name="admissionNotes"
-            defaultValue={place?.entranceFee?.notes}
+            defaultValue={place?.admission?.notes}
             rows={2}
             className={textareaClass}
           />
@@ -207,16 +200,16 @@ export function PlaceForm({ place, action }: Props) {
         <h2 className="font-display text-card-title font-semibold text-strong">İletişim ve Ziyaret</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Telefon (opsiyonel)" htmlFor="phone">
-            <Input id="phone" name="phone" defaultValue={place?.contact?.phone} />
+            <Input id="phone" name="phone" defaultValue={place?.phone} />
           </Field>
           <Field label="Web Sitesi (opsiyonel, tam URL)" htmlFor="website">
-            <Input id="website" name="website" type="url" defaultValue={place?.contact?.website} />
+            <Input id="website" name="website" type="url" defaultValue={place?.website} />
           </Field>
           <Field label="Tahmini Ziyaret Süresi (dakika)" htmlFor="visitDuration">
-            <Input id="visitDuration" name="visitDuration" type="number" defaultValue={place?.visitDuration} />
+            <Input id="visitDuration" name="visitDuration" type="number" defaultValue={place?.estimatedVisitMinutes} />
           </Field>
           <Field label="Kaynak URL (opsiyonel)" htmlFor="sourceUrl">
-            <Input id="sourceUrl" name="sourceUrl" type="url" defaultValue={place?.sources?.[0]} />
+            <Input id="sourceUrl" name="sourceUrl" type="url" defaultValue={place?.sourceUrl} />
           </Field>
           <Field label="Son Doğrulama Tarihi (opsiyonel)" htmlFor="lastVerifiedAt">
             <Input id="lastVerifiedAt" name="lastVerifiedAt" type="date" defaultValue={place?.lastVerifiedAt?.slice(0, 10)} />
@@ -231,7 +224,7 @@ export function PlaceForm({ place, action }: Props) {
             </Select>
           </Field>
         </div>
-        <Field label="Yakındaki Yerler (slug, virgülle ayırın — opsiyonel)" htmlFor="nearbyPlaceSlugs">
+        <Field label="Yakındaki Yerler (slug, virgülle ayırın, opsiyonel)" htmlFor="nearbyPlaceSlugs">
           <Input
             id="nearbyPlaceSlugs"
             name="nearbyPlaceSlugs"

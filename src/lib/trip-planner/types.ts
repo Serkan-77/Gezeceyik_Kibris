@@ -36,6 +36,22 @@ export interface PlannerInput {
 
 // ── Itinerary ─────────────────────────────────────────────────
 
+/** Real inter-city bus leg used for the "next stop" hop, when one was found. */
+export interface TransitDetail {
+  operator: string;
+  fromStopName: string;
+  toStopName: string;
+  /** Walking time to/from the bus stop on each end, in minutes. */
+  walkToStopMin: number;
+  walkFromStopMin: number;
+  rideMinutes: number;
+  waitMinutes: number;
+  /** Undefined when the operator publishes no fixed timetable. */
+  departureTime?: string;
+  arrivalTime?: string;
+  fareTRY?: number;
+}
+
 export interface ItineraryStop {
   place: Place;
   /** Arrival time as HH:MM string, e.g. "09:30" */
@@ -48,6 +64,8 @@ export interface ItineraryStop {
   distanceToNextKm: number;
   /** Estimated admission cost for one adult */
   admissionCost: number;
+  /** Present only when transport is 'public' and a real bus route covers this hop. */
+  transitDetail?: TransitDetail;
 }
 
 export interface ItineraryDay {

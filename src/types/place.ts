@@ -1,5 +1,5 @@
 // types/place.ts
-// Core data model for the Cyprus Discovery platform.
+// Core data model for the Gezeceyik Kıbrıs platform.
 // Every attraction — museum, castle, beach, monastery, viewpoint — is a Place.
 // KKTC (Northern Cyprus) first, expandable island-wide.
 

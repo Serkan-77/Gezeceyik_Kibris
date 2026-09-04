@@ -10,13 +10,13 @@ import { PlaceListingHeader } from '@/components/places/PlaceListingHeader';
 import { Container } from '@/components/ui/Container';
 
 export const metadata: Metadata = {
-  title: 'Gezilerim — Kuzey Kıbrıs Discovery',
+  title: 'Gezilerim: Gezeceyik Kıbrıs',
   description: 'Kaydettiğiniz Kuzey Kıbrıs gezi planları.',
 };
 
 export default function GezilerimPage() {
   return (
-    <Container className="py-12 sm:py-16">
+    <Container className="py-10 sm:py-14">
       <PlaceListingHeader
         eyebrow="Gezilerim"
         title="Kaydettiğim Gezi Planları"

@@ -1,5 +1,5 @@
 // lib/i18n/tr.ts
-// Centralized Turkish UI strings for Cyprus Discovery.
+// Centralized Turkish UI strings for Gezeceyik Kıbrıs.
 // No i18n framework — structured so English can be added as a parallel layer later.
 // Usage: import { tr } from '@/lib/i18n/tr'
 
@@ -102,6 +102,7 @@ export const tr = {
 
   // ─── Filters ─────────────────────────────────────────────────
   filter: {
+    filters: 'Filtreler',
     search: 'Ara',
     searchPlaceholder: 'Yer adı veya şehir ara…',
     category: 'Kategori',
@@ -232,6 +233,12 @@ export const tr = {
     filterByCategory: 'Kategoriye göre filtrele',
     filterByRegion: 'Bölgeye göre filtrele',
     showAll: 'Tümünü Göster',
+    searchThisArea: 'Bu bölgede ara',
+    areaResultsActive: 'Bu bölgedeki sonuçlar',
+    viewMap: 'Harita',
+    viewList: 'Liste',
+    noLocation: 'Konum bilgisi yok',
+    noResultsInView: 'Bu görünümde yer bulunamadı.',
   },
 
   // ─── Geolocation ─────────────────────────────────────────────

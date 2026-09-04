@@ -1,20 +1,19 @@
 // app/gezi-planla/page.tsx — Gezi Planla (/gezi-planla)
-// Server Component wrapper — actual wizard is client-side. Container stays
-// full-width so the itinerary result (and its route map) has room; the
-// wizard card itself constrains to a narrow, focused column internally.
+// Server Component wrapper — the planner experience itself is client-side
+// (Phase 6: a living map + a growing sentence, not a boxed wizard).
 
 import { Metadata } from 'next';
-import { PlannerWizardClient } from '@/components/trip/PlannerWizardClient';
-import { SectionHeader } from '@/components/ui/SectionHeader';
+import { PlannerExperience } from '@/components/trip/PlannerExperience';
 import { Container } from '@/components/ui/Container';
 import { getAllCategories, getAllPlaces } from '@/lib/places';
+import { getActiveTransitRoutes } from '@/lib/transitRoutes';
 
 export const metadata: Metadata = {
-  title: 'Gezi Planla — Kuzey Kıbrıs Discovery',
+  title: 'Gezi Planla: Gezeceyik Kıbrıs',
   description:
     'Kuzey Kıbrıs için kişiselleştirilmiş çok günlük gezi programı oluşturun. Konaklama yerinizi, sürenizi ve ilgi alanlarınızı girin.',
   openGraph: {
-    title: 'Gezi Planla | Kuzey Kıbrıs Discovery',
+    title: 'Gezi Planla | Gezeceyik Kıbrıs',
     description: 'Kuzey Kıbrıs için akıllı, optimize edilmiş gezi programı.',
   },
 };
@@ -22,22 +21,16 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default async function GeziPlanlaPage() {
-  const [categories, places] = await Promise.all([getAllCategories(), getAllPlaces()]);
+  const [categories, places, transitRoutes] = await Promise.all([
+    getAllCategories(),
+    getAllPlaces(),
+    getActiveTransitRoutes(),
+  ]);
 
   return (
-    <Container className="py-12 sm:py-16">
-      <div className="mb-10 text-center">
-        <SectionHeader
-          as="h1"
-          size="page"
-          align="center"
-          eyebrow="Gezi Planlayıcı"
-          title="Kuzey Kıbrıs Gezi Planı"
-          subtitle="Bilgilerinizi girin, sizin için optimize edilmiş bir program oluşturalım."
-        />
-      </div>
-
-      <PlannerWizardClient categories={categories} places={places} />
+    <Container className="py-10 sm:py-14">
+      <h1 className="sr-only">Gezi Planla</h1>
+      <PlannerExperience categories={categories} places={places} transitRoutes={transitRoutes} />
     </Container>
   );
 }

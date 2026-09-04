@@ -4,6 +4,7 @@
 // Dynamically imports the actual map (which uses browser-only APIs) on client only.
 
 import dynamic from 'next/dynamic';
+import type L from 'leaflet';
 import { Place } from '@/types/place';
 
 const PlacesMap = dynamic(() => import('./PlacesMap'), {
@@ -23,8 +24,17 @@ const PlacesMap = dynamic(() => import('./PlacesMap'), {
 
 interface PlacesMapWrapperProps {
   places: Place[];
+  visibleSlugs: Set<string>;
+  selectedSlug?: string | null;
+  onSelect?: (slug: string | null) => void;
+  onUserMovedBounds?: (bounds: L.LatLngBounds) => void;
+  visible?: boolean;
+  favoriteSlugs?: Set<string>;
+  routeSlugs?: string[];
+  onToggleFavorite?: (slug: string) => void;
+  onToggleRoute?: (slug: string) => void;
 }
 
-export function PlacesMapWrapper({ places }: PlacesMapWrapperProps) {
-  return <PlacesMap places={places} />;
+export function PlacesMapWrapper(props: PlacesMapWrapperProps) {
+  return <PlacesMap {...props} />;
 }

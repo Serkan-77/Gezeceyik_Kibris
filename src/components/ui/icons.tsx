@@ -208,3 +208,68 @@ export function FlagEndIcon(props: IconProps) {
     </svg>
   );
 }
+
+export function FilterIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M4 6h16M7 12h10M10 18h4" />
+    </svg>
+  );
+}
+
+export function MapIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 4.5L4 6.5v13l5-2m0-13l6 2m-6-2v13m6-11l5-2v13l-5 2m0-13v13m0-13l-6-2" />
+    </svg>
+  );
+}
+
+export function ColumnsIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 6h18M5 6v12m4-12v12m4-12v12m4-12v12M3 21h18M2 6l10-3 10 3" />
+    </svg>
+  );
+}
+
+export function WavesIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2 9c1.5-1.5 3.5-1.5 5 0s3.5 1.5 5 0 3.5-1.5 5 0 3.5 1.5 5 0M2 15c1.5-1.5 3.5-1.5 5 0s3.5 1.5 5 0 3.5-1.5 5 0 3.5 1.5 5 0" />
+    </svg>
+  );
+}
+
+export function LeafIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 19c9 0 14-5 14-14-9 0-14 5-14 14z" />
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 19c0-6 3-10 8-12" />
+    </svg>
+  );
+}
+
+export function CastleIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 21V9l2-2V5h2v2l2-2v2l2-2v2l2-2v2l2-2v2l2 2v12M4 21h16M9 21v-6h6v6" />
+    </svg>
+  );
+}
+
+export function ArchIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 20V11a8 8 0 0116 0v9M4 20h16M7 20v-8m10 8v-8" />
+    </svg>
+  );
+}
+
+export function ListIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
+    </svg>
+  );
+}

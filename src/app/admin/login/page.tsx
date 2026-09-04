@@ -7,7 +7,7 @@ import { Surface } from '@/components/ui/Surface';
 import { Container } from '@/components/ui/Container';
 
 export const metadata: Metadata = {
-  title: 'Admin Girişi — Kuzey Kıbrıs Discovery',
+  title: 'Admin Girişi: Gezeceyik Kıbrıs',
   robots: { index: false, follow: false },
 };
 

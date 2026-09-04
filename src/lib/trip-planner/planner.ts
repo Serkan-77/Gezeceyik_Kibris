@@ -4,11 +4,12 @@
 //
 // Takes the candidate place list as a parameter rather than reading it
 // itself: this runs inside PlannerWizardClient, a Client Component, and
-// lib/places.ts is now a server-only MongoDB-backed module that a client
+// lib/places.ts is now a server-only Supabase-backed module that a client
 // bundle can't import. The server page (app/gezi-planla/page.tsx) fetches
 // places once and passes them down.
 
 import { Place, Region } from '@/types/place';
+import { BusRoute } from '@/types/transit';
 import { PlannerInput, TripItinerary, ItineraryDay } from './types';
 import { scorePlaceForInput } from './scoring';
 import { scheduleDay } from './scheduleDay';
@@ -65,7 +66,11 @@ function nearestNeighbourSort(
  * Generate a deterministic trip itinerary from PlannerInput and the pool of
  * candidate places to schedule from.
  */
-export function generateItinerary(input: PlannerInput, allPlaces: Place[]): TripItinerary {
+export function generateItinerary(
+  input: PlannerInput,
+  allPlaces: Place[],
+  transitRoutes: BusRoute[] = []
+): TripItinerary {
   // 1. Score and filter
   const scored = allPlaces
     .map((place) => ({ place, score: scorePlaceForInput(place, input) }))
@@ -114,7 +119,7 @@ export function generateItinerary(input: PlannerInput, allPlaces: Place[]): Trip
       (a, b) => b[1] - a[1]
     )[0][0];
 
-    const itDay = scheduleDay(dayPlaces, day + 1, input.transport, dominantRegion);
+    const itDay = scheduleDay(dayPlaces, day + 1, input.transport, dominantRegion, transitRoutes);
     days.push(itDay);
 
     totalCost += itDay.totalCost;

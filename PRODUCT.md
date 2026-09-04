@@ -12,11 +12,11 @@ Primary users are pre-trip planners: tourists researching and building an itiner
 
 ## Product Purpose
 
-Cyprus Discovery is a general Northern Cyprus travel discovery platform, not a single-category guide. It lets users explore and filter attractions across all categories, view practical visitor information (hours, admission, transport), browse an interactive map, and generate a personalized multi-day trip itinerary. Success means a visitor can go from "what's in Northern Cyprus?" to a concrete, workable day-by-day plan without leaving the site.
+Gezeceyik Kıbrıs is a general Northern Cyprus travel discovery platform, not a single-category guide. It lets users explore and filter attractions across all categories, view practical visitor information (hours, admission, transport), browse an interactive map, and generate a personalized multi-day trip itinerary. Success means a visitor can go from "what's in Northern Cyprus?" to a concrete, workable day-by-day plan without leaving the site.
 
 ## Positioning
 
-The differentiator is curation and editorial quality, not raw coverage. Where Google Maps or TripAdvisor return generic, unevenly-sourced listings for the region, Cyprus Discovery offers hand-curated, well-written, categorized content built specifically for Northern Cyprus, aiming for a premium/trustworthy feel rather than a directory feel. The rule-based multi-day trip planner (interest scoring, nearest-neighbour routing, timed daily schedules) is a supporting mechanism, not the primary pitch.
+The differentiator is curation and editorial quality, not raw coverage. Where Google Maps or TripAdvisor return generic, unevenly-sourced listings for the region, Gezeceyik Kıbrıs offers hand-curated, well-written, categorized content built specifically for Northern Cyprus, aiming for a premium/trustworthy feel rather than a directory feel. The rule-based multi-day trip planner (interest scoring, nearest-neighbour routing, timed daily schedules) is a supporting mechanism, not the primary pitch.
 
 ## Operating Context
 
@@ -37,7 +37,7 @@ The differentiator is curation and editorial quality, not raw coverage. Where Go
 
 ## Brand Commitments
 
-Site name is "Cyprus Discovery." No further identity constraints have been confirmed beyond what's already implemented (wordmark/logo SVG in Navbar and Footer, Playfair Display + Inter typefaces, orange/charcoal/warm-white palette) — these are current implementation, not yet confirmed as binding brand law.
+Site name is "Gezeceyik Kıbrıs." No further identity constraints have been confirmed beyond what's already implemented (wordmark/logo SVG in Navbar and Footer, Playfair Display + Inter typefaces, orange/charcoal/warm-white palette) — these are current implementation, not yet confirmed as binding brand law.
 
 ## Evidence on Hand
 

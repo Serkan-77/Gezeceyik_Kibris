@@ -3,11 +3,22 @@
 // Times start at 09:00 and are computed from visit durations + travel times.
 
 import { Place, Region } from '@/types/place';
-import { ItineraryDay, ItineraryStop, TransportMode } from './types';
+import { BusRoute } from '@/types/transit';
+import { ItineraryDay, ItineraryStop, TransitDetail, TransportMode } from './types';
 import { drivingMinutes, walkingMinutes, publicTransitMinutes, haversineKm, LatLng } from './distance';
+import { findBestTransitLeg } from './transitSchedule';
 
 const START_HOUR = 9; // 09:00
 const LUNCH_BREAK_MIN = 60; // 1-hour lunch at midday
+
+/**
+ * Estimated walk time to/from an inter-city bus stop, in minutes. Real
+ * terminal coordinates aren't available for most stops in
+ * src/data/transitRoutes.ts, so this is a flat approximation rather than a
+ * haversine calculation — same spirit as the other rough transit estimates
+ * in distance.ts.
+ */
+const WALK_TO_TERMINAL_MIN = 10;
 
 /**
  * Format total minutes from midnight as HH:MM string.
@@ -34,13 +45,47 @@ function getAdmissionCost(place: Place): number {
 }
 
 /**
+ * Try to build a real bus-based transit hop between two places in
+ * different regions. Returns null when no route data covers that region
+ * pair (or none departs before the day effectively ends), in which case
+ * the caller should fall back to the generic estimate.
+ */
+function buildIntercityTransit(
+  routes: BusRoute[],
+  place: Place,
+  next: Place,
+  readyToLeaveMin: number
+): { travelMin: number; detail: TransitDetail } | null {
+  const stopArrivalMin = readyToLeaveMin + WALK_TO_TERMINAL_MIN;
+  const leg = findBestTransitLeg(routes, place.region, next.region, stopArrivalMin);
+  if (!leg) return null;
+
+  return {
+    travelMin: WALK_TO_TERMINAL_MIN + leg.waitMinutes + leg.rideMinutes + WALK_TO_TERMINAL_MIN,
+    detail: {
+      operator: leg.route.operator,
+      fromStopName: leg.route.fromStop.name,
+      toStopName: leg.route.toStop.name,
+      walkToStopMin: WALK_TO_TERMINAL_MIN,
+      walkFromStopMin: WALK_TO_TERMINAL_MIN,
+      rideMinutes: leg.rideMinutes,
+      waitMinutes: leg.waitMinutes,
+      departureTime: leg.departureTime,
+      arrivalTime: leg.arrivalTime,
+      fareTRY: leg.route.fareTRY,
+    },
+  };
+}
+
+/**
  * Build a scheduled ItineraryDay from an ordered list of places.
  */
 export function scheduleDay(
   places: Place[],
   dayNumber: number,
   transport: TransportMode,
-  region: Region
+  region: Region,
+  transitRoutes: BusRoute[] = []
 ): ItineraryDay {
   const stops: ItineraryStop[] = [];
   let cursor = START_HOUR * 60; // current time in minutes from midnight
@@ -69,12 +114,24 @@ export function scheduleDay(
 
     let travelToNextMin = 0;
     let distanceToNextKm = 0;
+    let transitDetail: TransitDetail | undefined;
 
     if (next?.latitude && next?.longitude && place.latitude && place.longitude) {
       const from = { lat: place.latitude, lng: place.longitude };
       const to = { lat: next.latitude, lng: next.longitude };
-      travelToNextMin = getTravelMinutes(from, to, transport);
       distanceToNextKm = parseFloat(haversineKm(from, to).toFixed(1));
+
+      const intercity =
+        transport === 'public' && place.region !== next.region
+          ? buildIntercityTransit(transitRoutes, place, next, cursor)
+          : null;
+
+      if (intercity) {
+        travelToNextMin = intercity.travelMin;
+        transitDetail = intercity.detail;
+      } else {
+        travelToNextMin = getTravelMinutes(from, to, transport);
+      }
     }
 
     totalTravelMin += travelToNextMin;
@@ -91,6 +148,7 @@ export function scheduleDay(
       travelToNextMin,
       distanceToNextKm,
       admissionCost,
+      transitDetail,
     });
   }
 

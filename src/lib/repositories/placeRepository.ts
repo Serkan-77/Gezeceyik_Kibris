@@ -1,181 +1,224 @@
 // lib/repositories/placeRepository.ts
-// Data-access layer over the `places` collection. This is the only module
-// in the app that talks to MongoDB in terms of place data — the UI never
-// queries MongoDB directly, and src/lib/places.ts (the app's data seam) is
-// the only in-app caller of this repository. It's also imported directly by
-// the standalone scripts (scripts/*.ts) for seeding/verification/index
-// management — see the note in lib/db/mongodb.ts for why the
+// Data-access layer over the `places` table (Supabase/Postgres). This is
+// the only module in the app that talks to Supabase in terms of place
+// data — the UI never queries it directly, and src/lib/places.ts (the
+// app's data seam) is the only in-app caller of this repository. It's
+// also imported directly by the standalone scripts (scripts/*.ts) for
+// seeding/verification — see the note in lib/db/supabase.ts for why the
 // Client-Component safety guard lives at lib/places.ts instead of here.
 //
 // Public read methods (findPublished, findFeatured, findByCategory,
 // findByRegion, findBySlugPublished, findBySlugs) only ever return
-// published, non-archived documents — exactly what should be visible to
+// published, non-archived rows — exactly what should be visible to
 // visitors. Unpublished/archived records are reachable only through the
 // internal methods (findAll, findBySlugAny), which nothing in the public
 // app currently calls.
 
-import { Collection, Filter } from 'mongodb';
-import { getDb } from '@/lib/db/mongodb';
+import { getSupabaseClient } from '@/lib/db/supabase';
+import { haversineKm } from '@/lib/trip-planner/distance';
 import { Category, Region } from '@/types/place';
-import { PlaceDocument, PlaceInput, PlaceUpdate, placeInputSchema, placeUpdateSchema } from '@/lib/db/placeDocument';
+import { PlaceRow, PlaceInput, PlaceUpdate, placeInputSchema, placeUpdateSchema } from '@/lib/db/placeSchema';
 
-const COLLECTION_NAME = 'places';
+const TABLE = 'places';
 
-async function getCollection(): Promise<Collection<PlaceDocument>> {
-  const db = await getDb();
-  return db.collection<PlaceDocument>(COLLECTION_NAME);
+function unwrap<T>(data: T | null, error: { message: string } | null, context: string): T {
+  if (error) throw new Error(`Supabase error (${context}): ${error.message}`);
+  return data as T;
 }
-
-/** Filter shared by every public-facing read: visible, non-archived places only. */
-const PUBLIC_FILTER: Filter<PlaceDocument> = { published: true, archived: { $ne: true } };
 
 // ─── Public reads ───────────────────────────────────────────────
 
-export async function findPublished(): Promise<PlaceDocument[]> {
-  const collection = await getCollection();
-  return collection.find(PUBLIC_FILTER).sort({ name: 1 }).toArray();
+export async function findPublished(): Promise<PlaceRow[]> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from(TABLE)
+    .select('*')
+    .eq('published', true)
+    .eq('archived', false)
+    .order('name');
+  return unwrap(data, error, 'findPublished') ?? [];
 }
 
-export async function findBySlugPublished(slug: string): Promise<PlaceDocument | null> {
-  const collection = await getCollection();
-  return collection.findOne({ ...PUBLIC_FILTER, slug });
+export async function findBySlugPublished(slug: string): Promise<PlaceRow | null> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from(TABLE)
+    .select('*')
+    .eq('published', true)
+    .eq('archived', false)
+    .eq('slug', slug)
+    .maybeSingle();
+  return unwrap(data, error, 'findBySlugPublished');
 }
 
-export async function findByCategory(category: Category): Promise<PlaceDocument[]> {
-  const collection = await getCollection();
-  return collection.find({ ...PUBLIC_FILTER, category }).sort({ name: 1 }).toArray();
+export async function findByCategory(category: Category): Promise<PlaceRow[]> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from(TABLE)
+    .select('*')
+    .eq('published', true)
+    .eq('archived', false)
+    .eq('category', category)
+    .order('name');
+  return unwrap(data, error, 'findByCategory') ?? [];
 }
 
-export async function findByRegion(region: Region): Promise<PlaceDocument[]> {
-  const collection = await getCollection();
-  return collection.find({ ...PUBLIC_FILTER, region }).sort({ name: 1 }).toArray();
+export async function findByRegion(region: Region): Promise<PlaceRow[]> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from(TABLE)
+    .select('*')
+    .eq('published', true)
+    .eq('archived', false)
+    .eq('region', region)
+    .order('name');
+  return unwrap(data, error, 'findByRegion') ?? [];
 }
 
-export async function findFeatured(): Promise<PlaceDocument[]> {
-  const collection = await getCollection();
-  return collection.find({ ...PUBLIC_FILTER, featured: true }).sort({ name: 1 }).toArray();
+export async function findFeatured(): Promise<PlaceRow[]> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from(TABLE)
+    .select('*')
+    .eq('published', true)
+    .eq('archived', false)
+    .eq('featured', true)
+    .order('name');
+  return unwrap(data, error, 'findFeatured') ?? [];
 }
 
 /** Look up several places by slug in one query — used for the "nearby places" list. */
-export async function findBySlugs(slugs: string[]): Promise<PlaceDocument[]> {
+export async function findBySlugs(slugs: string[]): Promise<PlaceRow[]> {
   if (slugs.length === 0) return [];
-  const collection = await getCollection();
-  return collection.find({ ...PUBLIC_FILTER, slug: { $in: slugs } }).toArray();
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from(TABLE)
+    .select('*')
+    .eq('published', true)
+    .eq('archived', false)
+    .in('slug', slugs);
+  return unwrap(data, error, 'findBySlugs') ?? [];
 }
 
 export async function findAllSlugs(): Promise<string[]> {
-  const collection = await getCollection();
-  const docs = await collection.find(PUBLIC_FILTER, { projection: { slug: 1 } }).toArray();
-  return docs.map((d) => d.slug);
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase.from(TABLE).select('slug').eq('published', true).eq('archived', false);
+  const rows = unwrap(data, error, 'findAllSlugs') ?? [];
+  return rows.map((r) => r.slug as string);
 }
 
 export async function findAllCategories(): Promise<Category[]> {
-  const collection = await getCollection();
-  const values = await collection.distinct('category', PUBLIC_FILTER);
-  return (values as Category[]).sort();
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase.from(TABLE).select('category').eq('published', true).eq('archived', false);
+  const rows = unwrap(data, error, 'findAllCategories') ?? [];
+  return [...new Set(rows.map((r) => r.category as Category))].sort();
 }
 
 export async function findAllRegions(): Promise<Region[]> {
-  const collection = await getCollection();
-  const values = await collection.distinct('region', PUBLIC_FILTER);
-  return (values as Region[]).sort();
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase.from(TABLE).select('region').eq('published', true).eq('archived', false);
+  const rows = unwrap(data, error, 'findAllRegions') ?? [];
+  return [...new Set(rows.map((r) => r.region as Region))].sort();
 }
 
 export async function countByRegion(): Promise<Record<string, number>> {
-  const collection = await getCollection();
-  const rows = await collection
-    .aggregate<{ _id: string; count: number }>([
-      { $match: PUBLIC_FILTER },
-      { $group: { _id: '$region', count: { $sum: 1 } } },
-    ])
-    .toArray();
-  return Object.fromEntries(rows.map((r) => [r._id, r.count]));
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase.from(TABLE).select('region').eq('published', true).eq('archived', false);
+  const rows = unwrap(data, error, 'countByRegion') ?? [];
+  const counts: Record<string, number> = {};
+  for (const r of rows) counts[r.region as string] = (counts[r.region as string] ?? 0) + 1;
+  return counts;
+}
+
+export async function countByCategory(): Promise<Record<string, number>> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase.from(TABLE).select('category').eq('published', true).eq('archived', false);
+  const rows = unwrap(data, error, 'countByCategory') ?? [];
+  const counts: Record<string, number> = {};
+  for (const r of rows) counts[r.category as string] = (counts[r.category as string] ?? 0) + 1;
+  return counts;
 }
 
 /**
- * Geospatial "near a point" query, foundation for future nearby/map-radius
- * features. Uses the `location` field's 2dsphere index. Not currently
- * called by any UI — the existing nearby-places feature is slug-list based
- * (findBySlugs) and is left as-is per the current app's behavior.
+ * "Near a point" lookup, foundation for future nearby/map-radius features.
+ * Not currently called by any UI — the existing nearby-places feature is
+ * slug-list based (findBySlugs) and is left as-is per the current app's
+ * behavior. Filters/sorts in application code using the same haversine
+ * helper the trip planner already uses, rather than requiring the PostGIS
+ * extension for a feature nothing calls yet.
  */
 export async function findNear(
   longitude: number,
   latitude: number,
   maxDistanceMeters: number,
   limit = 10
-): Promise<PlaceDocument[]> {
-  const collection = await getCollection();
-  return collection
-    .find({
-      ...PUBLIC_FILTER,
-      location: {
-        $near: {
-          $geometry: { type: 'Point', coordinates: [longitude, latitude] },
-          $maxDistance: maxDistanceMeters,
-        },
-      },
-    })
-    .limit(limit)
-    .toArray();
+): Promise<PlaceRow[]> {
+  const rows = await findPublished();
+  const maxKm = maxDistanceMeters / 1000;
+  return rows
+    .map((row) => ({ row, km: haversineKm({ lat: latitude, lng: longitude }, { lat: row.latitude, lng: row.longitude }) }))
+    .filter((x) => x.km <= maxKm)
+    .sort((a, b) => a.km - b.km)
+    .slice(0, limit)
+    .map((x) => x.row);
 }
 
 // ─── Internal / admin-facing reads (not filtered to published) ─────
 
-export async function findAll(): Promise<PlaceDocument[]> {
-  const collection = await getCollection();
-  return collection.find({}).sort({ name: 1 }).toArray();
+export async function findAll(): Promise<PlaceRow[]> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase.from(TABLE).select('*').order('name');
+  return unwrap(data, error, 'findAll') ?? [];
 }
 
-export async function findBySlugAny(slug: string): Promise<PlaceDocument | null> {
-  const collection = await getCollection();
-  return collection.findOne({ slug });
+export async function findBySlugAny(slug: string): Promise<PlaceRow | null> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase.from(TABLE).select('*').eq('slug', slug).maybeSingle();
+  return unwrap(data, error, 'findBySlugAny');
 }
 
 // ─── Mutations ──────────────────────────────────────────────────
-// Foundation for a future admin interface. Nothing in the current app calls
-// these yet — no route handler or server action exposes them publicly.
 
-export async function createPlace(input: PlaceInput): Promise<PlaceDocument> {
+export async function createPlace(input: PlaceInput): Promise<PlaceRow> {
   const parsed = placeInputSchema.parse(input);
-  const collection = await getCollection();
-  const now = new Date();
+  const supabase = getSupabaseClient();
 
-  const existing = await collection.findOne({ slug: parsed.slug });
+  const { data: existing } = await supabase.from(TABLE).select('id').eq('slug', parsed.slug).maybeSingle();
   if (existing) {
     throw new Error(`A place with slug "${parsed.slug}" already exists.`);
   }
 
-  const doc = { ...parsed, createdAt: now, updatedAt: now } as Omit<PlaceDocument, '_id'>;
-  const result = await collection.insertOne(doc as PlaceDocument);
-  return { ...doc, _id: result.insertedId };
+  const { data, error } = await supabase.from(TABLE).insert(parsed).select('*').single();
+  return unwrap(data, error, 'createPlace');
 }
 
-export async function updatePlace(slug: string, patch: PlaceUpdate): Promise<PlaceDocument | null> {
+export async function updatePlace(slug: string, patch: PlaceUpdate): Promise<PlaceRow | null> {
   const parsed = placeUpdateSchema.parse(patch);
-  const collection = await getCollection();
-  const result = await collection.findOneAndUpdate(
-    { slug },
-    { $set: { ...parsed, updatedAt: new Date() } },
-    { returnDocument: 'after' }
-  );
-  return result;
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from(TABLE)
+    .update({ ...parsed, updatedAt: new Date().toISOString() })
+    .eq('slug', slug)
+    .select('*')
+    .maybeSingle();
+  return unwrap(data, error, 'updatePlace');
 }
 
-export async function publishPlace(slug: string): Promise<PlaceDocument | null> {
+export async function publishPlace(slug: string): Promise<PlaceRow | null> {
   return updatePlace(slug, { published: true });
 }
 
-export async function unpublishPlace(slug: string): Promise<PlaceDocument | null> {
+export async function unpublishPlace(slug: string): Promise<PlaceRow | null> {
   return updatePlace(slug, { published: false });
 }
 
 /**
  * Archives a place. This is a soft delete — it flips `archived`/`published`
- * flags rather than removing the document, so archived places can be
- * restored and never disappear from the database outright. There is
- * deliberately no hard-delete operation in this repository yet; that would
- * need explicit, privileged handling later, not a foundation-only pass.
+ * flags rather than removing the row, so archived places can be restored
+ * and never disappear from the database outright. There is deliberately no
+ * hard-delete operation in this repository yet; that would need explicit,
+ * privileged handling later, not a foundation-only pass.
  */
-export async function archivePlace(slug: string): Promise<PlaceDocument | null> {
+export async function archivePlace(slug: string): Promise<PlaceRow | null> {
   return updatePlace(slug, { archived: true, published: false });
 }

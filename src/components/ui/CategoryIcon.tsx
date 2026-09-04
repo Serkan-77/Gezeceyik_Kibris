@@ -1,9 +1,12 @@
-// lib/categoryIcons.ts
-// Category glyph path data for the map's marker pins. Leaflet's divIcon
-// needs a raw HTML string (React components can't render there), so these
-// are plain SVG path strings — drawn in the same stroke-icon language as
-// CategoryGrid's icons so the map doesn't introduce a second visual system.
+// components/ui/CategoryIcon.tsx
+// React counterpart to lib/categoryIcons.ts's raw-SVG-string glyphs (which
+// exist only because Leaflet's divIcon needs an HTML string, not JSX).
+// Same path data, so a category reads as the same glyph everywhere it
+// appears — map pins, badges, category tiles — which matters more than
+// ever now that color no longer differentiates categories (monochrome
+// palette): the icon is the only identity signal left.
 
+import { SVGProps } from 'react';
 import { Category } from '@/types/place';
 
 const CATEGORY_ICON_PATHS: Record<Category, string[]> = {
@@ -31,10 +34,12 @@ const CATEGORY_ICON_PATHS: Record<Category, string[]> = {
   'Family Activity': ['M12 2l2.6 6.6L21 9.3l-5 4.6 1.4 7.1L12 17.6 6.6 21l1.4-7.1-5-4.6 6.4-.7L12 2z'],
 };
 
-/** Inline-SVG string for Leaflet's divIcon (which needs raw HTML, not React). */
-export function categoryGlyphSvg(category: Category, color = 'white'): string {
-  const paths = CATEGORY_ICON_PATHS[category]
-    .map((d) => `<path d="${d}" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`)
-    .join('');
-  return `<svg width="13" height="13" viewBox="0 0 24 24" fill="none">${paths}</svg>`;
+export function CategoryIcon({ category, ...props }: { category: Category } & SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" {...props}>
+      {CATEGORY_ICON_PATHS[category].map((d) => (
+        <path key={d} d={d} strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" />
+      ))}
+    </svg>
+  );
 }

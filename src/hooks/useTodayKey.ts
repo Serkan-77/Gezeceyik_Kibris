@@ -14,7 +14,7 @@ import { OpeningHours } from '@/types/place';
 
 export type DayKey = keyof OpeningHours;
 
-const DAY_KEYS: DayKey[] = [
+export const DAY_KEYS: DayKey[] = [
   'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday',
 ];
 

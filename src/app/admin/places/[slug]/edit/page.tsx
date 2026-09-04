@@ -3,7 +3,7 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import * as placeRepository from '@/lib/repositories/placeRepository';
-import { PlaceInput } from '@/lib/db/placeDocument';
+import { PlaceInput } from '@/lib/db/placeSchema';
 import { PlaceForm } from '@/components/admin/PlaceForm';
 import { updatePlaceAction } from '@/app/admin/actions';
 import { Container } from '@/components/ui/Container';
@@ -13,7 +13,7 @@ interface Props {
 }
 
 export const metadata: Metadata = {
-  title: 'Yeri Düzenle — Admin',
+  title: 'Yeri Düzenle: Admin',
   robots: { index: false, follow: false },
 };
 
@@ -24,10 +24,11 @@ export default async function EditPlacePage({ params }: Props) {
 
   const boundAction = updatePlaceAction.bind(null, slug);
 
-  // `place` carries Mongo-only, non-plain values (an ObjectId `_id`, Date
-  // `createdAt`/`updatedAt`) that can't cross the Server -> Client Component
-  // boundary. Round-tripping through JSON strips them down to plain
-  // strings/numbers/objects — the same shape PlaceForm expects (PlaceInput).
+  // `place` is a plain Supabase row already — this JSON round-trip is a
+  // defensive habit (guarantees a plain serializable value crosses the
+  // Server -> Client Component boundary) rather than a strict necessity.
+  // The extra fields (id, createdAt, updatedAt) beyond PlaceInput are
+  // simply ignored by PlaceForm.
   const formInput: PlaceInput = JSON.parse(JSON.stringify(place));
 
   return (

@@ -1,6 +1,6 @@
 'use client';
 // components/layout/Navbar.tsx
-// Turkish-first navigation for Kuzey Kıbrıs Discovery.
+// Turkish-first navigation for Gezeceyik Kıbrıs.
 // Desktop: logo + category links + harita/favoriler + Gezi Planla CTA
 // Mobile: hamburger → full-screen slide-in
 
@@ -35,65 +35,73 @@ export function Navbar() {
     <header className="sticky top-0 z-50 w-full border-b border-line/80 bg-paper/95 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
 
-        {/* Logo */}
+        {/* Logo — a coastline gesture, not an icon boxed in a rounded square */}
         <Link
           href="/"
-          className="group flex items-center gap-3"
-          aria-label="Kuzey Kıbrıs Discovery — Ana Sayfa"
+          className="group flex items-center gap-2.5"
+          aria-label="Gezeceyik Kıbrıs, Ana Sayfa"
         >
-          <span className="flex h-8 w-8 items-center justify-center rounded-sm bg-ink transition-colors group-hover:bg-brand">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M8 2C4.686 2 2 4.686 2 8s2.686 6 6 6 6-2.686 6-6-2.686-6-6-6z" fill="#e8651a" className="transition-colors group-hover:fill-white" />
-              <path d="M5.5 8c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5S5.5 9.38 5.5 8z" fill="#fafaf8" />
-            </svg>
-          </span>
-          <span className="hidden font-display text-[15px] font-semibold tracking-tight text-strong sm:block">
-            Kuzey Kıbrıs Discovery
+          <svg width="26" height="16" viewBox="0 0 26 16" fill="none" aria-hidden="true" className="shrink-0 text-brand">
+            <path
+              d="M1.5 12.5C4 12.5 4.5 5 8 5c3 0 3 6.5 6 6.5 2.5 0 3-8 10-8"
+              stroke="currentColor"
+              strokeWidth="1.75"
+              strokeLinecap="round"
+              fill="none"
+            />
+            <circle cx="24.5" cy="3.5" r="1.75" fill="currentColor" />
+          </svg>
+          <span className="flex items-baseline gap-1.5">
+            <span className="font-display text-[15px] font-semibold tracking-tight text-strong">
+              Gezeceyik
+            </span>
+            <span className="hidden text-[11px] text-subtle sm:inline">Kıbrıs</span>
           </span>
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden items-center lg:flex" aria-label="Ana navigasyon">
-          <ul className="flex items-center">
+        <nav className="hidden items-center gap-0.5 lg:flex" aria-label="Ana navigasyon">
+          <ul className="flex items-center gap-0.5">
             {primaryLinks.map(({ href, label }) => (
               <li key={href}>
                 <Link
                   href={href}
-                  className={`relative px-3 py-2 text-sm font-medium transition-colors ${
-                    isActive(href) ? 'text-brand' : 'text-muted hover:text-strong'
+                  className={`rounded-full px-3.5 py-2 text-sm font-medium transition-colors ${
+                    isActive(href) ? 'bg-brand/10 text-brand-strong' : 'text-muted hover:bg-surface-muted hover:text-strong'
                   }`}
                 >
                   {label}
-                  {isActive(href) && (
-                    <span className="absolute bottom-0 left-3 right-3 h-px bg-brand" aria-hidden="true" />
-                  )}
                 </Link>
               </li>
             ))}
           </ul>
         </nav>
 
-        {/* Desktop right-side actions */}
-        <div className="hidden items-center gap-2 lg:flex">
+        {/* Desktop right-side actions — icon always visible, label appears once
+            there's room (xl:) so the bar never wraps at the lg breakpoint;
+            aria-label keeps the accessible name correct at every width. */}
+        <div className="hidden items-center gap-1 lg:flex">
           <Link
             href="/gezilerim"
             aria-label="Gezilerim"
-            className={`flex h-9 w-9 items-center justify-center rounded-sm transition-colors hover:bg-surface-muted ${
+            className={`flex items-center gap-1.5 rounded-sm px-2.5 py-2 text-sm font-medium transition-colors hover:bg-surface-muted ${
               isActive('/gezilerim') ? 'text-brand' : 'text-muted'
             }`}
           >
-            <CompassIcon className="h-5 w-5" />
+            <CompassIcon className="h-[18px] w-[18px]" />
+            <span className="hidden xl:inline">Gezilerim</span>
           </Link>
           <Link
             href="/favoriler"
             aria-label="Favorilerim"
-            className={`flex h-9 w-9 items-center justify-center rounded-sm transition-colors hover:bg-surface-muted ${
+            className={`flex items-center gap-1.5 rounded-sm px-2.5 py-2 text-sm font-medium transition-colors hover:bg-surface-muted ${
               isActive('/favoriler') ? 'text-brand' : 'text-muted'
             }`}
           >
-            <HeartIcon filled={isActive('/favoriler')} className="h-5 w-5" />
+            <HeartIcon filled={isActive('/favoriler')} className="h-[18px] w-[18px]" />
+            <span className="hidden xl:inline">Favoriler</span>
           </Link>
-          <Button href="/gezi-planla" size="sm">Gezi Planla</Button>
+          <Button href="/gezi-planla" size="sm" className="ml-1">Gezi Planla</Button>
         </div>
 
         {/* Mobile menu button */}

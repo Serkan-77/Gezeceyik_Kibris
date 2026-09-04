@@ -17,8 +17,12 @@ const RouteMap = dynamic(() => import('./RouteMap'), {
 interface RouteMapWrapperProps {
   day: ItineraryDay;
   accommodation: AccommodationLocation;
+  focusedSlug?: string | null;
+  onSelectStop?: (slug: string) => void;
+  panToken?: number;
+  panSlug?: string | null;
 }
 
-export function RouteMapWrapper({ day, accommodation }: RouteMapWrapperProps) {
-  return <RouteMap day={day} accommodation={accommodation} />;
+export function RouteMapWrapper(props: RouteMapWrapperProps) {
+  return <RouteMap {...props} />;
 }

@@ -8,7 +8,7 @@ import { Container } from '@/components/ui/Container';
 import { getAllPlaces } from '@/lib/places';
 
 export const metadata: Metadata = {
-  title: 'Favorilerim — Kuzey Kıbrıs Discovery',
+  title: 'Favorilerim: Gezeceyik Kıbrıs',
   description: 'Kaydettiğiniz Kuzey Kıbrıs yerleri.',
 };
 
@@ -18,7 +18,7 @@ export default async function FavorilerPage() {
   const places = await getAllPlaces();
 
   return (
-    <Container className="py-12 sm:py-16">
+    <Container className="py-10 sm:py-14">
       <PlaceListingHeader
         eyebrow="Favorilerim"
         title="Kaydettiğim Yerler"

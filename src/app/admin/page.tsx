@@ -2,7 +2,7 @@
 // Lists every place (including unpublished/archived — this is the internal
 // admin view, not the public one) with quick publish/archive controls and
 // a link into the edit form. Reads directly from placeRepository rather
-// than lib/places.ts: the admin view needs raw, unfiltered PlaceDocuments,
+// than lib/places.ts: the admin view needs raw, unfiltered place rows,
 // not the public, mapped-and-filtered domain Place shape.
 
 import Link from 'next/link';
@@ -13,7 +13,7 @@ import { Container } from '@/components/ui/Container';
 import { Button } from '@/components/ui/Button';
 
 export const metadata: Metadata = {
-  title: 'Admin Paneli — Kuzey Kıbrıs Discovery',
+  title: 'Admin Paneli: Gezeceyik Kıbrıs',
   robots: { index: false, follow: false },
 };
 
@@ -30,6 +30,9 @@ export default async function AdminDashboardPage() {
         <div className="flex items-center gap-2">
           <Button href="/admin/places/new" size="sm">
             Yeni Yer Ekle
+          </Button>
+          <Button href="/admin/transit" variant="ghost" size="sm">
+            Otobüs Hatları
           </Button>
           <form action={logoutAction}>
             <Button type="submit" variant="ghost" size="sm">
@@ -53,7 +56,7 @@ export default async function AdminDashboardPage() {
           </thead>
           <tbody className="divide-y divide-line">
             {places.map((place) => (
-              <tr key={place._id.toString()} className={place.archived ? 'opacity-50' : ''}>
+              <tr key={place.id} className={place.archived ? 'opacity-50' : ''}>
                 <td className="px-4 py-3">
                   <p className="font-medium text-strong">{place.name}</p>
                   <p className="text-meta text-subtle">{place.slug}</p>

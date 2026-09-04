@@ -1,12 +1,17 @@
-// lib/db/placeDocument.ts
-// The MongoDB persistence shape for a place, plus Zod validation for data
-// entering the database (createPlace/updatePlace and the seed script share
-// this schema). This is deliberately a different shape from the app's
-// domain `Place` type (src/types/place.ts) — see placeMapper.ts for the
-// conversion between the two.
+// lib/db/placeSchema.ts
+// The Supabase/Postgres persistence shape for a place, plus Zod validation
+// for data entering the database (createPlace/updatePlace and the seed
+// script share this schema). Replaces lib/db/placeDocument.ts.
+//
+// The `places` table uses the exact same field names as this schema
+// (camelCase, quoted in the DDL — see supabase/schema.sql) — deliberately
+// mirroring the app's existing domain-shape conventions instead of
+// converting to snake_case, so PlaceInput and the table row are the same
+// shape field-for-field (row = input + id/createdAt/updatedAt). See
+// placeMapper.ts for the (now very thin) conversion to/from the domain
+// `Place` type (src/types/place.ts).
 
 import { z } from 'zod';
-import { ObjectId } from 'mongodb';
 import { Category, Region, VerificationStatus } from '@/types/place';
 
 export const CATEGORIES = [
@@ -47,7 +52,7 @@ const openingHoursSchema = z
   .partial()
   .optional();
 
-const entranceFeeSchema = z
+const admissionSchema = z
   .object({
     isFree: z.boolean(),
     adultPrice: z.number().nonnegative().optional(),
@@ -56,11 +61,6 @@ const entranceFeeSchema = z
     notes: z.string().optional(),
   })
   .optional();
-
-const contactSchema = z.object({
-  phone: z.string().optional(),
-  website: z.string().url().optional(),
-});
 
 const accessibilitySchema = z
   .object({
@@ -71,24 +71,7 @@ const accessibilitySchema = z
   })
   .optional();
 
-const imagesSchema = z.object({
-  cover: z.string().min(1),
-  gallery: z.array(z.string()).default([]),
-});
-
-/** GeoJSON Point — MongoDB requires [longitude, latitude] order. */
-export const geoPointSchema = z.object({
-  type: z.literal('Point'),
-  coordinates: z
-    .tuple([z.number(), z.number()])
-    .refine(([lng, lat]) => lng >= -180 && lng <= 180 && lat >= -90 && lat <= 90, {
-      message: 'coordinates must be [longitude, latitude] within valid WGS-84 ranges',
-    }),
-});
-
-export type GeoPoint = z.infer<typeof geoPointSchema>;
-
-/** Shape of a place document as it should be written to MongoDB (no _id/timestamps — those are server-assigned). */
+/** Shape of a place row as it should be written to Supabase (no id/timestamps — those are server-assigned). */
 export const placeInputSchema = z.object({
   slug: z
     .string()
@@ -102,19 +85,22 @@ export const placeInputSchema = z.object({
   region: z.enum(REGIONS),
   city: z.string().min(1),
   address: z.string().min(1),
-  location: geoPointSchema,
-  images: imagesSchema,
+  latitude: z.number().min(-90).max(90),
+  longitude: z.number().min(-180).max(180),
+  image: z.string().min(1),
+  gallery: z.array(z.string()).default([]),
   openingHours: openingHoursSchema,
-  entranceFee: entranceFeeSchema,
-  contact: contactSchema,
-  visitDuration: z.number().int().positive().optional(),
+  admission: admissionSchema,
+  phone: z.string().optional(),
+  website: z.string().url().optional(),
+  estimatedVisitMinutes: z.number().int().positive().optional(),
   accessibility: accessibilitySchema,
   nearbyPlaceSlugs: z.array(z.string()).optional(),
   featured: z.boolean().default(false),
   published: z.boolean().default(false),
   archived: z.boolean().default(false),
   verificationStatus: z.enum(VERIFICATION_STATUSES),
-  sources: z.array(z.string().url()).default([]),
+  sourceUrl: z.string().url().optional(),
   lastVerifiedAt: z.string().optional(),
 });
 
@@ -124,9 +110,9 @@ export type PlaceInput = z.infer<typeof placeInputSchema>;
 export const placeUpdateSchema = placeInputSchema.partial();
 export type PlaceUpdate = z.infer<typeof placeUpdateSchema>;
 
-/** The full document shape as stored in and read back from MongoDB. */
-export interface PlaceDocument extends PlaceInput {
-  _id: ObjectId;
-  createdAt: Date;
-  updatedAt: Date;
+/** The full row shape as stored in and read back from the `places` table. */
+export interface PlaceRow extends PlaceInput {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
 }

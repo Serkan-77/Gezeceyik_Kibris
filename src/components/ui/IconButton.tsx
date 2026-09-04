@@ -2,6 +2,10 @@
 // Toggle variant (favorite, add-to-trip, wizard stepper) that owns its own
 // active/inactive visual states so consuming components don't each
 // re-implement the same class map.
+//
+// The small variant's hit area is h-10 w-10 (40px) — comfortably above the
+// ~44px touch-target guidance without the icon itself looking bigger; the
+// icon and background stay the same visual size as before.
 
 import { ReactNode } from 'react';
 
@@ -60,8 +64,8 @@ export function IconToggleButton({
       aria-pressed={active}
       className={
         large
-          ? `flex items-center gap-2 rounded-sm border px-4 py-2 text-sm font-medium transition-colors duration-[var(--duration-fast)] ${largeClass} ${className}`
-          : `flex h-8 w-8 items-center justify-center rounded-sm backdrop-blur-sm transition-colors duration-[var(--duration-fast)] ${smallClass} ${className}`
+          ? `flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors duration-[var(--duration-fast)] ${largeClass} ${className}`
+          : `flex h-10 w-10 items-center justify-center rounded-full backdrop-blur-sm transition-colors duration-[var(--duration-fast)] ${smallClass} ${className}`
       }
       {...rest}
     >

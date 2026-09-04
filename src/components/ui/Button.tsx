@@ -6,24 +6,30 @@
 import Link from 'next/link';
 import { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from 'react';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'ink' | 'outline-on-ink' | 'ghost-on-ink';
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'ink' | 'white' | 'outline-on-ink' | 'ghost-on-ink';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 const variantClass: Record<ButtonVariant, string> = {
+  // Clear Coastal Blue — the one brand action color, so every primary
+  // action site-wide reads as the same brand, not a rotating palette.
   primary:
-    'bg-brand text-white hover:bg-brand-hover shadow-[0_1px_0_rgb(255_255_255_/_0.08)_inset]',
+    'bg-brand text-white hover:bg-brand-hover shadow-[0_1px_0_rgb(255_255_255_/_0.14)_inset] hover:shadow-[var(--shadow-brand)]',
   secondary:
-    'border border-line bg-surface text-strong hover:border-ink',
+    'border border-line bg-surface text-strong hover:border-ink hover:text-ink',
   ghost:
     'text-muted hover:text-strong hover:bg-surface-muted',
-  // Solid dark action on a light surface (e.g. "Get directions") — its own
-  // step between the brand-orange primary and the outlined secondary.
+  // Outline that inverts to solid black on hover — its own tactile step
+  // between the flat primary and the plain outlined secondary.
   ink:
-    'bg-ink text-white hover:bg-brand',
+    'border-2 border-ink text-ink hover:bg-ink hover:text-white',
+  // Solid white on a photograph (hero, cards over imagery) — its own step
+  // so a dark-surface primary action never needs a semi-transparent hack.
+  white:
+    'bg-white text-ink hover:bg-white/90',
   'outline-on-ink':
-    'border border-white/20 text-white/80 hover:border-white/40 hover:text-white',
+    'border border-white/25 text-white/85 hover:border-white/50 hover:text-white',
   'ghost-on-ink':
-    'text-white/70 hover:text-white hover:bg-white/5',
+    'text-white/70 hover:text-white hover:bg-white/10',
 };
 
 const sizeClass: Record<ButtonSize, string> = {
@@ -50,7 +56,7 @@ type ButtonAsLink = CommonProps &
 export type ButtonProps = ButtonAsButton | ButtonAsLink;
 
 const base =
-  'inline-flex shrink-0 items-center justify-center rounded-sm font-semibold tracking-[-0.01em] transition-colors duration-[var(--duration-fast)] disabled:pointer-events-none disabled:opacity-40';
+  'inline-flex shrink-0 items-center justify-center rounded-full font-semibold tracking-[-0.01em] transition-[color,background-color,box-shadow,transform] duration-[var(--duration-fast)] active:scale-[0.98] disabled:pointer-events-none disabled:opacity-40';
 
 export function Button({
   variant = 'primary',

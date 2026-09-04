@@ -1,33 +1,90 @@
 @import "tailwindcss";
 
 /* ══════════════════════════════════════════════════════════════════
-   DESIGN TOKENS — Cyprus Discovery
+   DESIGN TOKENS — Gezeceyik Kıbrıs
    Source of truth for color, type, radius, shadow and container scale.
    Components must consume these utilities (bg-brand, text-ink, …)
    instead of raw hex arbitrary values.
    ══════════════════════════════════════════════════════════════════ */
 @theme inline {
-  /* ── Brand ──────────────────────────────────────────────────── */
-  --color-brand:            #e8651a;
-  --color-brand-hover:      #c9540e;
-  --color-brand-strong:     #a8420b;
+  /* ── Brand — "Blue Coastal Kinetic Atlas" ─────────────────────────────
+     Clear Coastal Blue is the one true brand action color: links, primary
+     buttons, active nav, default map markers, route lines, selected
+     states, focus rings. Deep Mediterranean / Aegean are rationed for a
+     small set of specific immersive/secondary geographic moments — they
+     are not general-purpose backgrounds. Blue stays geographic and
+     interactive, never decorative UI paint — category color, badges and
+     other purely descriptive chrome stay neutral (see cat-* below). */
+  --color-brand:            #0389BE; /* Clear Coastal Blue */
+  --color-brand-hover:      #04729F;
+  --color-brand-strong:     #0B6E93; /* Aegean — darker, for small text needing extra contrast */
+  /* Large-scale decoration only (glows, gradients at size, on-dark
+     accents) — never small text on a light background. */
+  --color-brand-bright:     #3AA9D6;
 
-  /* ── Neutrals (ink = charcoal, paper = warm white) ─────────── */
-  --color-ink:              #1a1a1a;
-  --color-ink-soft:         #2d2d2d;
-  --color-paper:            #fafaf8;
-  --color-surface:          #ffffff;
-  --color-surface-muted:    #f5f2ee;
-  --color-line:             #e8e4de;
+  --color-sun:              #0B6E93;
+  --color-sun-hover:        #04729F;
+  --color-sun-soft:         #E3F1F8;
+  /* Sea-Light tint — the on-dark equivalent of --color-brand: eyebrows
+     and fine accents over photography/ink surfaces. */
+  --color-gold:             #BFE3F1;
 
-  --color-strong:           #1a1a1a;
-  --color-muted:            #6b7280;
-  --color-subtle:           #9ca3af;
-  --color-faint:            #c4bdb4;
+  --gradient-sea:    linear-gradient(135deg, #0B6E93 0%, #0A3D5C 100%);
+  --gradient-sunset: linear-gradient(135deg, #0389BE 0%, #0A3D5C 100%);
+
+  /* Geographic/map contexts reuse the brand blue directly. */
+  --color-geo:              #0389BE;
+  --color-geo-soft:         #E3F1F8;
+
+  /* Deep Mediterranean — rationed for full-bleed immersive sections only
+     (homepage map scene, footer's closing dark note). Never a general
+     dark-surface substitute for --color-ink. */
+  --color-deep:             #0A3D5C;
+
+  /* ── Category palette — deliberately kept OUT of the blue system.
+     Blue means geographic/interactive on this site; category is read
+     from icon + label, not hue, so every category shares one neutral
+     ink pair — see components/ui/CategoryIcon.tsx. ── */
+  --color-cat-museum:            #17191C;
+  --color-cat-museum-soft:       #ECE7DC;
+  --color-cat-castle:            #17191C;
+  --color-cat-castle-soft:       #ECE7DC;
+  --color-cat-archaeological:    #17191C;
+  --color-cat-archaeological-soft: #ECE7DC;
+  --color-cat-monastery:         #17191C;
+  --color-cat-monastery-soft:    #ECE7DC;
+  --color-cat-beach:             #17191C;
+  --color-cat-beach-soft:        #ECE7DC;
+  --color-cat-nature:            #17191C;
+  --color-cat-nature-soft:       #ECE7DC;
+  --color-cat-historical:        #17191C;
+  --color-cat-historical-soft:   #ECE7DC;
+  --color-cat-viewpoint:         #17191C;
+  --color-cat-viewpoint-soft:    #ECE7DC;
+  --color-cat-cultural:          #17191C;
+  --color-cat-cultural-soft:     #ECE7DC;
+  --color-cat-church:            #17191C;
+  --color-cat-church-soft:       #ECE7DC;
+  --color-cat-family:            #17191C;
+  --color-cat-family-soft:       #ECE7DC;
+
+  /* ── Neutrals — warm family throughout (limestone/ink), never cool
+     gray, so nothing reads as SaaS-dashboard neutral. ── */
+  --color-ink:              #17191C;
+  --color-ink-soft:         #22262B;
+  --color-paper:            #F6F3EC; /* Warm Limestone — default page background */
+  --color-surface:          #FCFBF8; /* Warm White — rows/cards/panels on limestone */
+  --color-surface-muted:    #EFEADF;
+  --color-line:             #DED8C8; /* warm hairline */
+
+  --color-strong:           #17191C;
+  --color-muted:            #5C5C58;
+  --color-subtle:           #8A8A82;
+  --color-faint:            #B7B2A6;
   --color-on-ink-muted:     rgb(255 255 255 / 62%);
   --color-on-ink-subtle:    rgb(255 255 255 / 40%);
 
-  /* ── Semantic state ─────────────────────────────────────────── */
+  /* ── Semantic state — unchanged, already correct ─────────────── */
   --color-success:          #15803d;
   --color-success-soft:     #ecfdf5;
   --color-warning:          #92400e;
@@ -36,8 +93,13 @@
   --color-danger-soft:      #fef2f2;
 
   /* ── Typography ─────────────────────────────────────────────── */
-  --font-display: var(--font-playfair), Georgia, serif;
+  /* Blue Coastal Kinetic Atlas: an editorial serif carries place, story
+     and emotion; the UI sans carries navigation/utility; mono carries
+     only measured facts (Phase 8 §2). */
+  --font-display: var(--font-serif), Georgia, serif;
   --font-sans:    var(--font-inter), system-ui, sans-serif;
+  /* Numeral/technical face — coordinates, prices, hours, distances only. */
+  --font-mono:    var(--font-plex-mono), 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
 
   /* Fluid type scale — one utility class, no breakpoint staircase.
      Named by role, not by size, so usage stays meaningful. */
@@ -65,18 +127,22 @@
   --text-display--line-height: 0.95;
 
   /* ── Radius scale (shape consistency lock) ───────────────────
-     sm  → controls: buttons, inputs, badges, filter pills
+     sm  → small controls: inputs, badges, filter pills
      md  → cards, panels, wizard container
      lg  → hero-scale feature surfaces, image frames
-     full → pills, step circles, avatars                        */
-  --radius-sm:  0.25rem;
-  --radius-md:  0.625rem;
-  --radius-lg:  1.25rem;
+     full → buttons, step circles, avatars — warmer, more inviting
+            than the site's previous sharp-cornered default          */
+  --radius-sm:  0.5rem;
+  --radius-md:  1rem;
+  --radius-lg:  1.5rem;
 
-  /* ── Shadows — two deliberate elevation levels only ──────────── */
-  --shadow-card: 0 1px 2px rgb(26 26 26 / 0.04), 0 1px 1px rgb(26 26 26 / 0.03);
-  --shadow-lift: 0 20px 32px -12px rgb(26 26 26 / 0.16), 0 4px 10px -4px rgb(26 26 26 / 0.08);
-  --shadow-ink:  0 24px 48px -16px rgb(26 26 26 / 0.45);
+  /* ── Shadows — tinted to hue, reserved for genuinely floating elements
+     only (marker preview cards, the route-building strip) — never on
+     static in-flow content. ── */
+  --shadow-card:  0 1px 2px rgb(23 25 28 / 0.04), 0 1px 1px rgb(23 25 28 / 0.03);
+  --shadow-lift:  0 20px 32px -12px rgb(23 25 28 / 0.16), 0 4px 10px -4px rgb(23 25 28 / 0.08);
+  --shadow-ink:   0 24px 48px -16px rgb(23 25 28 / 0.45);
+  --shadow-brand: 0 20px 36px -14px rgb(3 137 190 / 0.32), 0 4px 10px -4px rgb(3 137 190 / 0.16);
 
   /* ── Containers ───────────────────────────────────────────────── */
   --max-width-site:   1280px;
@@ -88,6 +154,15 @@
   --duration-fast:   150ms;
   --duration-base:   240ms;
   --duration-slow:   420ms;
+
+  /* ── Z-index scale — documented layers (design system §18) ────── */
+  --z-base:          0;
+  --z-sticky:        10;
+  --z-map-controls:  20;
+  --z-disclosure:    30;
+  --z-preview:       40;
+  --z-nav:           50;
+  --z-overlay:       60;
 }
 
 /* ── Base ──────────────────────────────────────────────────────── */
@@ -112,15 +187,23 @@ body {
   border-radius: var(--radius-sm);
 }
 
-/* Dark surfaces need a lighter, still-branded ring for contrast */
+/* Dark surfaces need a lighter, still-branded ring for contrast — the
+   base --color-brand is now deliberately dark (so it also works as small
+   text on light backgrounds), so dark sections use the brighter tint. */
 .on-ink :focus-visible {
-  outline-color: var(--color-brand);
+  outline-color: var(--color-brand-bright);
   outline-offset: 3px;
 }
 
 /* ── Typography utilities ─────────────────────────────────────── */
 .font-display {
   font-family: var(--font-display);
+}
+
+/* Numeral/technical face — coordinates, prices, hours, distances only. */
+.font-mono {
+  font-family: var(--font-mono);
+  font-feature-settings: 'tnum' 1;
 }
 
 /* Comfortable reading measure for long body text */
@@ -140,6 +223,167 @@ body {
 /* ── Smooth image loading ─────────────────────────────────────── */
 img {
   display: block;
+}
+
+/* Photography stays natural color everywhere (Blue Coastal Kinetic
+   Atlas direction) — no site-wide filter. Blue is spent deliberately in
+   UI/markers/route lines, never as a wash over real photos. */
+
+/* ── Route-scene map labels ──────────────────────────────────────
+   Custom-styled Leaflet permanent tooltip (homepage Scene 5) — strips
+   Leaflet's default tooltip chrome in favor of the site's own type. */
+.route-scene-tooltip {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--color-strong);
+  box-shadow: var(--shadow-card);
+}
+.route-scene-tooltip::before {
+  border-right-color: var(--color-line) !important;
+}
+
+/* ── /harita map preview (Phase 5) ─────────────────────────────────
+   Leaflet's Popup is kept only for its positioning/autopan — every bit
+   of its default chrome is stripped and rebuilt as the site's own
+   editorial language, never a generic popup or SaaS card look. */
+.harita-preview .leaflet-popup-content-wrapper {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
+  padding: 0;
+}
+.harita-preview .leaflet-popup-content {
+  margin: 0;
+  width: 240px !important;
+}
+.harita-preview .leaflet-popup-tip-container {
+  width: 16px;
+  height: 8px;
+}
+.harita-preview .leaflet-popup-tip {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  box-shadow: none;
+}
+.harita-preview .leaflet-popup-close-button {
+  color: var(--color-subtle);
+  font-size: 16px;
+  top: 6px !important;
+  right: 6px !important;
+}
+.harita-preview .leaflet-popup-close-button:hover {
+  color: var(--color-strong);
+}
+.harita-preview-content {
+  font-family: var(--font-sans);
+}
+.harita-preview-photo {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  background: var(--color-surface-muted);
+}
+.harita-preview-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.harita-preview-tag {
+  position: absolute;
+  bottom: 6px;
+  left: 6px;
+  background: rgb(255 255 255 / 0.92);
+  color: var(--color-ink-soft);
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+.harita-preview-meta {
+  margin: 10px 12px 0;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-subtle);
+}
+.harita-preview-name {
+  margin: 3px 12px 0;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-strong);
+  line-height: 1.3;
+}
+.harita-preview-fact {
+  margin: 5px 12px 0;
+  font-size: 12px;
+  color: var(--color-muted);
+}
+.harita-preview-fact.is-open {
+  color: var(--color-success);
+  font-weight: 500;
+}
+.harita-preview-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 10px 12px 12px;
+  padding-top: 8px;
+  border-top: 1px solid var(--color-line);
+}
+.harita-preview-link {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-brand);
+  text-decoration: none;
+}
+.harita-preview-link:hover {
+  text-decoration: underline;
+}
+.harita-preview-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.harita-preview-buttons button {
+  font-size: 12px;
+  color: var(--color-subtle);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-family: var(--font-sans);
+}
+.harita-preview-buttons button[aria-pressed='true'] {
+  color: var(--color-brand);
+  font-weight: 600;
+}
+.harita-preview-buttons button:hover {
+  color: var(--color-strong);
+}
+
+/* Hover name tag — minimal, no default Leaflet tooltip box/arrow bulk */
+.harita-hover-tag {
+  background: var(--color-ink) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 3px 8px !important;
+  font-size: 11px !important;
+  font-family: var(--font-sans);
+  box-shadow: var(--shadow-card) !important;
+}
+.harita-hover-tag::before {
+  display: none !important;
 }
 
 /* ── Tabular numbers for opening hours / route stats ───────────── */
@@ -216,16 +460,66 @@ img {
   [data-marker-enter] {
     animation: marker-pop 260ms var(--ease-out-editorial) both;
   }
+
+  /* Planner transport step — small symbolic motion signatures per mode.
+     Purely typographic/motion identity: this never becomes the literal
+     line style of a real route later (Phase 6 Correction 2) — the
+     generated route always uses one consistent abstract dashed line
+     regardless of transport mode. */
+  .transport-sig {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 4px;
+  }
+  .transport-sig-dot {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 5px;
+    height: 5px;
+    margin-top: -2.5px;
+    border-radius: 9999px;
+    background: currentColor;
+  }
+  .transport-sig-car .transport-sig-dot {
+    animation: transport-sig-car 1.6s linear infinite;
+  }
+  .transport-sig-walk .transport-sig-dot {
+    animation: transport-sig-walk 1.6s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  }
+  .transport-sig-public .transport-sig-dot {
+    animation: transport-sig-public 1.8s steps(4, jump-none) infinite;
+  }
+  @keyframes transport-sig-car {
+    from { left: 0; }
+    to   { left: calc(100% - 5px); }
+  }
+  @keyframes transport-sig-walk {
+    0%   { left: 0; transform: translateY(0); }
+    25%  { transform: translateY(-3px); }
+    50%  { left: calc(50% - 2.5px); transform: translateY(0); }
+    75%  { transform: translateY(-3px); }
+    100% { left: calc(100% - 5px); transform: translateY(0); }
+  }
+  @keyframes transport-sig-public {
+    from { left: 0; }
+    to   { left: calc(100% - 5px); }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   [data-motion],
   [data-step-motion],
   [data-marker-enter],
+  .transport-sig-dot,
   .leaflet-overlay-pane path {
     animation: none !important;
     transition: none !important;
     opacity: 1 !important;
     transform: none !important;
+  }
+  .transport-sig-dot {
+    left: 50% !important;
   }
 }
