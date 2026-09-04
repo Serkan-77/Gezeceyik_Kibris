@@ -1,28 +1,36 @@
 'use client';
 // components/places/PlaceOpenStatus.tsx
-// Small client leaf for the hero's open/closed dot — status stays a
-// semantic success/neutral color, never blue (blue means location/
-// interaction on this site, not status). Renders nothing when the data
-// doesn't exist rather than guessing.
+// "Open now" / "closed today" — computed client-side post-mount (see
+// useTodayKey) so a statically pre-rendered page never bakes in a stale
+// build-day answer. Renders nothing until hydrated rather than guessing.
 
-import { Place } from '@/types/place';
-import { useTodayKey, DayKey } from '@/hooks/useTodayKey';
-import { tr } from '@/lib/i18n/tr';
+import { OpeningHours } from '@/types/place';
+import { useTodayKey } from '@/hooks/useTodayKey';
 
-export function PlaceOpenStatus({ openingHours, dark = false }: { openingHours: Place['openingHours']; dark?: boolean }) {
+interface PlaceOpenStatusProps {
+  openingHours?: OpeningHours;
+  dark?: boolean;
+}
+
+export function PlaceOpenStatus({ openingHours, dark }: PlaceOpenStatusProps) {
   const todayKey = useTodayKey();
   if (!openingHours || !todayKey) return null;
-  const val = openingHours[todayKey as DayKey];
-  if (val === undefined) return null;
-  const isOpen = val !== null;
+
+  const hoursToday = openingHours[todayKey];
+
+  if (hoursToday === null || hoursToday === undefined) {
+    return (
+      <span className={`inline-flex items-center gap-1.5 text-sm font-medium ${dark ? 'text-white/70' : 'text-subtle'}`}>
+        <span className="h-1.5 w-1.5 rounded-full bg-danger" aria-hidden="true" />
+        Bugün kapalı
+      </span>
+    );
+  }
 
   return (
-    <span className="flex items-center gap-1.5">
-      <span
-        className={`h-1.5 w-1.5 shrink-0 rounded-full ${isOpen ? 'bg-success' : dark ? 'bg-white/40' : 'bg-faint'}`}
-        aria-hidden="true"
-      />
-      {isOpen ? `${tr.place.openToday} · ${val}` : tr.place.closedToday}
+    <span className={`inline-flex items-center gap-1.5 text-sm font-medium ${dark ? 'text-white' : 'text-success'}`}>
+      <span className="h-1.5 w-1.5 rounded-full bg-success" aria-hidden="true" />
+      Bugün açık · {hoursToday}
     </span>
   );
 }

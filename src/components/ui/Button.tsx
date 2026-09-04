@@ -10,15 +10,16 @@ export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'ink' | 'white' 
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 const variantClass: Record<ButtonVariant, string> = {
-  // Clear Coastal Blue — the one brand action color, so every primary
-  // action site-wide reads as the same brand, not a rotating palette.
+  // Clear Mediterranean Blue — the one brand action color, so every
+  // primary action site-wide reads as the same brand, not a rotating
+  // palette.
   primary:
-    'bg-brand text-white hover:bg-brand-hover shadow-[0_1px_0_rgb(255_255_255_/_0.14)_inset] hover:shadow-[var(--shadow-brand)]',
+    'bg-brand text-white hover:bg-brand-hover shadow-[0_1px_0_rgb(255_255_255_/_0.14)_inset] hover:shadow-lift',
   secondary:
     'border border-line bg-surface text-strong hover:border-ink hover:text-ink',
   ghost:
     'text-muted hover:text-strong hover:bg-surface-muted',
-  // Outline that inverts to solid black on hover — its own tactile step
+  // Outline that inverts to solid ink on hover — its own tactile step
   // between the flat primary and the plain outlined secondary.
   ink:
     'border-2 border-ink text-ink hover:bg-ink hover:text-white',

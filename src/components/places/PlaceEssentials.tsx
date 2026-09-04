@@ -1,12 +1,8 @@
 'use client';
 // components/places/PlaceEssentials.tsx
-// Data-adaptive essentials strip — replaces the old 8-card sidebar
-// entirely (Phase 4). Shows only fields that genuinely exist for this
-// place; the format (hairline dividers, consistent rhythm) stays
-// constant regardless of count, so a 2-field strip and a 6-field strip
-// both read as intentional. Never invents a value: estimated visit time
-// only appears when `estimatedVisitMinutes` is real, existing data — see
-// Phase 4/7 Correction on never fabricating durations.
+// Data-adaptive essentials strip: shows only fields that genuinely exist
+// for this place. Never invents a value — estimated visit time only
+// appears when estimatedVisitMinutes is real data.
 
 import { ReactNode } from 'react';
 import { Place } from '@/types/place';
@@ -36,9 +32,9 @@ export function PlaceEssentials({ place }: PlaceEssentialsProps) {
     : null;
 
   const accessibilityFeatures = [
-    place.accessibility?.wheelchairAccessible ? tr.place.wheelchairAccessible : '',
-    place.accessibility?.audioGuide ? tr.place.audioGuide : '',
-    place.accessibility?.guidedTours ? tr.place.guidedTours : '',
+    place.accessibility?.wheelchairAccessible ? 'Tekerlekli sandalye' : '',
+    place.accessibility?.audioGuide ? 'Sesli rehber' : '',
+    place.accessibility?.guidedTours ? 'Rehberli tur' : '',
   ].filter(Boolean);
 
   const items: StripItem[] = [{ label: tr.filter.region, value: `${place.city}, ${tr.regions[place.region]}` }];
@@ -91,8 +87,8 @@ export function PlaceEssentials({ place }: PlaceEssentialsProps) {
             {tr.place.getDirections}
             <span className="sr-only">(yeni sekmede açılır)</span>
           </a>
-          <FavoriteButton placeSlug={place.slug} placeName={place.name} />
-          <AddToTripButton placeSlug={place.slug} placeName={place.name} large />
+          <FavoriteButton slug={place.slug} name={place.name} />
+          <AddToTripButton slug={place.slug} name={place.name} large />
         </div>
       </div>
     </div>

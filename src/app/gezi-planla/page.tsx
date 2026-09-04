@@ -29,7 +29,6 @@ export default async function GeziPlanlaPage() {
 
   return (
     <Container className="py-10 sm:py-14">
-      <h1 className="sr-only">Gezi Planla</h1>
       <PlannerExperience categories={categories} places={places} transitRoutes={transitRoutes} />
     </Container>
   );

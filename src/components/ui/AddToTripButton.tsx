@@ -1,33 +1,35 @@
 'use client';
 // components/ui/AddToTripButton.tsx
-// Plus/check toggle backed by useTripSelection (localStorage). Thin
-// wrapper around IconToggleButton — this file only owns trip-specific wiring.
+// Toggles a place's membership in the trip-planner selection
+// (useTripSelection — separate from favorites by design: a place can be
+// on the trip without being favorited, and vice versa).
 
 import { useTripSelection } from '@/hooks/useTripSelection';
-import { IconToggleButton } from './IconButton';
-import { PlusIcon, CheckIcon } from './icons';
+import { PlusIcon, CheckIcon } from '@/components/ui/icons';
+import { Button } from '@/components/ui/Button';
 
 interface AddToTripButtonProps {
-  placeSlug: string;
-  placeName: string;
+  slug: string;
+  name: string;
   large?: boolean;
-  className?: string;
 }
 
-export function AddToTripButton({ placeSlug, placeName, large, className }: AddToTripButtonProps) {
+export function AddToTripButton({ slug, name, large }: AddToTripButtonProps) {
   const { isSelected, toggle, hydrated } = useTripSelection();
-  const active = hydrated && isSelected(placeSlug);
+  const active = hydrated && isSelected(slug);
 
   return (
-    <IconToggleButton
+    <Button
+      type="button"
+      variant={active ? 'ink' : 'secondary'}
+      size={large ? 'md' : 'sm'}
       icon={active ? <CheckIcon className="h-4 w-4" /> : <PlusIcon className="h-4 w-4" />}
-      active={active}
-      onToggle={() => toggle(placeSlug)}
-      aria-label={active ? `${placeName} geziden çıkar` : `${placeName} geziye ekle`}
-      large={large}
-      label={{ active: 'Geziden Çıkar', inactive: 'Geziye Ekle' }}
-      tone="brand"
-      className={className}
-    />
+      iconPosition="leading"
+      onClick={() => toggle(slug)}
+      aria-pressed={active}
+      aria-label={active ? `${name} rotadan çıkar` : `${name} rotaya ekle`}
+    >
+      {active ? 'Rotada' : 'Rotaya Ekle'}
+    </Button>
   );
 }

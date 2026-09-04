@@ -1,11 +1,8 @@
 'use client';
 // components/pages/FavorilerClient.tsx
-// Client component — reads favorites from localStorage and renders the
-// same borderless editorial row (DiscoveryRow) used at /places and place
-// detail's nearby strip, consistent with the rest of the redesign — a
-// compact, personal list, not a card grid. Receives the full place list
-// as a prop from its Server Component parent (lib/places.ts is
-// server-only now).
+// Reads favorites from localStorage and renders the same borderless
+// editorial row (DiscoveryRow) used at place detail's nearby strip — a
+// compact personal list, not a card grid.
 
 import { useFavorites } from '@/hooks/useFavorites';
 import { Place } from '@/types/place';
@@ -13,7 +10,6 @@ import { DiscoveryRow } from '@/components/places/DiscoveryRow';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Button } from '@/components/ui/Button';
 import { HeartIcon } from '@/components/ui/icons';
-import { tr } from '@/lib/i18n/tr';
 
 interface FavorilerClientProps {
   places: Place[];
@@ -43,9 +39,9 @@ export function FavorilerClient({ places }: FavorilerClientProps) {
     return (
       <EmptyState
         icon={<HeartIcon className="h-6 w-6" />}
-        title={tr.favorites.empty}
-        description={tr.favorites.emptyHint}
-        action={<Button href="/places">{tr.favorites.browseAllPlaces}</Button>}
+        title="Henüz favori eklemediniz"
+        description="Beğendiğiniz yerlerin kalp simgesine tıklayarak buraya kaydedebilirsiniz."
+        action={<Button href="/places">Tüm yerlere göz at</Button>}
       />
     );
   }

@@ -1,11 +1,8 @@
 // components/places/PlaceHistoryEssay.tsx
-// The history essay — a real editorial composition that does NOT depend
-// on extracting dates/people/phrases from the free-text history field
-// (Phase 4 Correction 3: marginalia was optional progressive enhancement
-// only, and this page must look strong without it). Long history gets a
-// drop cap and real paragraph rhythm; short history collapses gracefully
-// into a single large pull-quote treatment rather than sitting alone in
-// a template built for a long read.
+// The history essay — a real editorial composition, independent of
+// extracting dates/people from the free-text field. Long history gets a
+// drop cap and real paragraph rhythm; short history collapses into a
+// single large pull-quote treatment.
 
 import { Place } from '@/types/place';
 
@@ -35,9 +32,7 @@ export function PlaceHistoryEssay({ place }: PlaceHistoryEssayProps) {
         paragraphs.map((paragraph, i) => (
           <p
             key={i}
-            className={`prose-body font-display text-body leading-8 text-ink-soft text-pretty ${
-              i > 0 ? 'mt-5' : ''
-            } ${
+            className={`prose-body font-display text-body leading-8 text-ink-soft text-pretty ${i > 0 ? 'mt-5' : ''} ${
               i === 0
                 ? 'first-letter:float-left first-letter:mr-2 first-letter:font-display first-letter:text-6xl first-letter:font-bold first-letter:leading-[0.85] first-letter:text-strong'
                 : ''

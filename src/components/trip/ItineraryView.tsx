@@ -1,19 +1,18 @@
 'use client';
 // components/trip/ItineraryView.tsx
-// Renders a full TripItinerary (Phase 7) — real day-tick navigation, a
-// sticky real route map, and borderless editorial stop rows with real
-// photography. All numbers come straight from the planner's output;
-// nothing invented. Public transport is shown at its real confidence:
-// a matched real bus connection reads with full confidence; an
-// estimated hop (public with no match, or car/walking) always carries
-// an explicit "tahmini" qualifier — visual confidence never exceeds
-// data confidence.
+// Renders a full TripItinerary — day-tick navigation, a sticky real route
+// map, and borderless editorial stop rows with real photography. All
+// numbers come straight from the planner's output; nothing invented.
+// Public transport is shown at its real confidence: a matched real bus
+// connection reads with full confidence; an estimated hop always carries
+// an explicit "tahmini" qualifier.
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { TripItinerary, ItineraryDay, AccommodationLocation, TransportMode } from '@/lib/trip-planner/types';
 import { RouteMapWrapper } from './RouteMapWrapper';
-import { PhotoTreatment } from '@/components/ui/PhotoTreatment';
+import { isImageRepresentative } from '@/lib/format';
 import { FlagEndIcon, CarIcon, WalkIcon, BusIcon, DirectionsIcon } from '@/components/ui/icons';
 import { tr } from '@/lib/i18n/tr';
 
@@ -50,8 +49,6 @@ export function ItineraryView({ itinerary }: Props) {
   const listRef = useRef<HTMLDivElement>(null);
   const day = itinerary.days[activeDay];
 
-  // Passive scroll focus — highlights the in-view stop on the map, never
-  // moves the camera. Re-observes whenever the active day's stops change.
   useEffect(() => {
     const container = listRef.current;
     if (!container || !day) return;
@@ -85,7 +82,6 @@ export function ItineraryView({ itinerary }: Props) {
 
   return (
     <div>
-      {/* Trip summary — mono metadata row, not boxed stat tiles */}
       <p className="mb-6 flex flex-wrap items-center gap-x-4 gap-y-1.5 font-mono text-xs tabular-nums text-subtle">
         <span>{itinerary.days.length} gün</span>
         <span className="h-3 w-px bg-line" aria-hidden="true" />
@@ -96,7 +92,6 @@ export function ItineraryView({ itinerary }: Props) {
         <span>{itinerary.totalCost > 0 ? `${itinerary.totalCost.toLocaleString('tr-TR')} TRY giriş` : 'giriş ücretsiz'}</span>
       </p>
 
-      {/* Day navigation — real per-day facts, not tab pills */}
       <nav aria-label="Gün seçimi" className="mb-8 border-y border-line">
         <ol className="flex gap-6 overflow-x-auto sm:gap-10">
           {itinerary.days.map((d, i) => {
@@ -106,9 +101,7 @@ export function ItineraryView({ itinerary }: Props) {
                 <button
                   type="button"
                   onClick={() => setActiveDay(i)}
-                  className={`flex flex-col items-start gap-1 border-b-2 py-3 text-left transition-colors ${
-                    current ? 'border-brand' : 'border-transparent'
-                  }`}
+                  className={`flex flex-col items-start gap-1 border-b-2 py-3 text-left transition-colors ${current ? 'border-brand' : 'border-transparent'}`}
                 >
                   <span className={`font-display text-lg font-semibold ${current ? 'text-brand' : 'text-strong'}`}>
                     {String(d.dayNumber).padStart(2, '0')}
@@ -123,7 +116,6 @@ export function ItineraryView({ itinerary }: Props) {
         </ol>
       </nav>
 
-      {/* Day summary strip */}
       <div className="mb-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-meta">
         <Metric label="Ziyaret" value={formatMinutes(day.totalVisitMin)} />
         <Metric label="Yol (tahmini)" value={formatMinutes(day.totalTravelMin)} />
@@ -135,7 +127,6 @@ export function ItineraryView({ itinerary }: Props) {
         </div>
       </div>
 
-      {/* Map + stops — breathing composition, map stays present while scrolling */}
       <div className="grid gap-8 lg:grid-cols-[1fr_45%] lg:items-start">
         <div ref={listRef} className="order-2 lg:order-1">
           <p className="mb-3 flex items-center gap-2 text-meta text-subtle">
@@ -150,71 +141,71 @@ export function ItineraryView({ itinerary }: Props) {
           {day.stops.map((stop, i) => {
             const isLast = i === day.stops.length - 1;
             const isFocused = stop.place.slug === focusedSlug;
+            const representative = isImageRepresentative(stop.place.verificationStatus);
             return (
               <div key={stop.place.slug}>
-              <div
-                data-slug={stop.place.slug}
-                ref={(el) => {
-                  if (el) rowRefs.current.set(stop.place.slug, el);
-                  else rowRefs.current.delete(stop.place.slug);
-                }}
-                className={`flex items-stretch gap-4 border-t border-line py-4 transition-colors ${isFocused ? 'bg-brand/5' : ''}`}
-              >
-                <button
-                  type="button"
-                  onClick={() => selectFromRow(stop.place.slug)}
-                  aria-label={`${stop.place.name}, haritada göster`}
-                  className="flex min-w-0 flex-1 items-stretch gap-4 text-left"
+                <div
+                  data-slug={stop.place.slug}
+                  ref={(el) => {
+                    if (el) rowRefs.current.set(stop.place.slug, el);
+                    else rowRefs.current.delete(stop.place.slug);
+                  }}
+                  className={`flex items-stretch gap-4 border-t border-line py-4 transition-colors ${isFocused ? 'bg-brand/5' : ''}`}
                 >
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center self-start rounded-full border-2 border-brand bg-surface font-mono text-xs font-bold text-brand">
-                    {i + 1}
-                  </span>
-                  <PhotoTreatment
-                    src={stop.place.image}
-                    alt=""
-                    verificationStatus={stop.place.verificationStatus}
-                    sizes="112px"
-                    className="h-24 w-28 shrink-0 rounded-sm sm:w-36"
-                  />
-                  <span className="min-w-0 flex-1">
-                    <span className="font-mono text-[11px] tabular-nums text-subtle">
-                      {stop.arrivalTime} – {stop.departureTime}
+                  <button
+                    type="button"
+                    onClick={() => selectFromRow(stop.place.slug)}
+                    aria-label={`${stop.place.name}, haritada göster`}
+                    className="flex min-w-0 flex-1 items-stretch gap-4 text-left"
+                  >
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center self-start rounded-full border-2 border-brand bg-surface font-mono text-xs font-bold text-brand">
+                      {i + 1}
                     </span>
-                    <span className="mt-0.5 block font-display text-card-title font-semibold leading-tight text-strong">
-                      {stop.place.name}
-                    </span>
-                    <span className="mt-1 line-clamp-2 block text-meta text-muted">{stop.place.shortDescription}</span>
-                    <span className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-meta">
-                      {stop.admissionCost > 0 ? (
-                        <span className="font-medium text-muted">{stop.admissionCost.toLocaleString('tr-TR')} TRY</span>
-                      ) : (
-                        <span className="font-medium text-success">Ücretsiz</span>
+                    <span className="relative h-24 w-28 shrink-0 overflow-hidden rounded-sm bg-surface-muted sm:w-36">
+                      {stop.place.image && <Image src={stop.place.image} alt="" fill sizes="112px" className="object-cover" />}
+                      {representative && stop.place.image && (
+                        <span className="absolute bottom-1 left-1 rounded-full bg-white/92 px-1.5 py-0.5 text-[9px] font-medium text-ink-soft">
+                          Temsili
+                        </span>
                       )}
                     </span>
-                  </span>
-                </button>
+                    <span className="min-w-0 flex-1">
+                      <span className="font-mono text-[11px] tabular-nums text-subtle">
+                        {stop.arrivalTime} – {stop.departureTime}
+                      </span>
+                      <span className="mt-0.5 block font-display text-card-title font-semibold leading-tight text-strong">{stop.place.name}</span>
+                      <span className="mt-1 line-clamp-2 block text-meta text-muted">{stop.place.shortDescription}</span>
+                      <span className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-meta">
+                        {stop.admissionCost > 0 ? (
+                          <span className="font-medium text-muted">{stop.admissionCost.toLocaleString('tr-TR')} TRY</span>
+                        ) : (
+                          <span className="font-medium text-success">Ücretsiz</span>
+                        )}
+                      </span>
+                    </span>
+                  </button>
 
-                <div className="flex shrink-0 flex-col items-center justify-center gap-2">
-                  <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${stop.place.name}, ${stop.place.address}`)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`${stop.place.name}, ${tr.place.getDirections}`}
-                    className="flex h-10 w-10 items-center justify-center rounded-sm text-subtle transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
-                  >
-                    <DirectionsIcon className="h-4 w-4" />
-                  </a>
-                  <Link
-                    href={`/places/${stop.place.slug}`}
-                    aria-label={`${stop.place.name}, ${tr.place.viewDetails}`}
-                    className="flex h-10 w-10 items-center justify-center rounded-sm text-subtle transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
-                  >
-                    →
-                  </Link>
+                  <div className="flex shrink-0 flex-col items-center justify-center gap-2">
+                    <a
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${stop.place.name}, ${stop.place.address}`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${stop.place.name}, ${tr.place.getDirections}`}
+                      className="flex h-10 w-10 items-center justify-center rounded-sm text-subtle transition-colors hover:text-brand"
+                    >
+                      <DirectionsIcon className="h-4 w-4" />
+                    </a>
+                    <Link
+                      href={`/places/${stop.place.slug}`}
+                      aria-label={`${stop.place.name}, ${tr.place.viewDetails}`}
+                      className="flex h-10 w-10 items-center justify-center rounded-sm text-subtle transition-colors hover:text-brand"
+                    >
+                      →
+                    </Link>
+                  </div>
                 </div>
-              </div>
 
-              {!isLast && <TravelSegment stop={stop} transport={itinerary.input.transport} />}
+                {!isLast && <TravelSegment stop={stop} transport={itinerary.input.transport} />}
               </div>
             );
           })}
@@ -240,8 +231,8 @@ export function ItineraryView({ itinerary }: Props) {
       </div>
 
       <p className="mt-8 max-w-2xl text-meta leading-relaxed text-warning">
-        Bu program tahmini süreler ve örnek veriler kullanılarak otomatik oluşturulmuştur.
-        Ziyaret öncesi açılış saatlerini ve fiyatları resmi kaynaklardan doğrulayın.
+        Bu program tahmini süreler ve örnek veriler kullanılarak otomatik oluşturulmuştur. Ziyaret öncesi açılış
+        saatlerini ve fiyatları resmi kaynaklardan doğrulayın.
       </p>
     </div>
   );
@@ -259,9 +250,6 @@ function Metric({ label, value }: { label: string; value: string }) {
   );
 }
 
-/** The three real confidence tiers: a matched real bus leg, an estimated
- * transit hop, or a plain estimated drive/walk — never shown with the
- * same visual confidence. */
 function TravelSegment({ stop, transport }: { stop: ItineraryDay['stops'][number]; transport: TransportMode }) {
   if (stop.travelToNextMin <= 0) return null;
 

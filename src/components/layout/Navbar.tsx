@@ -1,10 +1,12 @@
 'use client';
 // components/layout/Navbar.tsx
-// Turkish-first navigation for Gezeceyik Kıbrıs.
-// Desktop: logo + category links + harita/favoriler + Gezi Planla CTA
-// Mobile: hamburger → full-screen slide-in
+// Ground-up rebuild. Wordmark carries the brand's personality (a warm
+// Fraunces italic on "Kıbrıs", set against a plain-weight "Gezeceyik") so
+// the surrounding UI can stay quiet. Desktop: wordmark + category links +
+// harita/favoriler + Gezi Planla CTA. Mobile: hamburger → full-screen
+// slide-in.
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
@@ -28,38 +30,23 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
-  const isActive = (href: string) =>
-    pathname === href || pathname.startsWith(href + '/');
+  const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/');
+
+  // Close the mobile sheet on route change so a back-navigation never
+  // leaves it stuck open. Deferred to a microtask (matches the pattern in
+  // hooks/useFavorites etc.) to avoid a synchronous setState-in-effect.
+  useEffect(() => {
+    Promise.resolve().then(() => setOpen(false));
+  }, [pathname]);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-line/80 bg-paper/95 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-
-        {/* Logo — a coastline gesture, not an icon boxed in a rounded square */}
-        <Link
-          href="/"
-          className="group flex items-center gap-2.5"
-          aria-label="Gezeceyik Kıbrıs, Ana Sayfa"
-        >
-          <svg width="26" height="16" viewBox="0 0 26 16" fill="none" aria-hidden="true" className="shrink-0 text-brand">
-            <path
-              d="M1.5 12.5C4 12.5 4.5 5 8 5c3 0 3 6.5 6 6.5 2.5 0 3-8 10-8"
-              stroke="currentColor"
-              strokeWidth="1.75"
-              strokeLinecap="round"
-              fill="none"
-            />
-            <circle cx="24.5" cy="3.5" r="1.75" fill="currentColor" />
-          </svg>
-          <span className="flex items-baseline gap-1.5">
-            <span className="font-display text-[15px] font-semibold tracking-tight text-strong">
-              Gezeceyik
-            </span>
-            <span className="hidden text-[11px] text-subtle sm:inline">Kıbrıs</span>
-          </span>
+    <header className="sticky top-0 z-nav w-full border-b border-line/80 bg-paper/95 backdrop-blur-md">
+      <div className="mx-auto flex h-16 max-w-[1320px] items-center justify-between px-4 sm:px-6 lg:px-8">
+        <Link href="/" className="group flex shrink-0 items-baseline gap-1.5" aria-label="Gezeceyik Kıbrıs, Ana Sayfa">
+          <span className="font-sans text-[15px] font-bold tracking-tight text-strong">Gezeceyik</span>
+          <span className="font-display text-[17px] italic text-brand">Kıbrıs</span>
         </Link>
 
-        {/* Desktop nav */}
         <nav className="hidden items-center gap-0.5 lg:flex" aria-label="Ana navigasyon">
           <ul className="flex items-center gap-0.5">
             {primaryLinks.map(({ href, label }) => (
@@ -77,9 +64,6 @@ export function Navbar() {
           </ul>
         </nav>
 
-        {/* Desktop right-side actions — icon always visible, label appears once
-            there's room (xl:) so the bar never wraps at the lg breakpoint;
-            aria-label keeps the accessible name correct at every width. */}
         <div className="hidden items-center gap-1 lg:flex">
           <Link
             href="/gezilerim"
@@ -101,14 +85,15 @@ export function Navbar() {
             <HeartIcon filled={isActive('/favoriler')} className="h-[18px] w-[18px]" />
             <span className="hidden xl:inline">Favoriler</span>
           </Link>
-          <Button href="/gezi-planla" size="sm" className="ml-1">Gezi Planla</Button>
+          <Button href="/gezi-planla" size="sm" className="ml-1">
+            Gezi Planla
+          </Button>
         </div>
 
-        {/* Mobile menu button */}
         <button
           type="button"
-          className="flex h-10 w-10 items-center justify-center rounded-sm text-strong transition-colors hover:bg-surface-muted lg:hidden"
-          onClick={() => setOpen(!open)}
+          className="flex h-11 w-11 items-center justify-center rounded-sm text-strong transition-colors hover:bg-surface-muted lg:hidden"
+          onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
           aria-controls="mobile-nav"
           aria-label={open ? 'Menüyü kapat' : 'Menüyü aç'}
@@ -117,21 +102,17 @@ export function Navbar() {
         </button>
       </div>
 
-      {/* Mobile nav */}
       {open && (
         <div id="mobile-nav" className="border-t border-line bg-paper lg:hidden">
-          <nav className="mx-auto max-w-7xl px-4 py-4 sm:px-6" aria-label="Mobil navigasyon">
+          <nav className="mx-auto max-w-[1320px] px-4 py-4 sm:px-6" aria-label="Mobil navigasyon">
             <ul className="space-y-0.5">
               {primaryLinks.map(({ href, label }) => (
                 <li key={href}>
                   <Link
                     href={href}
-                    className={`flex items-center rounded-sm px-3 py-2.5 text-sm font-medium transition-colors ${
-                      isActive(href)
-                        ? 'bg-surface-muted text-brand'
-                        : 'text-muted hover:bg-surface-muted hover:text-strong'
+                    className={`flex min-h-11 items-center rounded-sm px-3 py-2.5 text-base font-medium transition-colors ${
+                      isActive(href) ? 'bg-surface-muted text-brand' : 'text-muted hover:bg-surface-muted hover:text-strong'
                     }`}
-                    onClick={() => setOpen(false)}
                   >
                     {label}
                   </Link>
@@ -140,12 +121,9 @@ export function Navbar() {
               <li>
                 <Link
                   href="/gezilerim"
-                  className={`flex items-center rounded-sm px-3 py-2.5 text-sm font-medium transition-colors ${
-                    isActive('/gezilerim')
-                      ? 'bg-surface-muted text-brand'
-                      : 'text-muted hover:bg-surface-muted hover:text-strong'
+                  className={`flex min-h-11 items-center rounded-sm px-3 py-2.5 text-base font-medium transition-colors ${
+                    isActive('/gezilerim') ? 'bg-surface-muted text-brand' : 'text-muted hover:bg-surface-muted hover:text-strong'
                   }`}
-                  onClick={() => setOpen(false)}
                 >
                   Gezilerim
                 </Link>
@@ -153,19 +131,16 @@ export function Navbar() {
               <li>
                 <Link
                   href="/favoriler"
-                  className={`flex items-center rounded-sm px-3 py-2.5 text-sm font-medium transition-colors ${
-                    isActive('/favoriler')
-                      ? 'bg-surface-muted text-brand'
-                      : 'text-muted hover:bg-surface-muted hover:text-strong'
+                  className={`flex min-h-11 items-center rounded-sm px-3 py-2.5 text-base font-medium transition-colors ${
+                    isActive('/favoriler') ? 'bg-surface-muted text-brand' : 'text-muted hover:bg-surface-muted hover:text-strong'
                   }`}
-                  onClick={() => setOpen(false)}
                 >
                   Favorilerim
                 </Link>
               </li>
             </ul>
             <div className="mt-4 border-t border-surface-muted pt-4">
-              <Button href="/gezi-planla" className="w-full" onClick={() => setOpen(false)}>
+              <Button href="/gezi-planla" className="w-full">
                 Gezi Planla
               </Button>
             </div>

@@ -1,9 +1,10 @@
 'use client';
 // components/ui/Reveal.tsx
 // Thin scroll-reveal wrapper: fades/lifts content in once as it enters
-// the viewport. transform + opacity only; no-ops under prefers-reduced-motion
-// (see globals.css). Keep usage sparing — this communicates arrival for a
-// section's first appearance, not a decoration to apply everywhere.
+// the viewport. transform + opacity only; no-ops under
+// prefers-reduced-motion (see globals.css). Keep usage sparing — this
+// communicates arrival for a section's first appearance, not a
+// decoration to apply everywhere.
 
 import { ComponentPropsWithoutRef, ReactNode } from 'react';
 import { useInView } from '@/hooks/useInView';

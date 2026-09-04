@@ -1,9 +1,8 @@
 // app/places/[slug]/page.tsx — Yer Detay Sayfası (/places/[slug])
-// Server Component with generateStaticParams for SSG. Phase 4: cinematic
+// Server Component with generateStaticParams for SSG. Cinematic
 // photography-led hero → data-adaptive essentials strip → editorial
 // history essay → real geographic context → nearby places as journey
-// continuation. Presentation only — data access (getPlaceBySlug,
-// getNearbyPlaces) is unchanged.
+// continuation.
 
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
@@ -17,7 +16,6 @@ import { DiscoveryRow } from '@/components/places/DiscoveryRow';
 import { MobileActionBar } from '@/components/places/MobileActionBar';
 import { PlaceGeoContextWrapper } from '@/components/map/PlaceGeoContextWrapper';
 import { AddToTripButton } from '@/components/ui/AddToTripButton';
-import { IslandLineArt } from '@/components/graphics/IslandLineArt';
 import { Container } from '@/components/ui/Container';
 import { tr } from '@/lib/i18n/tr';
 import { isImageRepresentative } from '@/lib/format';
@@ -29,9 +27,6 @@ interface Props {
 export const revalidate = 3600;
 
 export async function generateStaticParams() {
-  // Deliberately tolerant of a failed/unreachable database at build time —
-  // see the original note this replaces: dynamicParams stays at its
-  // default (true), so any slug not returned here still renders on-demand.
   try {
     const slugs = await getAllPlaceSlugs();
     return slugs.map((slug) => ({ slug }));
@@ -75,29 +70,18 @@ export default async function PlaceDetailPage({ params }: Props) {
 
   return (
     <article className="pb-20 lg:pb-0">
-      {/* Hero — cinematic and trustworthy: category tag, headline, one-line
-          hook, one meta row. Never covers the photo with more than that. */}
-      <div className="relative min-h-[68dvh] w-full overflow-hidden bg-ink sm:min-h-[76dvh]">
+      <div className="relative min-h-[68dvh] w-full overflow-hidden bg-deep sm:min-h-[76dvh]">
         {place.image ? (
-          <Image
-            src={place.image}
-            alt={`${place.name}, ${place.city}, Kuzey Kıbrıs`}
-            fill
-            className="object-cover"
-            priority
-            sizes="100vw"
-          />
+          <Image src={place.image} alt={`${place.name}, ${place.city}, Kuzey Kıbrıs`} fill className="object-cover" priority sizes="100vw" />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center bg-deep">
-            <IslandLineArt className="h-[55%] w-[55%] text-white/20" strokeWidth={2} />
+            <span className="font-display text-4xl italic text-white/20">Gezeceyik Kıbrıs</span>
           </div>
         )}
 
         <div
           className="absolute inset-0"
-          style={{
-            background: 'linear-gradient(0deg, rgb(23 25 28 / 0.85) 0%, rgb(23 25 28 / 0.35) 32%, transparent 62%)',
-          }}
+          style={{ background: 'linear-gradient(0deg, rgb(13 46 66 / 0.88) 0%, rgb(13 46 66 / 0.35) 32%, transparent 62%)' }}
           aria-hidden="true"
         />
 
@@ -112,13 +96,9 @@ export default async function PlaceDetailPage({ params }: Props) {
               )}
             </div>
 
-            <h1 className="mt-2 font-display text-page-title font-bold leading-tight text-white text-balance">
-              {place.name}
-            </h1>
+            <h1 className="mt-2 font-display text-page-title font-bold leading-tight text-white text-balance">{place.name}</h1>
 
-            <p className="mt-2 max-w-xl text-body-sm leading-relaxed text-white/80 text-pretty">
-              {place.shortDescription}
-            </p>
+            <p className="mt-2 max-w-xl text-body-sm leading-relaxed text-white/80 text-pretty">{place.shortDescription}</p>
 
             <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-body-sm text-white/75">
               {hasLocation ? (
@@ -145,7 +125,6 @@ export default async function PlaceDetailPage({ params }: Props) {
 
       <PlaceEssentials place={place} />
 
-      {/* Source & verification — a quiet editorial footnote, not an alarm banner */}
       <Container className="pt-4">
         {place.verificationStatus === 'verified' ? (
           <p className="max-w-2xl text-caption leading-relaxed text-subtle">
@@ -162,8 +141,8 @@ export default async function PlaceDetailPage({ params }: Props) {
           </p>
         ) : (
           <p className="max-w-2xl text-caption leading-relaxed text-warning">
-            Açılış saatleri, fiyatlar ve iletişim bilgileri <strong className="font-semibold">örnek veridir</strong>,
-            bağımsız olarak doğrulanmamıştır. Ziyaret öncesi resmi kaynaklara başvurun.
+            Açılış saatleri, fiyatlar ve iletişim bilgileri <strong className="font-semibold">örnek veridir</strong>, bağımsız olarak
+            doğrulanmamıştır. Ziyaret öncesi resmi kaynaklara başvurun.
             {place.sourceUrl && (
               <>
                 {' '}
@@ -176,12 +155,9 @@ export default async function PlaceDetailPage({ params }: Props) {
         )}
       </Container>
 
-      {/* Content — lede, then the essay, then any real gallery photos */}
       <Container className="py-10">
         <div className="max-w-2xl">
-          <p className="font-display text-block-title leading-relaxed text-ink-soft text-pretty">
-            {place.description}
-          </p>
+          <p className="font-display text-block-title leading-relaxed text-ink-soft text-pretty">{place.description}</p>
         </div>
 
         <div className="mt-10">
@@ -198,7 +174,6 @@ export default async function PlaceDetailPage({ params }: Props) {
           </div>
         )}
 
-        {/* Geographic context — real coordinates, real nearby places */}
         {hasLocation && (
           <section id="geo" className="mt-16 scroll-mt-24 border-t border-line pt-12" aria-labelledby="geo-heading">
             <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
@@ -207,12 +182,10 @@ export default async function PlaceDetailPage({ params }: Props) {
                   Konum ve Çevre
                 </h2>
                 <p className="mt-1.5 text-body-sm text-subtle">
-                  {nearbyPoints.length > 0
-                    ? `Yakında ${nearbyPoints.length} yer daha var.`
-                    : `${place.address}`}
+                  {nearbyPoints.length > 0 ? `Yakında ${nearbyPoints.length} yer daha var.` : place.address}
                 </p>
               </div>
-              <AddToTripButton placeSlug={place.slug} placeName={place.name} large />
+              <AddToTripButton slug={place.slug} name={place.name} large />
             </div>
             <div className="h-80 w-full overflow-hidden rounded-lg border border-line sm:h-96">
               <PlaceGeoContextWrapper
@@ -223,15 +196,12 @@ export default async function PlaceDetailPage({ params }: Props) {
           </section>
         )}
 
-        {/* Nearby places — continuation of the journey, not a repeated grid */}
         {nearby.length > 0 && (
           <section className="mt-16 border-t border-line pt-12" aria-labelledby="nearby-heading">
             <h2 id="nearby-heading" className="font-display text-block-title font-semibold text-strong">
               Madem buradasın…
             </h2>
-            <p className="mt-1.5 max-w-lg text-body-sm text-subtle">
-              Bölgedeyken ziyaret etmeye değer diğer yerler.
-            </p>
+            <p className="mt-1.5 max-w-lg text-body-sm text-subtle">Bölgedeyken ziyaret etmeye değer diğer yerler.</p>
             <div className="mt-6">
               {nearby.slice(0, 4).map((p) => (
                 <DiscoveryRow key={p.slug} place={p} />
@@ -240,7 +210,6 @@ export default async function PlaceDetailPage({ params }: Props) {
           </section>
         )}
 
-        {/* Ending — a quiet sign-off, not a giant CTA card */}
         <div className="mt-14 border-t border-line pt-8">
           <p className="font-display text-block-title text-strong">Bu durağı gördün. Sırada ne var?</p>
           <Link href="/gezi-planla" className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:underline">

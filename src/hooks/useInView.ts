@@ -1,9 +1,8 @@
 'use client';
 // hooks/useInView.ts
 // Minimal IntersectionObserver hook for scroll-triggered entrance motion.
-// No animation library: consumers pair this with the CSS in globals.css
-// ([data-motion="fade-up"] / [data-enter]), which already no-ops under
-// prefers-reduced-motion.
+// Pairs with [data-motion]/[data-enter] in globals.css. Native browser
+// API only — no animation library needed for a single one-shot reveal.
 
 import { useEffect, useRef, useState } from 'react';
 

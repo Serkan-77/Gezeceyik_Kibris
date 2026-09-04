@@ -6,7 +6,6 @@
 
 import { Metadata } from 'next';
 import { GezilerimClient } from '@/components/pages/GezilerimClient';
-import { PlaceListingHeader } from '@/components/places/PlaceListingHeader';
 import { Container } from '@/components/ui/Container';
 
 export const metadata: Metadata = {
@@ -17,12 +16,11 @@ export const metadata: Metadata = {
 export default function GezilerimPage() {
   return (
     <Container className="py-10 sm:py-14">
-      <PlaceListingHeader
-        eyebrow="Gezilerim"
-        title="Kaydettiğim Gezi Planları"
-        subtitle="Gezi Planla ile oluşturup kaydettiğiniz programlar."
-      />
-      <GezilerimClient />
+      <h1 className="font-display text-page-title font-semibold text-strong text-balance">Kaydettiğim Gezi Planları</h1>
+      <p className="mt-3 max-w-xl text-body leading-relaxed text-muted">Gezi Planla ile oluşturup kaydettiğiniz programlar.</p>
+      <div className="mt-8">
+        <GezilerimClient />
+      </div>
     </Container>
   );
 }

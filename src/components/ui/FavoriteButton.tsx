@@ -1,33 +1,38 @@
 'use client';
 // components/ui/FavoriteButton.tsx
-// Heart toggle backed by useFavorites (localStorage). Thin wrapper around
-// IconToggleButton — this file only owns the favorites-specific wiring.
+// A small, honest icon-only toggle — no colored badge, no pill chrome.
+// Safe pre-hydration: renders an inert outline heart until the
+// localStorage-backed hook hydrates, so it never flashes a wrong state.
 
 import { useFavorites } from '@/hooks/useFavorites';
-import { IconToggleButton } from './IconButton';
-import { HeartIcon } from './icons';
+import { HeartIcon } from '@/components/ui/icons';
 
 interface FavoriteButtonProps {
-  placeSlug: string;
-  placeName: string;
-  large?: boolean;
+  slug: string;
+  name: string;
   className?: string;
+  size?: 'sm' | 'md';
 }
 
-export function FavoriteButton({ placeSlug, placeName, large, className }: FavoriteButtonProps) {
+export function FavoriteButton({ slug, name, className = '', size = 'md' }: FavoriteButtonProps) {
   const { isFavorite, toggle, hydrated } = useFavorites();
-  const active = hydrated && isFavorite(placeSlug);
+  const active = hydrated && isFavorite(slug);
+  const dim = size === 'sm' ? 'h-8 w-8' : 'h-10 w-10';
+  const iconDim = size === 'sm' ? 'h-4 w-4' : 'h-[18px] w-[18px]';
 
   return (
-    <IconToggleButton
-      icon={<HeartIcon filled={active} className="h-4 w-4" />}
-      active={active}
-      onToggle={() => toggle(placeSlug)}
-      aria-label={active ? `${placeName} favorilerden çıkar` : `${placeName} favorilere ekle`}
-      large={large}
-      label={{ active: 'Favorilerden Çıkar', inactive: 'Favorilere Ekle' }}
-      tone="rose"
-      className={className}
-    />
+    <button
+      type="button"
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggle(slug);
+      }}
+      aria-pressed={active}
+      aria-label={active ? `${name} favorilerden çıkar` : `${name} favorilere ekle`}
+      className={`flex ${dim} items-center justify-center rounded-full bg-white/90 text-ink shadow-card backdrop-blur-sm transition-colors hover:bg-white ${className}`}
+    >
+      <HeartIcon filled={active} className={`${iconDim} ${active ? 'text-terracotta' : ''}`} />
+    </button>
   );
 }

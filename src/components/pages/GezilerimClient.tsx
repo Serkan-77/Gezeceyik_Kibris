@@ -1,9 +1,7 @@
 'use client';
 // components/pages/GezilerimClient.tsx
-// Lists locally-saved trip itineraries ("Gezilerim"). Purely client-side —
-// saved trips live in localStorage (see hooks/useSavedTrips.ts), so there's
-// no server data to fetch; each saved record already carries its full
-// TripItinerary (places included), so it can render standalone.
+// Lists locally-saved trip itineraries. Purely client-side — each saved
+// record already carries its full TripItinerary, so nothing to fetch.
 
 import { useState } from 'react';
 import { useSavedTrips } from '@/hooks/useSavedTrips';
@@ -13,11 +11,7 @@ import { Button } from '@/components/ui/Button';
 import { CompassIcon, ChevronDownIcon } from '@/components/ui/icons';
 
 function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('tr-TR', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  });
+  return new Date(iso).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
 export function GezilerimClient() {
@@ -59,9 +53,7 @@ export function GezilerimClient() {
                 className="flex min-w-0 flex-1 items-center gap-3 text-left"
                 aria-expanded={isOpen}
               >
-                <ChevronDownIcon
-                  className={`h-4 w-4 shrink-0 text-subtle transition-transform ${isOpen ? 'rotate-180' : ''}`}
-                />
+                <ChevronDownIcon className={`h-4 w-4 shrink-0 text-subtle transition-transform ${isOpen ? 'rotate-180' : ''}`} />
                 <div className="min-w-0">
                   <p className="truncate font-display text-card-title font-semibold text-strong">{trip.label}</p>
                   <p className="text-meta text-subtle">
@@ -69,11 +61,7 @@ export function GezilerimClient() {
                   </p>
                 </div>
               </button>
-              <button
-                type="button"
-                onClick={() => removeTrip(trip.id)}
-                className="shrink-0 text-meta text-subtle transition-colors hover:text-brand"
-              >
+              <button type="button" onClick={() => removeTrip(trip.id)} className="shrink-0 text-meta text-subtle transition-colors hover:text-brand">
                 Sil
               </button>
             </div>

@@ -3,7 +3,6 @@
 
 import { Metadata } from 'next';
 import { FavorilerClient } from '@/components/pages/FavorilerClient';
-import { PlaceListingHeader } from '@/components/places/PlaceListingHeader';
 import { Container } from '@/components/ui/Container';
 import { getAllPlaces } from '@/lib/places';
 
@@ -19,12 +18,11 @@ export default async function FavorilerPage() {
 
   return (
     <Container className="py-10 sm:py-14">
-      <PlaceListingHeader
-        eyebrow="Favorilerim"
-        title="Kaydettiğim Yerler"
-        subtitle="Favorilerinize eklediğiniz Kuzey Kıbrıs yerleri."
-      />
-      <FavorilerClient places={places} />
+      <h1 className="font-display text-page-title font-semibold text-strong text-balance">Kaydettiğim Yerler</h1>
+      <p className="mt-3 max-w-xl text-body leading-relaxed text-muted">Favorilerinize eklediğiniz Kuzey Kıbrıs yerleri.</p>
+      <div className="mt-8">
+        <FavorilerClient places={places} />
+      </div>
     </Container>
   );
 }

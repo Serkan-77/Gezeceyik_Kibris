@@ -1,8 +1,7 @@
 // components/places/MobileActionBar.tsx
-// Mobile is a primary use case here (someone walking around Cyprus), so the
-// two actions that matter most in the moment — save it, get directions —
-// stay reachable without scrolling back up. Hidden at lg: the sidebar
-// panel is already visible there.
+// Mobile is a primary use case here (someone walking around Cyprus), so
+// the actions that matter most in the moment — save it, add to trip, get
+// directions — stay reachable without scrolling back up.
 
 import { Place } from '@/types/place';
 import { FavoriteButton } from '@/components/ui/FavoriteButton';
@@ -16,11 +15,11 @@ export function MobileActionBar({ place }: { place: Place }) {
 
   return (
     <div
-      className="fixed inset-x-0 bottom-0 z-40 flex items-center gap-2 border-t border-line bg-surface/95 px-4 py-3 backdrop-blur-md lg:hidden"
+      className="fixed inset-x-0 bottom-0 z-overlay flex items-center gap-2 border-t border-line bg-surface/95 px-4 py-3 backdrop-blur-md lg:hidden"
       style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
     >
-      <FavoriteButton placeSlug={place.slug} placeName={place.name} />
-      <AddToTripButton placeSlug={place.slug} placeName={place.name} />
+      <FavoriteButton slug={place.slug} name={place.name} />
+      <AddToTripButton slug={place.slug} name={place.name} />
       <Button
         href={`https://www.google.com/maps/search/?api=1&query=${mapsQuery}`}
         target="_blank"
