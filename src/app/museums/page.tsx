@@ -4,12 +4,14 @@ import { Suspense } from 'react';
 import { Metadata } from 'next';
 import { getPlacesByCategory, getAllRegions } from '@/lib/places';
 import { DiscoveryExplorer, DiscoveryExplorerSkeleton } from '@/components/places/DiscoveryExplorer';
+import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
 import { Container } from '@/components/ui/Container';
 
 export const metadata: Metadata = {
   title: 'Kuzey Kıbrıs Müzeleri: Açılış Saatleri, Fiyatlar ve Ziyaretçi Rehberi',
   description:
     'Kuzey Kıbrıs\'taki en iyi müzeleri keşfedin: arkeoloji koleksiyonları, Bizans sanatı, Osmanlı tarihi ve daha fazlası. Tüm bölgeler için açılış saatleri ve giriş ücretleri.',
+  alternates: { canonical: '/museums' },
   openGraph: {
     title: 'Kuzey Kıbrıs Müzeleri | Gezeceyik Kıbrıs',
     description: 'Kuzey Kıbrıs\'ın altı bölgesindeki arkeoloji, sanat ve tarih müzeleri.',
@@ -23,16 +25,19 @@ export default async function MuseumsPage() {
 
   return (
     <Container className="py-10 sm:py-14">
-      <Suspense fallback={<DiscoveryExplorerSkeleton />}>
-        <DiscoveryExplorer
-          places={museums}
-          categories={['Museum']}
-          regions={regions}
-          lockedCategory="Museum"
-          title="Kuzey Kıbrıs Müzeleri"
-          subtitle="Dünya standartlarında arkeoloji, sanat ve tarih müzeleri: açılış saatleri, giriş ücretleri ve ziyaretçi bilgileriyle."
-        />
-      </Suspense>
+      <Breadcrumbs items={[{ name: 'Ana Sayfa', url: '/' }, { name: 'Yerler', url: '/places' }, { name: 'Müzeler', url: '/museums' }]} />
+      <div className="mt-5">
+        <Suspense fallback={<DiscoveryExplorerSkeleton />}>
+          <DiscoveryExplorer
+            places={museums}
+            categories={['Museum']}
+            regions={regions}
+            lockedCategory="Museum"
+            title="Kuzey Kıbrıs Müzeleri"
+            subtitle="Dünya standartlarında arkeoloji, sanat ve tarih müzeleri: açılış saatleri, giriş ücretleri ve ziyaretçi bilgileriyle."
+          />
+        </Suspense>
+      </div>
     </Container>
   );
 }

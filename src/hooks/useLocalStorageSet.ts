@@ -1,8 +1,9 @@
 'use client';
 // hooks/useLocalStorageSet.ts
 // Generic localStorage-backed string-array set with SSR-safe hydration.
-// Shared plumbing behind useFavorites and useTripSelection — both are the
-// same "toggle a slug in/out of a persisted list" shape, keyed differently.
+// Shared plumbing behind useFavorites — a "toggle a slug in/out of a
+// persisted list" shape. (The trip-selection equivalent now lives in
+// context/DraftRouteContext.tsx, Supabase-backed rather than localStorage.)
 
 import { useState, useEffect, useCallback } from 'react';
 

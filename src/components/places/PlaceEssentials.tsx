@@ -6,12 +6,14 @@
 // is real data).
 
 import { ReactNode } from 'react';
+import Link from 'next/link';
 import { Place } from '@/types/place';
 import { AddToTripButton } from '@/components/ui/AddToTripButton';
 import { FavoriteButton } from '@/components/ui/FavoriteButton';
 import { Button } from '@/components/ui/Button';
-import { PlaceOpenStatus } from './PlaceOpenStatus';
-import { DirectionsIcon } from '@/components/ui/icons';
+import { PlaceWeeklyHours } from './PlaceWeeklyHours';
+import { DirectionsIcon, ArrowRightIcon } from '@/components/ui/icons';
+import { useDraftRoute } from '@/context/DraftRouteContext';
 import { tr } from '@/lib/i18n/tr';
 
 interface PlaceEssentialsProps {
@@ -24,6 +26,7 @@ interface Row {
 }
 
 export function PlaceEssentials({ place }: PlaceEssentialsProps) {
+  const { count, hydrated } = useDraftRoute();
   const mapsQuery = encodeURIComponent(`${place.name}, ${place.address}`);
 
   const admissionLabel = place.admission
@@ -42,9 +45,6 @@ export function PlaceEssentials({ place }: PlaceEssentialsProps) {
 
   const rows: Row[] = [{ label: tr.filter.region, value: `${place.city}, ${tr.regions[place.region]}` }];
 
-  if (place.openingHours) {
-    rows.push({ label: tr.place.openingHours, value: <PlaceOpenStatus openingHours={place.openingHours} /> });
-  }
   if (admissionLabel) {
     rows.push({
       label: tr.place.admission,
@@ -72,8 +72,17 @@ export function PlaceEssentials({ place }: PlaceEssentialsProps) {
     <div className="rounded-md border border-line bg-surface p-5">
       <h2 className="mb-1 font-display text-block-title font-semibold text-strong">{tr.place.visitorInfo}</h2>
       <dl className="mt-3 divide-y divide-line">
-        {rows.map((row) => (
-          <div key={row.label} className="flex items-start justify-between gap-4 py-3 first:pt-0">
+        <div className="flex items-start justify-between gap-4 py-3">
+          <dt className="shrink-0 text-label font-medium uppercase tracking-wider text-subtle">{rows[0].label}</dt>
+          <dd className="text-right text-body-sm font-medium text-strong">{rows[0].value}</dd>
+        </div>
+        {place.openingHours && (
+          <div className="py-3">
+            <PlaceWeeklyHours openingHours={place.openingHours} />
+          </div>
+        )}
+        {rows.slice(1).map((row) => (
+          <div key={row.label} className="flex items-start justify-between gap-4 py-3">
             <dt className="shrink-0 text-label font-medium uppercase tracking-wider text-subtle">{row.label}</dt>
             <dd className="text-right text-body-sm font-medium text-strong">{row.value}</dd>
           </div>
@@ -93,9 +102,23 @@ export function PlaceEssentials({ place }: PlaceEssentialsProps) {
           <span className="sr-only">(yeni sekmede açılır)</span>
         </Button>
         <div className="flex gap-2.5">
-          <AddToTripButton slug={place.slug} name={place.name} large />
+          <AddToTripButton place={place} large />
           <FavoriteButton slug={place.slug} name={place.name} className="border border-line bg-surface shadow-none" />
         </div>
+        {hydrated && count > 0 && (
+          <Link
+            href="/rotam"
+            className="group flex items-center justify-between rounded-sm bg-brand/5 px-3.5 py-2.5 text-body-sm text-brand-strong transition-colors hover:bg-brand/10"
+          >
+            <span>
+              <span className="font-semibold tabular-nums">{count}</span> durak rotanda
+            </span>
+            <span className="flex items-center gap-1 font-medium">
+              Rotanı görüntüle
+              <ArrowRightIcon className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+            </span>
+          </Link>
+        )}
       </div>
     </div>
   );

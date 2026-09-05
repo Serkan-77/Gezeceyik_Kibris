@@ -9,9 +9,10 @@ import { getAllCategories, getAllPlaces } from '@/lib/places';
 import { getActiveTransitRoutes } from '@/lib/transitRoutes';
 
 export const metadata: Metadata = {
-  title: 'Gezi Planla: Gezeceyik Kıbrıs',
+  title: 'Gezi Planla',
   description:
     'Kuzey Kıbrıs için kişiselleştirilmiş çok günlük gezi programı oluşturun. Konaklama yerinizi, sürenizi ve ilgi alanlarınızı girin.',
+  alternates: { canonical: '/gezi-planla' },
   openGraph: {
     title: 'Gezi Planla | Gezeceyik Kıbrıs',
     description: 'Kuzey Kıbrıs için akıllı, optimize edilmiş gezi programı.',

@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   title: 'Kuzey Kıbrıs Haritası: Tüm Yerleri Haritada Keşfet',
   description:
     'Kuzey Kıbrıs\'taki müze, kale, plaj ve tarihi yerleri interaktif haritada görün. Kategoriye ve bölgeye göre filtreleyin.',
+  alternates: { canonical: '/harita' },
   openGraph: {
     title: 'Kuzey Kıbrıs Haritası | Gezeceyik Kıbrıs',
     description: 'KKTC\'deki tüm gezilecek yerleri interaktif haritada keşfedin.',

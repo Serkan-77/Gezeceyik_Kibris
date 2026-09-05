@@ -97,3 +97,15 @@ export interface Place {
    */
   verificationStatus: VerificationStatus;
 }
+
+/**
+ * Minimal projection used where a full Place would be needlessly heavy to
+ * ship to the client — e.g. the route builder's "add more places" search,
+ * which needs enough to render a result row and add a stop, not the full
+ * description/history/gallery payload. A full Place structurally satisfies
+ * this, so anything that already has one can pass it directly.
+ */
+export type PlaceLite = Pick<
+  Place,
+  'id' | 'slug' | 'name' | 'image' | 'city' | 'region' | 'category' | 'latitude' | 'longitude' | 'verificationStatus'
+>;

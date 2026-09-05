@@ -107,6 +107,17 @@ export async function findAllSlugs(): Promise<string[]> {
   return rows.map((r) => r.slug as string);
 }
 
+/** Slug + the row's real updatedAt — used by the sitemap for an honest per-URL lastModified (never a fabricated build-time date). */
+export async function findAllSlugsWithUpdatedAt(): Promise<{ slug: string; updatedAt: string }[]> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from(TABLE)
+    .select('slug, updatedAt')
+    .eq('published', true)
+    .eq('archived', false);
+  return unwrap(data, error, 'findAllSlugsWithUpdatedAt') ?? [];
+}
+
 export async function findAllCategories(): Promise<Category[]> {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase.from(TABLE).select('category').eq('published', true).eq('archived', false);
@@ -175,6 +186,32 @@ export async function findBySlugAny(slug: string): Promise<PlaceRow | null> {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase.from(TABLE).select('*').eq('slug', slug).maybeSingle();
   return unwrap(data, error, 'findBySlugAny');
+}
+
+/**
+ * Look up several places by id, regardless of published/archived state.
+ * Used by routeRepository to resolve a route's stops — a stop should
+ * keep showing the place it points to even if that place is later
+ * unpublished, rather than silently vanishing from a saved route.
+ */
+export async function findByIdsAny(ids: string[]): Promise<PlaceRow[]> {
+  if (ids.length === 0) return [];
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase.from(TABLE).select('*').in('id', ids);
+  return unwrap(data, error, 'findByIdsAny') ?? [];
+}
+
+/** Confirms a place id exists (and is published) before it's added to a route. */
+export async function existsPublishedId(id: string): Promise<boolean> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase
+    .from(TABLE)
+    .select('id')
+    .eq('id', id)
+    .eq('published', true)
+    .eq('archived', false)
+    .maybeSingle();
+  return unwrap(data, error, 'existsPublishedId') !== null;
 }
 
 // ─── Mutations ──────────────────────────────────────────────────

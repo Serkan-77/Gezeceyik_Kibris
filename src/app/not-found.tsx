@@ -7,6 +7,10 @@ import { ArrowRightIcon } from '@/components/ui/icons';
 
 export const metadata: Metadata = {
   title: 'Sayfa Bulunamadı',
+  // The route itself already responds with a real HTTP 404 (Next.js's
+  // not-found convention), which already excludes it from indexing — this
+  // is defense in depth for a URL a crawler discovers via a stale link.
+  robots: { index: false, follow: true },
 };
 
 export default function NotFound() {

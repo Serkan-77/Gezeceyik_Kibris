@@ -5,7 +5,7 @@
 // grid — the first result runs large, the rest settle into a standard
 // grid, so 121 places never read as an identical card wall.
 
-import { useCallback, useMemo, useState, useTransition } from 'react';
+import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Category, Place, Region } from '@/types/place';
 import { tr } from '@/lib/i18n/tr';
@@ -32,6 +32,29 @@ export function DiscoveryExplorer({ places, categories, regions, lockedCategory,
   const searchParams = useSearchParams();
   const [, startTransition] = useTransition();
   const [queryInput, setQueryInput] = useState(searchParams.get('q') ?? '');
+  const [ratings, setRatings] = useState<Record<string, { average: number; count: number }>>({});
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/ratings/batch', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ placeIds: places.map((p) => p.id) }),
+    })
+      .then((res) => res.json())
+      .then((data: { ratings: Record<string, { average: number | undefined; count: number }> }) => {
+        if (cancelled) return;
+        const withVotes: Record<string, { average: number; count: number }> = {};
+        for (const [id, agg] of Object.entries(data.ratings)) {
+          if (agg.average !== undefined) withVotes[id] = { average: agg.average, count: agg.count };
+        }
+        setRatings(withVotes);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [places]);
 
   const selectedCategory = lockedCategory ?? (searchParams.get('category') as Category | null) ?? ALL;
   const selectedRegion = (searchParams.get('region') as Region | null) ?? ALL;
@@ -124,7 +147,7 @@ export function DiscoveryExplorer({ places, categories, regions, lockedCategory,
         <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
           {filtered.map((place, i) => (
             <div key={place.slug} className={i === 0 ? 'col-span-2' : ''}>
-              <PlaceCard place={place} size={i === 0 ? 'lg' : 'md'} priority={i < 4} />
+              <PlaceCard place={place} size={i === 0 ? 'lg' : 'md'} priority={i < 4} rating={ratings[place.id]} />
             </div>
           ))}
         </div>

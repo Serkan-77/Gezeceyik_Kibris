@@ -18,6 +18,7 @@ export const metadata: Metadata = {
   title: 'Gezeceyik Kıbrıs: Müzeler, Kaleler, Plajlar ve Tarihi Yerler',
   description:
     'Kuzey Kıbrıs\'taki en iyi gezilecek yerleri keşfedin: müzeler, kaleler, arkeolojik alanlar, plajlar, manastırlar ve kültürel destinasyonlar.',
+  alternates: { canonical: '/' },
   openGraph: {
     title: 'Gezeceyik Kıbrıs: Adayı Keşfedin',
     description: 'Müzeler, kaleler, plajlar, manastırlar, arkeolojik alanlar ve daha fazlası: açılış saatleri, fiyatlar ve ziyaretçi rehberleriyle.',

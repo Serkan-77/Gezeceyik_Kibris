@@ -113,6 +113,15 @@ export async function getAllPlaceSlugs(): Promise<string[]> {
   );
 }
 
+/** Real per-place last-updated timestamps for the sitemap — see app/sitemap.ts. */
+export async function getAllPlaceSlugsWithUpdatedAt(): Promise<{ slug: string; updatedAt: string }[]> {
+  return withFallback(
+    'getAllPlaceSlugsWithUpdatedAt',
+    () => placeRepository.findAllSlugsWithUpdatedAt(),
+    () => localPlaces.map((p) => ({ slug: p.slug, updatedAt: new Date().toISOString() }))
+  );
+}
+
 export async function getAllCategories(): Promise<Category[]> {
   return withFallback(
     'getAllCategories',

@@ -15,9 +15,25 @@ import { PlaceOpenStatus } from '@/components/places/PlaceOpenStatus';
 import { DiscoveryRow } from '@/components/places/DiscoveryRow';
 import { MobileActionBar } from '@/components/places/MobileActionBar';
 import { PlaceGeoContextWrapper } from '@/components/map/PlaceGeoContextWrapper';
+import { PlaceRatingWidget } from '@/components/rating/PlaceRatingWidget';
+import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
+import { JsonLd } from '@/components/seo/JsonLd';
 import { Container } from '@/components/ui/Container';
 import { tr } from '@/lib/i18n/tr';
 import { isImageRepresentative } from '@/lib/format';
+import { getRatingSummary, getRatingAggregates } from '@/lib/repositories/ratingRepository';
+import { touristAttractionSchema } from '@/lib/seo/structuredData';
+import { Category } from '@/types/place';
+
+// Only 4 categories have a dedicated landing page today (see src/app/{museums,castles,beaches,historical-places}/page.tsx).
+// Everything else links into /places filtered by category — a real,
+// working URL, just not a standalone page of its own.
+const CATEGORY_URLS: Partial<Record<Category, string>> = {
+  Museum: '/museums',
+  Castle: '/castles',
+  Beach: '/beaches',
+  'Historical Place': '/historical-places',
+};
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -47,6 +63,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${place.name}, ${place.city}, Kuzey Kıbrıs`,
     description: place.shortDescription,
+    alternates: { canonical: `/places/${slug}` },
     openGraph: {
       title: `${place.name} | Gezeceyik Kıbrıs`,
       description: place.shortDescription,
@@ -61,6 +78,21 @@ export default async function PlaceDetailPage({ params }: Props) {
   if (!place) notFound();
 
   const nearby = await getNearbyPlaces(place);
+  // voterId omitted (null) — this page is statically generated for all
+  // 121 places (generateStaticParams + revalidate=3600) and must not
+  // become visitor-specific; only the public average/count belong here.
+  // The visitor's own rating is fetched client-side — see PlaceRatingWidget.
+  const ratingSummary = await getRatingSummary(place.id, null).catch((err) => {
+    console.warn(`[places/${place.slug}] rating summary unavailable, showing zero-state:`, err instanceof Error ? err.message : err);
+    return { average: undefined, count: 0, myRating: null };
+  });
+  const nearbyRatingsRaw = await getRatingAggregates(nearby.slice(0, 4).map((p) => p.id)).catch((err) => {
+    console.warn(`[places/${place.slug}] nearby ratings unavailable:`, err instanceof Error ? err.message : err);
+    return new Map<string, { average: number | undefined; count: number }>();
+  });
+  const nearbyRatings = new Map(
+    [...nearbyRatingsRaw].filter((entry): entry is [string, { average: number; count: number }] => entry[1].average !== undefined)
+  );
   const representative = isImageRepresentative(place.verificationStatus);
   const hasLocation = Number.isFinite(place.latitude) && Number.isFinite(place.longitude);
   const nearbyPoints = nearby
@@ -122,6 +154,18 @@ export default async function PlaceDetailPage({ params }: Props) {
         </div>
       </div>
 
+      <Container className="pt-5">
+        <Breadcrumbs
+          items={[
+            { name: 'Ana Sayfa', url: '/' },
+            { name: 'Yerler', url: '/places' },
+            { name: tr.categories[place.category], url: CATEGORY_URLS[place.category] ?? `/places?category=${encodeURIComponent(place.category)}` },
+            { name: place.name, url: `/places/${place.slug}` },
+          ]}
+        />
+      </Container>
+      <JsonLd data={touristAttractionSchema(place, ratingSummary)} />
+
       <Container className="py-10">
         <div className="grid gap-10 lg:grid-cols-[1fr_320px] lg:items-start">
           <div className="min-w-0">
@@ -149,7 +193,10 @@ export default async function PlaceDetailPage({ params }: Props) {
                       Resmi web sitesi ↗
                     </a>
                   </>
-                )}
+                )}{' '}
+                <Link href="/veri-kaynaklari" className="underline underline-offset-2 hover:opacity-80">
+                  Nasıl doğruluyoruz?
+                </Link>
               </p>
             )}
 
@@ -170,6 +217,10 @@ export default async function PlaceDetailPage({ params }: Props) {
                 ))}
               </div>
             )}
+
+            <div className="mt-10">
+              <PlaceRatingWidget placeId={place.id} initialAverage={ratingSummary.average} initialCount={ratingSummary.count} />
+            </div>
 
             {hasLocation && (
               <section id="geo" className="mt-16 scroll-mt-24 border-t border-line pt-12" aria-labelledby="geo-heading">
@@ -198,7 +249,7 @@ export default async function PlaceDetailPage({ params }: Props) {
                 <p className="mt-1.5 max-w-lg text-body-sm text-subtle">Bölgedeyken ziyaret etmeye değer diğer yerler.</p>
                 <div className="mt-6">
                   {nearby.slice(0, 4).map((p) => (
-                    <DiscoveryRow key={p.slug} place={p} />
+                    <DiscoveryRow key={p.slug} place={p} rating={nearbyRatings.get(p.id)} />
                   ))}
                 </div>
               </section>

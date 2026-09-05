@@ -22,7 +22,7 @@ export function useTodayKey(): DayKey | undefined {
   const [key, setKey] = useState<DayKey | undefined>(undefined);
 
   useEffect(() => {
-    // Batch into a microtask — same pattern as useFavorites/useTripSelection,
+    // Batch into a microtask — same pattern as useFavorites,
     // avoids the "setState synchronously within an effect" lint rule.
     Promise.resolve().then(() => {
       setKey(DAY_KEYS[new Date().getDay()]);

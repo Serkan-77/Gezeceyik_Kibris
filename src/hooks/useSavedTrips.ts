@@ -1,7 +1,7 @@
 'use client';
 // hooks/useSavedTrips.ts
 // localStorage-based saved trip itineraries ("Gezilerim").
-// Unlike useFavorites/useTripSelection (a simple slug set), a saved trip is
+// Unlike useFavorites (a simple slug set), a saved trip is
 // a full TripItinerary object — this hook owns its own read/write pair
 // rather than reusing useLocalStorageSet, which only stores string arrays.
 

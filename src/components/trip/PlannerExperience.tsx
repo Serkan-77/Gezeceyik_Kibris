@@ -8,12 +8,12 @@
 // categories, only-free, and must-visit slugs already chosen elsewhere
 // (AddToTripButton). generateItinerary/scoring/scheduling are untouched.
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Category, Place } from '@/types/place';
 import { BusRoute } from '@/types/transit';
 import { PlannerInput, TripItinerary } from '@/lib/trip-planner/types';
 import { generateItinerary } from '@/lib/trip-planner/planner';
-import { useTripSelection } from '@/hooks/useTripSelection';
+import { useDraftRoute } from '@/context/DraftRouteContext';
 import { useSavedTrips } from '@/hooks/useSavedTrips';
 import { ItineraryView } from './ItineraryView';
 import { Button } from '@/components/ui/Button';
@@ -52,7 +52,8 @@ interface Props {
 }
 
 export function PlannerExperience({ categories, places, transitRoutes }: Props) {
-  const { selected: selectedTripSlugs, hydrated: tripHydrated } = useTripSelection();
+  const { route: draftRoute, hydrated: tripHydrated } = useDraftRoute();
+  const selectedTripSlugs = useMemo(() => draftRoute?.stops.map((s) => s.place.slug) ?? [], [draftRoute]);
   const { saveTrip } = useSavedTrips();
   const [savedTripId, setSavedTripId] = useState<string | null>(null);
 

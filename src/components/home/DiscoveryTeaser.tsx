@@ -9,7 +9,10 @@ import { Container } from '@/components/ui/Container';
 import { PlaceCard } from '@/components/places/PlaceCard';
 import { ArrowRightIcon } from '@/components/ui/icons';
 
-const FEATURE_CATEGORIES: Category[] = ['Castle', 'Beach', 'Historical Place', 'Monastery', 'Museum'];
+// Exactly 4 picks — the lead card spans 2 of the 5 grid tracks (see the
+// grid below), so 4 picks (2+1+1+1 = 5) fill the row exactly. A 5th pick
+// used to strand a lone card alone on a mostly-empty second row.
+const FEATURE_CATEGORIES: Category[] = ['Castle', 'Beach', 'Historical Place', 'Monastery'];
 
 interface DiscoveryTeaserProps {
   places: Place[];

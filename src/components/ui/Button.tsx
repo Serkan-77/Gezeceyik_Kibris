@@ -6,7 +6,7 @@
 import Link from 'next/link';
 import { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from 'react';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'ink' | 'white' | 'outline-on-ink' | 'ghost-on-ink';
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'ink' | 'white' | 'outline-on-ink' | 'ghost-on-ink' | 'danger';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 const variantClass: Record<ButtonVariant, string> = {
@@ -31,6 +31,10 @@ const variantClass: Record<ButtonVariant, string> = {
     'border border-white/25 text-white/85 hover:border-white/50 hover:text-white',
   'ghost-on-ink':
     'text-white/70 hover:text-white hover:bg-white/10',
+  // Destructive confirmation only (route/rating deletion) — never a
+  // general-purpose "error" button.
+  danger:
+    'bg-danger text-white hover:bg-danger/90',
 };
 
 const sizeClass: Record<ButtonSize, string> = {

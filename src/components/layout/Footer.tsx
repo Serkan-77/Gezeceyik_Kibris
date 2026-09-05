@@ -21,11 +21,19 @@ const planLinks = [
   { href: '/places?category=Archaeological+Site', label: 'Arkeolojik Alanlar' },
 ];
 
+const trustLinks = [
+  { href: '/hakkimizda', label: 'Hakkımızda' },
+  { href: '/sss', label: 'Sıkça Sorulan Sorular' },
+  { href: '/veri-kaynaklari', label: 'Veri Kaynaklarımız' },
+  { href: '/iletisim', label: 'İletişim' },
+  { href: '/gizlilik', label: 'Gizlilik Politikası' },
+];
+
 export function Footer() {
   return (
     <footer className="on-ink bg-deep" role="contentinfo">
       <div className="mx-auto max-w-[1320px] px-4 pb-8 pt-14 sm:px-6 lg:px-8">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
           <div className="lg:col-span-2">
             <Link href="/" className="mb-5 inline-flex items-baseline gap-1.5" aria-label="Gezeceyik Kıbrıs, Ana Sayfa">
               <span className="font-sans text-base font-bold tracking-tight text-white">Gezeceyik</span>
@@ -74,6 +82,21 @@ export function Footer() {
               ))}
             </ul>
           </div>
+
+          <div>
+            <h3 className="mb-4 font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-on-ink-subtle">
+              Kurumsal
+            </h3>
+            <ul className="space-y-2.5">
+              {trustLinks.map(({ href, label }) => (
+                <li key={label}>
+                  <Link href={href} className="text-body-sm text-on-ink-muted transition-colors hover:text-brand-bright">
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
         <div className="mt-12 flex flex-col gap-2 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
@@ -81,9 +104,6 @@ export function Footer() {
             © {new Date().getFullYear()} Gezeceyik Kıbrıs. Tarihi, kültürü ve güzel yerleri seven gezginler için.
           </p>
           <p className="text-caption text-on-ink-subtle">Resmi bir turizm kurumu veya devlet kuruluşuyla bağlantılı değildir.</p>
-          <Link href="/gizlilik" className="text-caption text-on-ink-subtle transition-colors hover:text-brand-bright">
-            Gizlilik Politikası
-          </Link>
         </div>
       </div>
     </footer>

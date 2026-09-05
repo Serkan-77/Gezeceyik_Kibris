@@ -10,7 +10,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
-import { HeartIcon, CompassIcon, MenuIcon, CloseIcon } from '@/components/ui/icons';
+import { HeartIcon, CompassIcon, RouteIcon, MenuIcon, CloseIcon } from '@/components/ui/icons';
+import { useDraftRoute } from '@/context/DraftRouteContext';
 
 interface NavLink {
   href: string;
@@ -29,6 +30,8 @@ const primaryLinks: NavLink[] = [
 export function Navbar() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const { count, hydrated } = useDraftRoute();
+  const showBadge = hydrated && count > 0;
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/');
 
@@ -65,6 +68,21 @@ export function Navbar() {
         </nav>
 
         <div className="hidden items-center gap-1 lg:flex">
+          <Link
+            href="/rotam"
+            aria-label={showBadge ? `Rotam, ${count} durak` : 'Rotam'}
+            className={`relative flex items-center gap-1.5 rounded-sm px-2.5 py-2 text-sm font-medium transition-colors hover:bg-surface-muted ${
+              isActive('/rotam') ? 'text-brand' : 'text-muted'
+            }`}
+          >
+            <RouteIcon className="h-[18px] w-[18px]" />
+            <span className="hidden xl:inline">Rotam</span>
+            {showBadge && (
+              <span className="absolute -right-0.5 -top-0.5 flex h-[16px] min-w-[16px] items-center justify-center rounded-full bg-brand px-1 text-[10px] font-semibold tabular-nums text-white">
+                {count}
+              </span>
+            )}
+          </Link>
           <Link
             href="/gezilerim"
             aria-label="Gezilerim"
@@ -118,6 +136,21 @@ export function Navbar() {
                   </Link>
                 </li>
               ))}
+              <li>
+                <Link
+                  href="/rotam"
+                  className={`flex min-h-11 items-center justify-between rounded-sm px-3 py-2.5 text-base font-medium transition-colors ${
+                    isActive('/rotam') ? 'bg-surface-muted text-brand' : 'text-muted hover:bg-surface-muted hover:text-strong'
+                  }`}
+                >
+                  Rotam
+                  {showBadge && (
+                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-brand px-1.5 text-xs font-semibold tabular-nums text-white">
+                      {count}
+                    </span>
+                  )}
+                </Link>
+              </li>
               <li>
                 <Link
                   href="/gezilerim"

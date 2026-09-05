@@ -7,8 +7,13 @@ import { Container } from '@/components/ui/Container';
 import { getAllPlaces } from '@/lib/places';
 
 export const metadata: Metadata = {
-  title: 'Favorilerim: Gezeceyik Kıbrıs',
+  title: 'Favorilerim',
   description: 'Kaydettiğiniz Kuzey Kıbrıs yerleri.',
+  // Personal, localStorage-backed state — identical/empty for every
+  // crawler, and already excluded via robots.txt (src/app/robots.ts).
+  // This tag is the defense-in-depth layer for a URL discovered via an
+  // external link rather than crawled directly.
+  robots: { index: false, follow: false },
 };
 
 export const revalidate = 3600;

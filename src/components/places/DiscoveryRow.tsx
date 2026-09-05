@@ -11,9 +11,15 @@ import { FavoriteButton } from '@/components/ui/FavoriteButton';
 import { useTodayKey } from '@/hooks/useTodayKey';
 import { tr } from '@/lib/i18n/tr';
 import { isImageRepresentative } from '@/lib/format';
-import { ArrowRightIcon, PinIcon } from '@/components/ui/icons';
+import { ArrowRightIcon, PinIcon, StarIcon } from '@/components/ui/icons';
 
-export function DiscoveryRow({ place }: { place: Place }) {
+interface DiscoveryRowProps {
+  place: Place;
+  /** Omitted or count 0 renders nothing — see PlaceCard for the same rule. */
+  rating?: { average: number; count: number };
+}
+
+export function DiscoveryRow({ place, rating }: DiscoveryRowProps) {
   const todayKey = useTodayKey();
   const todayHours = todayKey ? place.openingHours?.[todayKey] : undefined;
   const admissionLabel = place.admission?.isFree
@@ -41,6 +47,12 @@ export function DiscoveryRow({ place }: { place: Place }) {
           <span className="flex items-center gap-1 truncate text-meta text-subtle">
             <PinIcon className="h-3 w-3 shrink-0" />
             {place.city}, {place.region}
+            {rating && rating.count > 0 && (
+              <span className="ml-1.5 flex items-center gap-0.5 text-strong">
+                <StarIcon filled className="h-3 w-3 text-terracotta" />
+                {rating.average.toFixed(1)} · {tr.rating.reviewCount(rating.count)}
+              </span>
+            )}
           </span>
           {(admissionLabel || todayHours !== undefined) && (
             <span className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-meta text-subtle">

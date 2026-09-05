@@ -86,9 +86,29 @@ export function HistoryScene({ places }: HistorySceneProps) {
         </div>
 
         <div className="relative min-h-[360px] sm:min-h-[480px] lg:min-h-[620px]">
-          {place.image && (
-            <Image key={place.image} src={place.image} alt={`${place.name}, ${place.city}, Kuzey Kıbrıs`} fill sizes="(max-width: 1024px) 100vw, 56vw" className="object-cover" priority={false} />
-          )}
+          {/* All slide images stay mounted, stacked, and crossfade via opacity —
+              swapping the <Image> itself (previously keyed by src) unmounted/
+              remounted it on every era change, which reads as an instant cut
+              rather than a transition ("ışınlanıyor gibi"). */}
+          {slides.map((slide, i) => (
+            <div
+              key={slide.place.slug}
+              className="absolute inset-0 transition-opacity duration-1000 ease-[var(--ease-out)]"
+              style={{ opacity: i === activeIdx ? 1 : 0 }}
+              aria-hidden={i === activeIdx ? undefined : true}
+            >
+              {slide.place.image && (
+                <Image
+                  src={slide.place.image}
+                  alt={`${slide.place.name}, ${slide.place.city}, Kuzey Kıbrıs`}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 56vw"
+                  className="object-cover"
+                  priority={i === 0}
+                />
+              )}
+            </div>
+          ))}
           <div
             className="absolute inset-x-0 bottom-0 h-32"
             style={{ background: 'linear-gradient(0deg, rgb(13 46 66 / 0.5) 0%, transparent 100%)' }}

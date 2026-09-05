@@ -10,14 +10,17 @@ import { Place } from '@/types/place';
 import { tr } from '@/lib/i18n/tr';
 import { isImageRepresentative } from '@/lib/format';
 import { FavoriteButton } from '@/components/ui/FavoriteButton';
+import { StarIcon } from '@/components/ui/icons';
 
 interface PlaceCardProps {
   place: Place;
   size?: 'md' | 'lg';
   priority?: boolean;
+  /** Omitted or count 0 renders nothing — a card grid of 121 mostly-unrated places must not read as "0 değerlendirme" noise everywhere. */
+  rating?: { average: number; count: number };
 }
 
-export function PlaceCard({ place, size = 'md', priority }: PlaceCardProps) {
+export function PlaceCard({ place, size = 'md', priority, rating }: PlaceCardProps) {
   const representative = isImageRepresentative(place.verificationStatus);
   const aspect = size === 'lg' ? 'aspect-[16/10]' : 'aspect-[4/5] sm:aspect-square';
 
@@ -60,7 +63,15 @@ export function PlaceCard({ place, size = 'md', priority }: PlaceCardProps) {
           <h3 className="mt-1 font-display text-lg font-semibold leading-tight text-white text-balance">
             {place.name}
           </h3>
-          <p className="mt-0.5 text-xs text-white/70">{place.city}, {place.region}</p>
+          <p className="mt-0.5 flex items-center gap-1.5 text-xs text-white/70">
+            <span>{place.city}, {place.region}</span>
+            {rating && rating.count > 0 && (
+              <span className="flex items-center gap-0.5 text-white/85">
+                <StarIcon filled className="h-3 w-3 text-terracotta" />
+                {rating.average.toFixed(1)} · {tr.rating.reviewCount(rating.count)}
+              </span>
+            )}
+          </p>
         </div>
       </div>
     </Link>
