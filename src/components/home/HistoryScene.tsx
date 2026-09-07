@@ -13,6 +13,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Place } from '@/types/place';
 import { Container } from '@/components/ui/Container';
+import { Reveal } from '@/components/ui/Reveal';
 import { isImageRepresentative } from '@/lib/format';
 
 const ERAS: { label: string; range: string }[] = [
@@ -69,7 +70,7 @@ export function HistoryScene({ places }: HistorySceneProps) {
   return (
     <section className="border-t border-line bg-surface" aria-labelledby="history-scene-heading">
       <div className="grid lg:grid-cols-[minmax(0,44%)_1fr]">
-        <div className="flex flex-col justify-center px-4 py-16 sm:px-6 sm:py-24 lg:px-10 lg:py-0 xl:px-16">
+        <Reveal className="flex flex-col justify-center px-4 py-16 sm:px-6 sm:py-24 lg:px-10 lg:py-0 xl:px-16">
           <p className="font-mono text-xs uppercase tracking-[0.14em] text-brand">{era.range}</p>
           <h2 id="history-scene-heading" className="mt-2 font-display text-display font-bold leading-[0.9] text-strong transition-opacity duration-500">
             {era.label}
@@ -83,7 +84,7 @@ export function HistoryScene({ places }: HistorySceneProps) {
           >
             {place.name} ↗
           </Link>
-        </div>
+        </Reveal>
 
         <div className="relative min-h-[360px] sm:min-h-[480px] lg:min-h-[620px]">
           {/* All slide images stay mounted, stacked, and crossfade via opacity —
@@ -127,27 +128,30 @@ export function HistoryScene({ places }: HistorySceneProps) {
         <div className="relative hidden sm:block">
           <div className="absolute left-0 right-0 top-2.5 h-px bg-line" aria-hidden="true" />
           <ol className="relative flex justify-between" aria-label="Tarihsel dönemler, kronolojik sırayla">
-            {ERAS.map((e) => {
+            {ERAS.map((e, i) => {
               const current = e.label === era.label;
               const slideIdx = slides.findIndex((s) => s.era.label === e.label);
               const clickable = slideIdx !== -1;
+              const isFirst = i === 0;
+              const isLast = i === ERAS.length - 1;
+              const align = isFirst ? 'items-start text-left' : isLast ? 'items-end text-right' : 'items-center text-center';
               return (
-                <li key={e.label} className="flex flex-col items-start gap-3">
+                <li key={e.label} className={`flex flex-col ${align} gap-3`}>
                   <button
                     type="button"
                     disabled={!clickable}
                     onClick={() => clickable && setActiveIdx(slideIdx)}
-                    className={`flex flex-col items-start gap-3 ${clickable ? 'cursor-pointer' : 'cursor-default'}`}
+                    className={`flex flex-col ${align} gap-3 transition-transform duration-200 ${clickable ? 'cursor-pointer hover:-translate-y-0.5' : 'cursor-default'}`}
                     aria-current={current ? 'true' : undefined}
                     aria-label={e.label}
                   >
                     <span
-                      className={current ? 'h-[11px] w-[11px] rounded-full bg-brand' : 'h-[9px] w-[9px] rounded-full border-2 border-line bg-surface'}
+                      className={current ? 'h-[11px] w-[11px] rounded-full bg-brand ring-4 ring-brand/15' : 'h-[9px] w-[9px] rounded-full border-2 border-line bg-surface'}
                       aria-hidden="true"
                     />
                     <span>
-                      <span className={`block font-display text-base font-semibold ${current ? 'text-brand' : 'text-strong'}`}>{e.label}</span>
-                      <span className="block font-mono text-[10px] tabular-nums text-subtle">{e.range}</span>
+                      <span className={`block whitespace-nowrap font-display text-base font-semibold ${current ? 'text-brand' : 'text-strong'}`}>{e.label}</span>
+                      <span className="block whitespace-nowrap font-mono text-[10px] tabular-nums text-subtle">{e.range}</span>
                     </span>
                   </button>
                 </li>

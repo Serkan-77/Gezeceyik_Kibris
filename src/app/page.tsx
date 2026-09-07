@@ -6,6 +6,7 @@
 
 import { Metadata } from 'next';
 import { Hero } from '@/components/home/Hero';
+import { CategoryNav } from '@/components/home/CategoryNav';
 import { DiscoveryTeaser } from '@/components/home/DiscoveryTeaser';
 import { HistoryScene } from '@/components/home/HistoryScene';
 import { GeographyBand } from '@/components/home/GeographyBand';
@@ -41,8 +42,6 @@ export default async function HomePage() {
   const heroFeature =
     heroPool.find((p) => p.image && p.verificationStatus === 'verified') ?? heroPool.find((p) => p.image) ?? null;
 
-  const planFeature = places.find((p) => p.category === 'Beach' && p.image) ?? heroFeature;
-
   const exampleInput: PlannerInput = {
     accommodation: EXAMPLE_ACCOMMODATION,
     days: 1,
@@ -58,10 +57,11 @@ export default async function HomePage() {
   return (
     <>
       <Hero placeCount={places.length} regionCount={regions.length} feature={heroFeature} />
+      <CategoryNav places={places} />
       <DiscoveryTeaser places={places} />
       <HistoryScene places={places} />
       <GeographyBand places={places} regionCount={regions.length} />
-      <PlanTripBand feature={planFeature} exampleDay={exampleDay} accommodation={exampleDay ? EXAMPLE_ACCOMMODATION : null} />
+      <PlanTripBand exampleDay={exampleDay} accommodation={exampleDay ? EXAMPLE_ACCOMMODATION : null} />
     </>
   );
 }

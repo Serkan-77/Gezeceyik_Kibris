@@ -8,6 +8,9 @@ import { Place } from '@/types/place';
 import { Container } from '@/components/ui/Container';
 import { IslandPinMap } from './IslandPinMap';
 import { ArrowRightIcon } from '@/components/ui/icons';
+import { SplitHeading } from '@/components/ui/SplitHeading';
+import { Reveal } from '@/components/ui/Reveal';
+import { Eyebrow } from '@/components/ui/Eyebrow';
 
 interface GeographyBandProps {
   places: Place[];
@@ -28,21 +31,29 @@ export function GeographyBand({ places, regionCount }: GeographyBandProps) {
 
       <Container className="relative flex flex-col items-start gap-8 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-lg">
-          <h2 id="geo-band-heading" className="font-display text-section-title font-semibold leading-[1.05] text-white text-balance">
-            {places.length} yer. {regionCount} bölge. Tek ada.
-          </h2>
-          <p className="mt-5 max-w-sm text-body-sm leading-relaxed text-on-ink-muted text-pretty">
-            Kuzey Kıbrıs&apos;taki her nokta gerçek koordinatlarıyla haritada. Bölgeyi gezin, yakınındakileri
-            görün, rotanızı oradan başlatın.
-          </p>
+          <Eyebrow tone="on-ink">Harita</Eyebrow>
+          <SplitHeading
+            as="h2"
+            id="geo-band-heading"
+            text={`${places.length} yer. ${regionCount} bölge. Tek ada.`}
+            className="mt-2 font-display text-section-title font-semibold leading-[1.05] text-white text-balance"
+          />
+          <Reveal delayMs={120}>
+            <p className="mt-5 max-w-sm text-body-sm leading-relaxed text-on-ink-muted text-pretty">
+              Kuzey Kıbrıs&apos;taki her nokta gerçek koordinatlarıyla haritada. Bölgeyi gezin, yakınındakileri
+              görün, rotanızı oradan başlatın.
+            </p>
+          </Reveal>
         </div>
-        <Link
-          href="/harita"
-          className="group inline-flex shrink-0 items-center gap-2 rounded-full border border-white/25 bg-deep/40 px-6 py-3.5 text-sm font-semibold text-white backdrop-blur-sm transition-colors hover:border-white/50"
-        >
-          Haritayı aç
-          <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-        </Link>
+        <Reveal delayMs={200}>
+          <Link
+            href="/harita"
+            className="group inline-flex shrink-0 items-center gap-2 rounded-full border border-white/25 bg-deep/40 px-6 py-3.5 text-sm font-semibold text-white backdrop-blur-sm transition-colors hover:border-white/50"
+          >
+            Haritayı aç
+            <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          </Link>
+        </Reveal>
       </Container>
     </section>
   );

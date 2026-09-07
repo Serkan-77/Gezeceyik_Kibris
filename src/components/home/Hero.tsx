@@ -58,7 +58,15 @@ export function Hero({ placeCount, regionCount, feature }: HeroProps) {
       </div>
 
       <div className="relative mx-auto flex min-h-[92dvh] max-w-[1440px] flex-col justify-end px-6 pb-16 pt-32 sm:px-10 sm:pb-20 lg:px-16">
-        <h1 id="hero-heading" data-motion="fade-up" data-enter="true" className="max-w-3xl font-display text-display font-semibold leading-[0.96] tracking-tight text-white text-balance">
+        <p
+          data-motion="fade-up"
+          data-enter="true"
+          className="font-mono text-xs uppercase tracking-[0.14em] text-brand-bright"
+        >
+          Kuzey Kıbrıs gezi rehberi
+        </p>
+
+        <h1 id="hero-heading" data-motion="fade-up" data-enter="true" style={{ transitionDelay: '40ms' }} className="mt-3 max-w-3xl font-display text-display font-semibold leading-[0.96] tracking-tight text-white text-balance">
           Kuzey Kıbrıs&apos;ı <span className="italic text-white/90">keşfet.</span>
         </h1>
 
@@ -66,16 +74,22 @@ export function Hero({ placeCount, regionCount, feature }: HeroProps) {
           <p className="text-body leading-relaxed text-white/80 text-pretty">
             Tarihi kaleler, masmavi koylar ve saklı seyir noktaları. {placeCount} yeri keşfet, kendi rotanı oluştur.
           </p>
-          <p className="mt-5 flex items-center gap-3 font-mono text-xs tabular-nums text-white/55">
-            <span>{placeCount} yer</span>
-            <span className="h-3 w-px bg-white/25" aria-hidden="true" />
-            <span>{regionCount} bölge</span>
-            <span className="h-3 w-px bg-white/25" aria-hidden="true" />
-            <span>10.000 yıllık tarih</span>
-          </p>
         </div>
 
-        <div data-motion="fade-up" data-enter="true" style={{ transitionDelay: '160ms' }} className="mt-8 flex flex-wrap items-center gap-4">
+        <dl data-motion="fade-up" data-enter="true" style={{ transitionDelay: '140ms' }} className="mt-8 flex items-end gap-6 sm:gap-8">
+          {[
+            { value: String(placeCount), label: 'yer' },
+            { value: String(regionCount), label: 'bölge' },
+            { value: '10.000+', label: 'yıllık tarih' },
+          ].map((stat, i) => (
+            <div key={stat.label} className={`flex flex-col ${i > 0 ? 'border-l border-white/20 pl-6 sm:pl-8' : ''}`}>
+              <dt className="order-2 mt-0.5 text-xs text-white/55">{stat.label}</dt>
+              <dd className="order-1 font-mono text-2xl font-medium tabular-nums text-white sm:text-3xl">{stat.value}</dd>
+            </div>
+          ))}
+        </dl>
+
+        <div data-motion="fade-up" data-enter="true" style={{ transitionDelay: '200ms' }} className="mt-8 flex flex-wrap items-center gap-4">
           <Button href="/places" size="lg" variant="primary" icon={<ArrowRightIcon className="h-4 w-4" />}>
             Keşfet
           </Button>
@@ -83,6 +97,13 @@ export function Hero({ placeCount, regionCount, feature }: HeroProps) {
             Rota Oluştur
           </Button>
         </div>
+      </div>
+
+      <div
+        aria-hidden="true"
+        className="absolute inset-x-0 bottom-6 hidden justify-center motion-safe:animate-[hero-scroll-cue_2.2s_ease-in-out_infinite] sm:flex"
+      >
+        <span className="h-9 w-px bg-gradient-to-b from-white/0 via-white/60 to-white/0" />
       </div>
     </section>
   );

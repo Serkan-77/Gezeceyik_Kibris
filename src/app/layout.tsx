@@ -100,7 +100,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="tr" className={`${inter.variable} ${fraunces.variable} ${jbMono.variable}`}>
+    <html lang="tr" className={`${inter.variable} ${fraunces.variable} ${jbMono.variable}`} suppressHydrationWarning>
+      <head>
+        {/* Flips scroll-reveal motion (see [data-motion] in globals.css) from
+            "default visible" to "hidden until observed" — only once JS is
+            confirmed running, so content never stays invisible without it. */}
+        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
+      </head>
       <body className="flex min-h-screen flex-col bg-paper text-strong">
         <JsonLd data={websiteSchema()} />
         <JsonLd data={organizationSchema()} />

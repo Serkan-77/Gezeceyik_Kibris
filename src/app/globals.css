@@ -266,6 +266,24 @@ img {
   [data-motion="fade"][data-enter="true"] {
     opacity: 1;
   }
+
+  /* Word-by-word heading reveal — each word rises out of a clipped mask
+     on its own delay. The wrapping [data-motion="words"] element carries
+     the real accessible text (via aria-label); the word spans underneath
+     are aria-hidden and exist purely for the visual stagger. */
+  [data-motion="words"] .word-mask {
+    overflow: clip;
+    padding-bottom: 0.08em;
+    margin-bottom: -0.08em;
+  }
+  [data-motion="words"] .word-inner {
+    display: inline-block;
+    transform: translateY(105%);
+    transition: transform var(--duration-slow) var(--ease-out);
+  }
+  [data-motion="words"][data-enter="true"] .word-inner {
+    transform: translateY(0);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -274,4 +292,22 @@ img {
     opacity: 1 !important;
     transform: none !important;
   }
+}
+
+@keyframes hero-scroll-cue {
+  0%, 100% { opacity: 0; transform: translateY(-4px); }
+  50% { opacity: 1; transform: translateY(6px); }
+}
+
+/* JS-optional: the `js` class is added by a tiny blocking inline script
+   in <head> (see layout.tsx) before first paint. Without it — JS
+   disabled, or failed to run — the observer that flips data-enter never
+   fires, so scroll-revealed content must default to visible instead of
+   staying permanently hidden. */
+html:not(.js) [data-motion] {
+  opacity: 1 !important;
+  transform: none !important;
+}
+html:not(.js) [data-motion="words"] .word-inner {
+  transform: none !important;
 }
