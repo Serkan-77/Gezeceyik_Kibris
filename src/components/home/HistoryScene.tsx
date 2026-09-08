@@ -36,7 +36,7 @@ const FEATURED_SLUGS: Record<string, string> = {
   Osmanlı: 'buyuk-han',
 };
 
-const ROTATION_MS = 6000;
+const ROTATION_MS = 4500;
 
 interface HistorySceneProps {
   places: Place[];
@@ -66,11 +66,16 @@ export function HistoryScene({ places }: HistorySceneProps) {
   const { era, place } = slides[activeIdx];
   const representative = isImageRepresentative(place.verificationStatus);
   const statement = place.history!.split(/(?<=[.!?])\s+/)[0];
+  // Alternates the image side per era instead of always pinning it right —
+  // reads as a livelier, less templated rhythm as the slides advance.
+  const imageOnLeft = activeIdx % 2 === 1;
 
   return (
     <section className="border-t border-line bg-surface" aria-labelledby="history-scene-heading">
-      <div className="grid lg:grid-cols-[minmax(0,44%)_1fr]">
-        <Reveal className="flex flex-col justify-center px-4 py-16 sm:px-6 sm:py-24 lg:px-10 lg:py-0 xl:px-16">
+      <div className={`grid ${imageOnLeft ? 'lg:grid-cols-[1fr_minmax(0,44%)]' : 'lg:grid-cols-[minmax(0,44%)_1fr]'}`}>
+        <Reveal
+          className={`flex flex-col justify-center px-4 py-16 sm:px-6 sm:py-24 lg:px-10 lg:py-0 xl:px-16 ${imageOnLeft ? 'lg:order-2' : 'lg:order-1'}`}
+        >
           <p className="font-mono text-xs uppercase tracking-[0.14em] text-brand">{era.range}</p>
           <h2 id="history-scene-heading" className="mt-2 font-display text-display font-bold leading-[0.9] text-strong transition-opacity duration-500">
             {era.label}
@@ -86,7 +91,9 @@ export function HistoryScene({ places }: HistorySceneProps) {
           </Link>
         </Reveal>
 
-        <div className="relative min-h-[360px] sm:min-h-[480px] lg:min-h-[620px]">
+        <div
+          className={`relative min-h-[360px] sm:min-h-[480px] lg:min-h-[620px] ${imageOnLeft ? 'lg:order-1' : 'lg:order-2'}`}
+        >
           {/* All slide images stay mounted, stacked, and crossfade via opacity —
               swapping the <Image> itself (previously keyed by src) unmounted/
               remounted it on every era change, which reads as an instant cut
@@ -94,7 +101,7 @@ export function HistoryScene({ places }: HistorySceneProps) {
           {slides.map((slide, i) => (
             <div
               key={slide.place.slug}
-              className="absolute inset-0 transition-opacity duration-1000 ease-[var(--ease-out)]"
+              className="absolute inset-0 transition-opacity duration-700 ease-[var(--ease-out)]"
               style={{ opacity: i === activeIdx ? 1 : 0 }}
               aria-hidden={i === activeIdx ? undefined : true}
             >

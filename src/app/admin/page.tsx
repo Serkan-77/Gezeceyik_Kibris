@@ -8,6 +8,7 @@
 import Link from 'next/link';
 import { Metadata } from 'next';
 import * as placeRepository from '@/lib/repositories/placeRepository';
+import { getRatingAggregates } from '@/lib/repositories/ratingRepository';
 import { archivePlaceAction, logoutAction, togglePublishAction } from './actions';
 import { Container } from '@/components/ui/Container';
 import { Button } from '@/components/ui/Button';
@@ -19,6 +20,14 @@ export const metadata: Metadata = {
 
 export default async function AdminDashboardPage() {
   const places = await placeRepository.findAll();
+  // Gezeceyik Puanı (community ratings) — surfaced here so admins can see
+  // at a glance which places are being rated, without opening each one's
+  // public detail page. Falls back to an empty map rather than failing the
+  // whole dashboard if ratings are unavailable.
+  const ratings = await getRatingAggregates(places.map((p) => p.id)).catch((err) => {
+    console.warn('[admin] ratings unavailable:', err instanceof Error ? err.message : err);
+    return new Map<string, { average: number | undefined; count: number }>();
+  });
 
   return (
     <Container className="py-10">
@@ -51,6 +60,7 @@ export default async function AdminDashboardPage() {
               <th className="px-4 py-3 font-medium">Bölge</th>
               <th className="px-4 py-3 font-medium">Durum</th>
               <th className="px-4 py-3 font-medium">Doğrulama</th>
+              <th className="px-4 py-3 font-medium">Gezeceyik Puanı</th>
               <th className="px-4 py-3 font-medium text-right">İşlemler</th>
             </tr>
           </thead>
@@ -69,6 +79,18 @@ export default async function AdminDashboardPage() {
                   </span>
                 </td>
                 <td className="px-4 py-3 text-muted">{place.verificationStatus}</td>
+                <td className="px-4 py-3">
+                  {(() => {
+                    const rating = ratings.get(place.id);
+                    return rating && rating.average !== undefined ? (
+                      <span className="font-medium text-strong">
+                        ★ {rating.average.toFixed(1)} <span className="font-normal text-subtle">({rating.count})</span>
+                      </span>
+                    ) : (
+                      <span className="text-subtle">—</span>
+                    );
+                  })()}
+                </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center justify-end gap-3">
                     <Link href={`/admin/places/${place.slug}/edit`} className="text-brand hover:underline">

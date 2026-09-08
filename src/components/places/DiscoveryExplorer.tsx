@@ -146,8 +146,18 @@ export function DiscoveryExplorer({ places, categories, regions, lockedCategory,
       ) : (
         <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
           {filtered.map((place, i) => (
-            <div key={place.slug} className={i === 0 ? 'col-span-2' : ''}>
-              <PlaceCard place={place} size={i === 0 ? 'lg' : 'md'} priority={i < 4} rating={ratings[place.id]} />
+            // The lead card also spans 2 rows at lg so it sits flush against its
+            // row-mates' combined height, instead of a taller 16:10 card leaving a
+            // gap below the shorter square cards beside it in the same row.
+            <div key={place.slug} className={i === 0 ? 'col-span-2 lg:row-span-2' : ''}>
+              <PlaceCard
+                place={place}
+                size={i === 0 ? 'lg' : 'md'}
+                priority={i < 4}
+                rating={ratings[place.id]}
+                aspectClassName={i === 0 ? 'aspect-[16/10] lg:aspect-auto lg:h-full' : undefined}
+                fillHeight={i === 0}
+              />
             </div>
           ))}
         </div>

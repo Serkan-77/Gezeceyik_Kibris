@@ -90,16 +90,18 @@ function routeIcon(order: number): L.DivIcon {
   });
 }
 
-/** Soft translucent mass, not a hard badge — "a gathering of points." */
+/** Soft translucent mass, not a hard badge — "a gathering of points." An
+ * inset white ring gives it a touch of glassy depth instead of a flat tint. */
 function clusterIcon(count: number): L.DivIcon {
-  const size = count < 10 ? 34 : count < 30 ? 42 : 50;
-  const fontSize = count < 10 ? 12 : count < 30 ? 13 : 14;
+  const size = count < 10 ? 36 : count < 30 ? 44 : 54;
+  const fontSize = count < 10 ? 12 : count < 30 ? 13 : 15;
   return L.divIcon({
     html: `<div style="
       width:${size}px;height:${size}px;border-radius:9999px;
-      background:rgb(3 137 190 / 0.22);border:1.5px solid rgb(3 137 190 / 0.5);
+      background:rgb(3 137 190 / 0.16);border:1.5px solid rgb(3 137 190 / 0.55);
+      box-shadow:0 2px 8px rgb(13 46 66 / 0.18), inset 0 0 0 4px rgb(255 255 255 / 0.55);
       display:flex;align-items:center;justify-content:center;
-      font:700 ${fontSize}px var(--font-mono);color:var(--color-coastal, var(--color-brand-strong));
+      font:700 ${fontSize}px var(--font-mono);color:var(--color-brand-strong);
     ">${count}</div>`,
     className: '',
     iconSize: [size, size],
@@ -148,8 +150,22 @@ function buildPreviewNode(
     <div class="harita-preview-actions">
       <a href="/places/${place.slug}" class="harita-preview-link">${tr.place.viewDetails} →</a>
       <span class="harita-preview-buttons">
-        <button type="button" data-action="favorite" aria-pressed="${opts.isFavorite}">${opts.isFavorite ? '♥' : '♡'}</button>
-        <button type="button" data-action="route" aria-pressed="${opts.isRouteAdded}">${opts.isRouteAdded ? '✓ Rotanda' : '+ Rotama ekle'}</button>
+        <button
+          type="button"
+          class="harita-preview-icon-btn"
+          data-action="favorite"
+          aria-pressed="${opts.isFavorite}"
+          aria-label="${opts.isFavorite ? 'Favorilerden çıkar' : 'Favorilere ekle'}"
+          title="${opts.isFavorite ? 'Favorilerden çıkar' : 'Favorilere ekle'}"
+        >${opts.isFavorite ? '♥' : '♡'}</button>
+        <button
+          type="button"
+          class="harita-preview-icon-btn"
+          data-action="route"
+          aria-pressed="${opts.isRouteAdded}"
+          aria-label="${opts.isRouteAdded ? 'Rotamdan çıkar' : 'Rotama ekle'}"
+          title="${opts.isRouteAdded ? 'Rotamdan çıkar' : 'Rotama ekle'}"
+        >${opts.isRouteAdded ? '✓' : '+'}</button>
       </span>
     </div>
   `;
@@ -272,8 +288,6 @@ export default function PlacesMap({
       typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const map = L.map(containerRef.current, {
-      center: KKTC_CENTER,
-      zoom: KKTC_ZOOM,
       scrollWheelZoom: true,
       zoomAnimation: !prefersReducedMotion,
       markerZoomAnimation: !prefersReducedMotion,
@@ -281,6 +295,18 @@ export default function PlacesMap({
       zoomControl: false,
     });
     L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+    // Frame on the real spread of places rather than a fixed center/zoom —
+    // keeps Cyprus filling the viewport on first paint instead of the
+    // wider Levant coastline dominating it, regardless of screen size.
+    const validCoords = places
+      .filter((p) => Number.isFinite(p.latitude) && Number.isFinite(p.longitude))
+      .map((p): [number, number] => [p.latitude, p.longitude]);
+    if (validCoords.length > 0) {
+      map.fitBounds(L.latLngBounds(validCoords), { padding: [40, 40], maxZoom: 11, animate: false });
+    } else {
+      map.setView(KKTC_CENTER, KKTC_ZOOM);
+    }
 
     tileLayerRef.current = L.tileLayer(BASEMAPS.street.url, {
       attribution: BASEMAPS.street.attribution,
@@ -332,7 +358,7 @@ export default function PlacesMap({
           },
         });
         if (marker.isPopupOpen()) marker.setPopupContent(node);
-        else marker.bindPopup(node, { maxWidth: 260, className: 'harita-preview', closeButton: true, autoPanPadding: [24, 24] });
+        else marker.bindPopup(node, { maxWidth: 280, className: 'harita-preview', closeButton: true, autoPanPadding: [24, 24] });
       }
 
       marker.on('click', () => {
@@ -476,21 +502,18 @@ export default function PlacesMap({
         aria-roledescription="harita"
         aria-label="Kuzey Kıbrıs interaktif haritası, sonuç listesi haritanın yanında/altında da mevcuttur"
       />
-      <div className="absolute left-3 top-3 z-[var(--z-map-controls)] flex items-center gap-3 text-xs font-medium">
-        {(['street', 'satellite'] as const).map((mode, i) => (
-          <span key={mode} className="flex items-center gap-3">
-            {i > 0 && <span className="h-3 w-px bg-line" aria-hidden="true" />}
-            <button
-              type="button"
-              onClick={() => setBasemap(mode)}
-              className={`pb-0.5 transition-colors ${
-                basemap === mode ? 'border-b border-brand text-brand' : 'border-b border-transparent text-strong/80 hover:text-strong'
-              }`}
-              style={{ textShadow: '0 1px 2px rgb(255 255 255 / 0.6)' }}
-            >
-              {mode === 'street' ? 'Harita' : 'Uydu'}
-            </button>
-          </span>
+      <div className="absolute left-3 top-3 z-[var(--z-index-map-controls)] flex items-center gap-0.5 rounded-full border border-line bg-paper/95 p-1 shadow-card backdrop-blur-sm">
+        {(['street', 'satellite'] as const).map((mode) => (
+          <button
+            key={mode}
+            type="button"
+            onClick={() => setBasemap(mode)}
+            className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+              basemap === mode ? 'bg-brand text-white' : 'text-muted hover:text-strong'
+            }`}
+          >
+            {mode === 'street' ? 'Harita' : 'Uydu'}
+          </button>
         ))}
       </div>
     </div>

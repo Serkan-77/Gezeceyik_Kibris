@@ -18,14 +18,21 @@ interface PlaceCardProps {
   priority?: boolean;
   /** Omitted or count 0 renders nothing — a card grid of 121 mostly-unrated places must not read as "0 değerlendirme" noise everywhere. */
   rating?: { average: number; count: number };
+  /** Overrides the size-derived aspect ratio — for bento/collage layouts where the grid cell shape, not `size`, decides the image's proportions. */
+  aspectClassName?: string;
+  /** Stretches the card to fill its grid cell's full height instead of sizing from its own aspect ratio — pair with an `aspectClassName` that includes `h-full` (e.g. a row-spanning bento cell). */
+  fillHeight?: boolean;
 }
 
-export function PlaceCard({ place, size = 'md', priority, rating }: PlaceCardProps) {
+export function PlaceCard({ place, size = 'md', priority, rating, aspectClassName, fillHeight }: PlaceCardProps) {
   const representative = isImageRepresentative(place.verificationStatus);
-  const aspect = size === 'lg' ? 'aspect-[16/10]' : 'aspect-[4/5] sm:aspect-square';
+  const aspect = aspectClassName ?? (size === 'lg' ? 'aspect-[16/10]' : 'aspect-[4/5] sm:aspect-square');
 
   return (
-    <Link href={`/places/${place.slug}`} className="group relative block overflow-hidden rounded-md bg-surface-muted">
+    <Link
+      href={`/places/${place.slug}`}
+      className={`group relative block overflow-hidden rounded-md bg-surface-muted${fillHeight ? ' h-full' : ''}`}
+    >
       <div className={`relative ${aspect} w-full overflow-hidden`}>
         {place.image ? (
           <Image

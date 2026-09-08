@@ -14,6 +14,7 @@ import { PlanTripBand } from '@/components/home/PlanTripBand';
 import { getAllPlaces, getFeaturedPlaces, getAllRegions } from '@/lib/places';
 import { generateItinerary } from '@/lib/trip-planner/planner';
 import { PlannerInput } from '@/lib/trip-planner/types';
+import { getRatingAggregates } from '@/lib/repositories/ratingRepository';
 
 export const metadata: Metadata = {
   title: 'Gezeceyik Kıbrıs: Müzeler, Kaleler, Plajlar ve Tarihi Yerler',
@@ -38,6 +39,17 @@ const EXAMPLE_MUST_VISIT = ['girne-kalesi', 'bellapais-manastiri', 'st-hilarion-
 export default async function HomePage() {
   const [places, featured, regions] = await Promise.all([getAllPlaces(), getFeaturedPlaces(), getAllRegions()]);
 
+  // Powers the "highest-rated first" ordering in DiscoveryTeaser. Falls
+  // back to an empty map (teaser then falls back to a category-diverse
+  // pick) rather than failing the whole homepage if ratings are down.
+  const ratingsRaw = await getRatingAggregates(places.map((p) => p.id)).catch((err) => {
+    console.warn('[home] ratings unavailable for discovery teaser:', err instanceof Error ? err.message : err);
+    return new Map<string, { average: number | undefined; count: number }>();
+  });
+  const ratings = new Map(
+    [...ratingsRaw].filter((entry): entry is [string, { average: number; count: number }] => entry[1].average !== undefined)
+  );
+
   const heroPool = featured.length > 0 ? featured : places;
   const heroFeature =
     heroPool.find((p) => p.image && p.verificationStatus === 'verified') ?? heroPool.find((p) => p.image) ?? null;
@@ -58,7 +70,7 @@ export default async function HomePage() {
     <>
       <Hero placeCount={places.length} regionCount={regions.length} feature={heroFeature} />
       <CategoryNav places={places} />
-      <DiscoveryTeaser places={places} />
+      <DiscoveryTeaser places={places} ratings={ratings} />
       <HistoryScene places={places} />
       <GeographyBand places={places} regionCount={regions.length} />
       <PlanTripBand exampleDay={exampleDay} accommodation={exampleDay ? EXAMPLE_ACCOMMODATION : null} />

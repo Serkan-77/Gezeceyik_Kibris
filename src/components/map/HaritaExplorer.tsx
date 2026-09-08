@@ -16,7 +16,7 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { tr } from '@/lib/i18n/tr';
 import { isImageRepresentative } from '@/lib/format';
-import { SearchIcon, ListIcon, MapIcon, ArrowRightIcon } from '@/components/ui/icons';
+import { SearchIcon, ListIcon, MapIcon, ArrowRightIcon, PinIcon } from '@/components/ui/icons';
 
 const ALL = '__all__';
 
@@ -46,7 +46,7 @@ export function HaritaExplorer({ places, categories, regions }: HaritaExplorerPr
   const visibleSlugs = useMemo(() => new Set(filtered.map((p) => p.slug)), [filtered]);
 
   return (
-    <div className="flex h-[calc(100dvh-4rem)] flex-col lg:flex-row">
+    <div className="relative flex h-[calc(100dvh-4rem)] flex-col lg:flex-row">
       <div className={`flex w-full shrink-0 flex-col border-r border-line bg-paper lg:w-[380px] ${mobileView === 'map' ? 'hidden lg:flex' : 'flex'}`}>
         <div className="space-y-2.5 border-b border-line p-4">
           <Input icon={<SearchIcon className="h-4 w-4" />} placeholder="Yer veya şehir ara…" value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Yer ara" />
@@ -71,7 +71,7 @@ export function HaritaExplorer({ places, categories, regions }: HaritaExplorerPr
           <p className="text-meta text-subtle">{filtered.length} yer</p>
         </div>
 
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto pb-20 lg:pb-0">
           {filtered.map((place) => {
             const representative = isImageRepresentative(place.verificationStatus);
             const active = place.slug === selectedSlug;
@@ -80,16 +80,23 @@ export function HaritaExplorer({ places, categories, regions }: HaritaExplorerPr
                 key={place.slug}
                 type="button"
                 onClick={() => setSelectedSlug(place.slug)}
-                className={`flex w-full items-center gap-3 border-b border-line px-4 py-3 text-left transition-colors ${active ? 'bg-brand/5' : 'hover:bg-surface-muted'}`}
+                className={`relative flex w-full items-center gap-3.5 border-b border-line py-3.5 pl-4 pr-4 text-left transition-colors ${active ? 'bg-brand/[0.06]' : 'hover:bg-surface-muted'}`}
               >
-                <span className="relative h-14 w-16 shrink-0 overflow-hidden rounded-sm bg-surface-muted">
-                  {place.image && <Image src={place.image} alt="" fill sizes="64px" className="object-cover" />}
-                  {representative && place.image && <span className="absolute bottom-0.5 left-0.5 rounded-sm bg-white/90 px-1 text-[8px] font-medium text-ink-soft">Temsili</span>}
+                <span
+                  className={`absolute inset-y-0 left-0 w-[3px] transition-colors ${active ? 'bg-brand' : 'bg-transparent'}`}
+                  aria-hidden="true"
+                />
+                <span className="relative h-16 w-20 shrink-0 overflow-hidden rounded-sm bg-surface-muted">
+                  {place.image && <Image src={place.image} alt="" fill sizes="80px" className="object-cover" />}
+                  {representative && place.image && <span className="absolute bottom-1 left-1 rounded-sm bg-white/90 px-1 text-[8px] font-medium text-ink-soft">Temsili</span>}
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block text-[10px] font-medium uppercase tracking-wider text-subtle">{tr.categories[place.category]}</span>
-                  <span className="block truncate font-display text-sm font-semibold text-strong">{place.name}</span>
-                  <span className="block truncate text-meta text-subtle">{place.city}</span>
+                  <span className={`block truncate font-display text-base font-semibold ${active ? 'text-brand-strong' : 'text-strong'}`}>{place.name}</span>
+                  <span className="mt-0.5 flex items-center gap-1 truncate text-meta text-subtle">
+                    <PinIcon className="h-3 w-3 shrink-0" />
+                    {place.city}
+                  </span>
                 </span>
                 <Link
                   href={`/places/${place.slug}`}
@@ -109,23 +116,28 @@ export function HaritaExplorer({ places, categories, regions }: HaritaExplorerPr
         <PlacesMapWrapper places={places} visibleSlugs={visibleSlugs} selectedSlug={selectedSlug} onSelect={setSelectedSlug} />
       </div>
 
-      <div className="flex shrink-0 border-t border-line bg-surface lg:hidden">
-        <button
-          type="button"
-          onClick={() => setMobileView('list')}
-          className={`flex flex-1 items-center justify-center gap-2 py-3.5 text-sm font-medium ${mobileView === 'list' ? 'text-brand' : 'text-subtle'}`}
-        >
-          <ListIcon className="h-4 w-4" />
-          Liste
-        </button>
-        <button
-          type="button"
-          onClick={() => setMobileView('map')}
-          className={`flex flex-1 items-center justify-center gap-2 border-l border-line py-3.5 text-sm font-medium ${mobileView === 'map' ? 'text-brand' : 'text-subtle'}`}
-        >
-          <MapIcon className="h-4 w-4" />
-          Harita
-        </button>
+      {/* Floating pill instead of a full-width bar — overlaps the active
+          view (list or map) rather than claiming its own permanent row, so
+          both panels get the full viewport height beneath it. */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-4 z-[var(--z-index-map-controls)] flex justify-center lg:hidden">
+        <div className="pointer-events-auto flex items-center gap-0.5 rounded-full border border-line bg-paper/95 p-1 shadow-lift backdrop-blur-sm">
+          <button
+            type="button"
+            onClick={() => setMobileView('list')}
+            className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition-colors ${mobileView === 'list' ? 'bg-brand text-white' : 'text-muted'}`}
+          >
+            <ListIcon className="h-4 w-4" />
+            Liste
+          </button>
+          <button
+            type="button"
+            onClick={() => setMobileView('map')}
+            className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition-colors ${mobileView === 'map' ? 'bg-brand text-white' : 'text-muted'}`}
+          >
+            <MapIcon className="h-4 w-4" />
+            Harita
+          </button>
+        </div>
       </div>
     </div>
   );

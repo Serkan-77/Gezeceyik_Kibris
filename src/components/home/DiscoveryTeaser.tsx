@@ -1,7 +1,7 @@
 // components/home/DiscoveryTeaser.tsx
-// A curated cross-section of the catalogue — one real place per major
-// category, photo-forward — rather than a wall of 121 identical cards.
-// Leads straight into /places for the full browsing experience.
+// The catalogue's highest-rated places, photo-forward, in a bento
+// composition — rather than a wall of 121 identical cards or a fixed
+// one-per-category lineup. Leads straight into /places for full browsing.
 
 import Link from 'next/link';
 import { Category, Place } from '@/types/place';
@@ -12,22 +12,61 @@ import { SplitHeading } from '@/components/ui/SplitHeading';
 import { Reveal } from '@/components/ui/Reveal';
 import { Eyebrow } from '@/components/ui/Eyebrow';
 
-// Exactly 4 picks — the lead card spans 2 of the 5 grid tracks (see the
-// grid below), so 4 picks (2+1+1+1 = 5) fill the row exactly. A 5th pick
-// used to strand a lone card alone on a mostly-empty second row.
-const FEATURE_CATEGORIES: Category[] = ['Castle', 'Beach', 'Historical Place', 'Monastery'];
+// Used only as a fallback when fewer than 4 places have any community
+// ratings yet (early on, most won't) — keeps the section looking curated
+// instead of showing an arbitrary tail of unrated places.
+const FALLBACK_CATEGORIES: Category[] = ['Castle', 'Beach', 'Historical Place', 'Monastery'];
+
+// Bento roles for exactly 4 picks: a tall lead card spanning both rows on
+// the left, two square cards stacked top-right, one wide card beneath
+// them. `undefined` entries fall back to the grid's natural (mobile) flow.
+const BENTO_ITEM_CLASSES = [
+  'col-span-2 lg:col-span-1 lg:col-start-1 lg:row-start-1 lg:row-span-2',
+  'lg:col-start-2 lg:row-start-1',
+  'lg:col-start-3 lg:row-start-1',
+  'col-span-2 lg:col-start-2 lg:col-span-2 lg:row-start-2',
+];
+const BENTO_ASPECT_CLASSES = [
+  'aspect-[16/10] lg:aspect-auto lg:h-full',
+  undefined,
+  undefined,
+  'aspect-[16/9] lg:aspect-[21/9]',
+];
+// Matches BENTO_ITEM_CLASSES: the lead and wide cards run up to full
+// viewport width on mobile, so next/image needs the wider `sizes` a 'lg'
+// PlaceCard requests — 'md' would keep loading an undersized image.
+const BENTO_SIZES: Array<'md' | 'lg'> = ['lg', 'md', 'md', 'lg'];
 
 interface DiscoveryTeaserProps {
   places: Place[];
+  ratings: Map<string, { average: number; count: number }>;
 }
 
-export function DiscoveryTeaser({ places }: DiscoveryTeaserProps) {
-  const picks: Place[] = [];
-  for (const category of FEATURE_CATEGORIES) {
+export function DiscoveryTeaser({ places, ratings }: DiscoveryTeaserProps) {
+  const withImage = places.filter((p) => p.image);
+
+  const rated = withImage
+    .filter((p) => (ratings.get(p.id)?.count ?? 0) > 0)
+    .sort((a, b) => {
+      const ra = ratings.get(a.id)!;
+      const rb = ratings.get(b.id)!;
+      return rb.average - ra.average || rb.count - ra.count;
+    });
+
+  const picks = rated.slice(0, 4);
+  const pickedIds = new Set(picks.map((p) => p.id));
+
+  // Backfill with a category-diverse pick per still-empty slot when the
+  // community hasn't rated enough places yet.
+  for (const category of FALLBACK_CATEGORIES) {
+    if (picks.length >= 4) break;
     const candidate =
-      places.find((p) => p.category === category && p.featured && p.image) ??
-      places.find((p) => p.category === category && p.image);
-    if (candidate) picks.push(candidate);
+      withImage.find((p) => p.category === category && p.featured && !pickedIds.has(p.id)) ??
+      withImage.find((p) => p.category === category && !pickedIds.has(p.id));
+    if (candidate) {
+      picks.push(candidate);
+      pickedIds.add(candidate.id);
+    }
   }
 
   if (picks.length === 0) return null;
@@ -51,10 +90,16 @@ export function DiscoveryTeaser({ places }: DiscoveryTeaserProps) {
           </Link>
         </div>
 
-        <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-5">
+        <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
           {picks.map((place, i) => (
-            <Reveal key={place.slug} delayMs={i * 70} className={i === 0 ? 'col-span-2' : ''}>
-              <PlaceCard place={place} size={i === 0 ? 'lg' : 'md'} />
+            <Reveal key={place.slug} delayMs={i * 70} className={BENTO_ITEM_CLASSES[i] ?? ''}>
+              <PlaceCard
+                place={place}
+                size={BENTO_SIZES[i]}
+                rating={ratings.get(place.id)}
+                aspectClassName={BENTO_ASPECT_CLASSES[i]}
+                fillHeight={i === 0}
+              />
             </Reveal>
           ))}
         </div>
