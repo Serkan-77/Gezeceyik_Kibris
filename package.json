@@ -10,6 +10,7 @@
     "db:verify": "tsx scripts/verify-supabase.ts",
     "db:seed": "tsx scripts/seed-places.ts",
     "db:seed:transit": "tsx scripts/seed-transit-routes.ts",
+    "db:seed:routes": "tsx scripts/seed-curated-routes.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },

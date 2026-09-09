@@ -7,6 +7,7 @@
 // than the desktop list narrowed into a dropdown.
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
@@ -29,6 +30,7 @@ const primaryLinks: NavLink[] = [
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [hoveredHref, setHoveredHref] = useState<string | null>(null);
   const [indicator, setIndicator] = useState<{ left: number; width: number } | null>(null);
@@ -39,6 +41,12 @@ export function Navbar() {
   const showBadge = hydrated && count > 0;
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/');
+
+  // The mobile sheet is portaled to document.body (see the render below) —
+  // needs a mounted flag since document isn't available during SSR.
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Close the mobile sheet on route change so a back-navigation never
   // leaves it stuck open. Deferred to a microtask (matches the pattern in
@@ -186,7 +194,7 @@ export function Navbar() {
         </button>
       </div>
 
-      {open && (
+      {open && mounted && createPortal(
         <div
           id="mobile-nav"
           className="fixed inset-x-0 bottom-0 z-overlay overflow-y-auto border-t border-line bg-paper lg:hidden"
@@ -260,7 +268,8 @@ export function Navbar() {
               </p>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </header>
   );
