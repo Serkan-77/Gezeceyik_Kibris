@@ -258,6 +258,23 @@ export const tr = {
     mapLoading: 'Rota haritası yükleniyor…',
   },
 
+  // ─── Curated routes ("Hazır Rotalar" — editorial, admin-authored) ─
+  curatedRoutes: {
+    sectionEyebrow: 'Hazır Rotalar',
+    sectionHeading: 'Hazırladığımız rotalara göz at.',
+    sectionSubtitle: 'Konaklama, süre ve ulaşımı biz düşündük — istersen olduğu gibi takip et.',
+    viewRoute: 'Rotayı İncele',
+    allRoutes: 'Tüm Hazır Rotalar',
+    listTitle: 'Hazır Rotalar',
+    listSubtitle: 'Ekibimizin önceden planladığı, gerçek mesafe ve otobüs saatleriyle hesaplanmış rotalar.',
+    days: (n: number) => `${n} gün`,
+    startsFrom: (label: string) => `Başlangıç: ${label}`,
+    empty: 'Şu anda yayında bir hazır rota yok.',
+    fixedNotice:
+      'Bu rota ekibimiz tarafından önceden hazırlanmıştır ve değiştirilemez. Kendi rotanı oluşturmak istersen gezi planlayıcıyı kullanabilirsin.',
+    planYourOwn: 'Kendi Rotanı Planla',
+  },
+
   // ─── Community ratings ("Gezeceyik Puanı") ────────────────────
   rating: {
     question: 'Bu yeri nasıl değerlendirirsin?',

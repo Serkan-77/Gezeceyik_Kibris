@@ -37,6 +37,9 @@ export default async function AdminTransitPage() {
           <Button href="/admin/transit/new" size="sm">
             Yeni Hat Ekle
           </Button>
+          <Button href="/admin/curated-routes" variant="ghost" size="sm">
+            Hazır Rotalar
+          </Button>
           <Button href="/admin" variant="ghost" size="sm">
             Yerlere Dön
           </Button>

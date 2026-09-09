@@ -130,6 +130,35 @@ create index if not exists "routeStops_routeId_idx" on "routeStops" ("routeId");
 
 alter table "routeStops" enable row level security;
 
+-- ─── curatedRoutes ──────────────────────────────────────────────
+-- Editorial, admin-authored multi-day itineraries shown on the homepage
+-- (and their own /rotalar pages) for visitors to browse — unlike `routes`
+-- above, these are never owned by or editable by a visitor. Each day is
+-- just an ordered list of place slugs; the real schedule (times, lunch,
+-- inter-region bus legs) is computed at render time by the same
+-- lib/trip-planner/scheduleDay.ts the /gezi-planla planner uses, from
+-- whatever the place/transit data looks like right now — so a curated
+-- route never goes stale the way a frozen, pre-computed schedule would.
+
+create table if not exists "curatedRoutes" (
+  id uuid primary key default gen_random_uuid(),
+  slug text not null unique,
+  title text not null,
+  summary text not null,
+  "coverImage" text,
+  accommodation jsonb not null,
+  transport text not null default 'car',
+  days jsonb not null default '[]'::jsonb,
+  published boolean not null default false,
+  "displayOrder" integer not null default 0,
+  "createdAt" timestamptz not null default now(),
+  "updatedAt" timestamptz not null default now()
+);
+
+create index if not exists "curatedRoutes_published_displayOrder_idx" on "curatedRoutes" (published, "displayOrder");
+
+alter table "curatedRoutes" enable row level security;
+
 -- ─── placeRatings ───────────────────────────────────────────────
 -- "Gezeceyik Puanı" — a lightweight, non-verified 1-5 star community
 -- rating per place. No check-in / GPS / visit verification by design —

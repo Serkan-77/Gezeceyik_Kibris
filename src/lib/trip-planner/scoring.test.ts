@@ -25,7 +25,7 @@ function makePlace(overrides: Partial<Place> = {}): Place {
 
 function makeInput(overrides: Partial<PlannerInput> = {}): PlannerInput {
   return {
-    accommodation: { lat: 35.341, lng: 33.318, label: 'Girne hotel', city: 'Girne' },
+    accommodation: { lat: 35.341, lng: 33.318, label: 'Girne hotel', city: 'Girne', region: 'Girne' },
     days: 3,
     transport: 'car',
     pace: 'balanced',

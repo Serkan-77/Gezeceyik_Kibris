@@ -18,8 +18,10 @@ import {
 } from '@/lib/admin/session';
 import * as placeRepository from '@/lib/repositories/placeRepository';
 import * as transitRouteRepository from '@/lib/repositories/transitRouteRepository';
+import * as curatedRouteRepository from '@/lib/repositories/curatedRouteRepository';
 import { PlaceInput } from '@/lib/db/placeSchema';
 import { TransitRouteInput } from '@/lib/db/transitRouteSchema';
+import { CuratedRouteInput } from '@/lib/db/curatedRouteSchema';
 import { Category, Region, VerificationStatus } from '@/types/place';
 
 async function requireAdminSession(): Promise<void> {
@@ -365,4 +367,137 @@ export async function toggleTransitRouteActiveAction(formData: FormData): Promis
   await transitRouteRepository.setActive(id, nextActive);
   revalidatePath('/admin/transit');
   revalidatePath('/gezi-planla');
+}
+
+// ─── Curated route mutations ─────────────────────────────────────
+// "Hazır rota" — an editorial, admin-authored multi-day itinerary shown on
+// the homepage and /rotalar for visitors to browse. Never owned or
+// editable by a visitor; see lib/curatedRoutes.ts for how `days` (plain
+// place slugs) becomes a real scheduled itinerary at render time.
+
+export interface CuratedRouteFormState {
+  error?: string;
+}
+
+/** One `<textarea name="day_0">` etc per day — comma-separated place slugs, same convention as PlaceForm's nearbyPlaceSlugs. Stops at the first missing index. */
+function parseCuratedRouteDays(formData: FormData): string[][] {
+  const days: string[][] = [];
+  for (let i = 0; ; i++) {
+    const raw = formData.get(`day_${i}`);
+    if (raw === null) break;
+    const slugs = String(raw)
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+    if (slugs.length > 0) days.push(slugs);
+  }
+  return days;
+}
+
+function parseCuratedRouteForm(formData: FormData): CuratedRouteInput {
+  return {
+    slug: String(formData.get('slug') ?? '').trim(),
+    title: String(formData.get('title') ?? '').trim(),
+    summary: String(formData.get('summary') ?? '').trim(),
+    coverImage: optionalString(formData, 'coverImage'),
+    accommodation: {
+      label: String(formData.get('accLabel') ?? '').trim(),
+      city: String(formData.get('accCity') ?? '').trim(),
+      region: String(formData.get('accRegion') ?? '') as Region,
+      lat: optionalNumber(formData, 'accLat') ?? 0,
+      lng: optionalNumber(formData, 'accLng') ?? 0,
+    },
+    transport: String(formData.get('transport') ?? 'car') as CuratedRouteInput['transport'],
+    days: parseCuratedRouteDays(formData),
+    published: formData.get('published') === 'on',
+    displayOrder: optionalNumber(formData, 'displayOrder') ?? 0,
+  };
+}
+
+/**
+ * Every place slug referenced by a day must be a real, published place —
+ * otherwise the route would materialize with silently-dropped stops (see
+ * curatedRouteItinerary.ts). Checked here, at save time, so a typo surfaces
+ * immediately instead of as a quietly thinner itinerary on the homepage.
+ */
+async function validateCuratedRouteSlugs(input: CuratedRouteInput): Promise<string | null> {
+  const publishedSlugs = new Set(await placeRepository.findAllSlugs());
+  const unknown = new Set<string>();
+  for (const day of input.days) {
+    for (const slug of day) {
+      if (!publishedSlugs.has(slug)) unknown.add(slug);
+    }
+  }
+  if (unknown.size === 0) return null;
+  return `Yayında olmayan veya bulunamayan yer slug'ı: ${[...unknown].join(', ')}`;
+}
+
+function revalidateCuratedRouteRoutes(slug: string, previousSlug?: string): void {
+  revalidatePath('/admin/curated-routes');
+  revalidatePath('/');
+  revalidatePath('/rotalar');
+  revalidatePath(`/rotalar/${slug}`);
+  if (previousSlug && previousSlug !== slug) revalidatePath(`/rotalar/${previousSlug}`);
+}
+
+export async function createCuratedRouteAction(
+  _prevState: CuratedRouteFormState,
+  formData: FormData
+): Promise<CuratedRouteFormState> {
+  await requireAdminSession();
+
+  const input = parseCuratedRouteForm(formData);
+  const slugError = await validateCuratedRouteSlugs(input);
+  if (slugError) return { error: slugError };
+
+  try {
+    await curatedRouteRepository.createRoute(input);
+  } catch (err) {
+    return { error: zodErrorMessage(err) };
+  }
+
+  revalidateCuratedRouteRoutes(input.slug);
+  redirect('/admin/curated-routes');
+}
+
+export async function updateCuratedRouteAction(
+  id: string,
+  originalSlug: string,
+  _prevState: CuratedRouteFormState,
+  formData: FormData
+): Promise<CuratedRouteFormState> {
+  await requireAdminSession();
+
+  const input = parseCuratedRouteForm(formData);
+  const slugError = await validateCuratedRouteSlugs(input);
+  if (slugError) return { error: slugError };
+
+  try {
+    const updated = await curatedRouteRepository.updateRoute(id, input);
+    if (!updated) return { error: 'Bu id ile bir rota bulunamadı.' };
+  } catch (err) {
+    return { error: zodErrorMessage(err) };
+  }
+
+  revalidateCuratedRouteRoutes(input.slug, originalSlug);
+  redirect('/admin/curated-routes');
+}
+
+export async function deleteCuratedRouteAction(formData: FormData): Promise<void> {
+  await requireAdminSession();
+  const id = String(formData.get('id') ?? '');
+  const slug = String(formData.get('slug') ?? '');
+  if (!id) return;
+  await curatedRouteRepository.deleteRoute(id);
+  revalidateCuratedRouteRoutes(slug);
+}
+
+export async function toggleCuratedRoutePublishedAction(formData: FormData): Promise<void> {
+  await requireAdminSession();
+  const id = String(formData.get('id') ?? '');
+  const slug = String(formData.get('slug') ?? '');
+  const nextPublished = formData.get('nextPublished') === 'true';
+  if (!id) return;
+  await curatedRouteRepository.setPublished(id, nextPublished);
+  revalidateCuratedRouteRoutes(slug);
 }

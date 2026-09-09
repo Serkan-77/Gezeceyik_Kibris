@@ -10,7 +10,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-import { TripItinerary, ItineraryDay, AccommodationLocation, TransportMode } from '@/lib/trip-planner/types';
+import { TripItinerary, AccommodationLocation, TransportMode, DayTransitLeg } from '@/lib/trip-planner/types';
 import { RouteMapWrapper } from './RouteMapWrapper';
 import { isImageRepresentative } from '@/lib/format';
 import { FlagEndIcon, CarIcon, WalkIcon, BusIcon, DirectionsIcon } from '@/components/ui/icons';
@@ -107,7 +107,7 @@ export function ItineraryView({ itinerary }: Props) {
                     {String(d.dayNumber).padStart(2, '0')}
                   </span>
                   <span className="whitespace-nowrap font-mono text-meta text-subtle">
-                    {d.region} · {tr.trip.stops(d.stops.length)}
+                    {d.regions.join(' → ')} · {tr.trip.stops(d.stops.length)}
                   </span>
                 </button>
               </li>
@@ -137,6 +137,8 @@ export function ItineraryView({ itinerary }: Props) {
             </span>
             {accLabel(itinerary.input.accommodation)}
           </p>
+
+          {day.startTravel && <TravelSegment leg={day.startTravel} transport={itinerary.input.transport} />}
 
           {day.stops.map((stop, i) => {
             const isLast = i === day.stops.length - 1;
@@ -205,10 +207,17 @@ export function ItineraryView({ itinerary }: Props) {
                   </div>
                 </div>
 
-                {!isLast && <TravelSegment stop={stop} transport={itinerary.input.transport} />}
+                {!isLast && (
+                  <TravelSegment
+                    leg={{ travelMin: stop.travelToNextMin, distanceKm: stop.distanceToNextKm, transitDetail: stop.transitDetail }}
+                    transport={itinerary.input.transport}
+                  />
+                )}
               </div>
             );
           })}
+
+          {day.endTravel && <TravelSegment leg={day.endTravel} transport={itinerary.input.transport} />}
 
           <div className="flex items-center gap-3 border-t border-line py-4 text-meta text-subtle">
             <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 border-line bg-surface-muted text-subtle">
@@ -250,11 +259,11 @@ function Metric({ label, value }: { label: string; value: string }) {
   );
 }
 
-function TravelSegment({ stop, transport }: { stop: ItineraryDay['stops'][number]; transport: TransportMode }) {
-  if (stop.travelToNextMin <= 0) return null;
+function TravelSegment({ leg, transport }: { leg: DayTransitLeg; transport: TransportMode }) {
+  if (leg.travelMin <= 0) return null;
 
-  if (stop.transitDetail) {
-    const t = stop.transitDetail;
+  if (leg.transitDetail) {
+    const t = leg.transitDetail;
     return (
       <div className="ml-11 flex items-start gap-2 border-l border-line py-3 pl-4 text-meta leading-relaxed text-muted">
         <BusIcon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-brand" />
@@ -278,7 +287,7 @@ function TravelSegment({ stop, transport }: { stop: ItineraryDay['stops'][number
   const label = transport === 'public' ? 'toplu taşıma (tahmini)' : `${TRANSPORT_LABEL[transport].toLowerCase()} (tahmini)`;
   return (
     <div className="ml-11 border-l border-line py-3 pl-4 text-meta text-faint">
-      ~{formatMinutes(stop.travelToNextMin)} · ~{stop.distanceToNextKm} km · {label}
+      ~{formatMinutes(leg.travelMin)} · ~{leg.distanceKm} km · {label}
     </div>
   );
 }

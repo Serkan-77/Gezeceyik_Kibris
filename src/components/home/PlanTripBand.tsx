@@ -34,7 +34,7 @@ export function PlanTripBand({ exampleDay, accommodation }: PlanTripBandProps) {
       <Container>
         <div className={`grid gap-10 lg:gap-16 ${hasExample ? 'lg:grid-cols-[minmax(0,42%)_1fr] lg:items-center' : 'justify-items-center text-center'}`}>
           <div>
-            <Eyebrow>§05 — Planlayıcı</Eyebrow>
+            <Eyebrow>§06 — Planlayıcı</Eyebrow>
             <SplitHeading
               as="h2"
               id="plan-band-heading"

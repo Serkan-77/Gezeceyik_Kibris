@@ -11,8 +11,10 @@ import { WeatherBand } from '@/components/home/WeatherBand';
 import { DiscoveryTeaser } from '@/components/home/DiscoveryTeaser';
 import { HistoryScene } from '@/components/home/HistoryScene';
 import { GeographyBand } from '@/components/home/GeographyBand';
+import { CuratedRoutesBand } from '@/components/home/CuratedRoutesBand';
 import { PlanTripBand } from '@/components/home/PlanTripBand';
 import { getAllPlaces, getFeaturedPlaces, getAllRegions } from '@/lib/places';
+import { getPublishedCuratedTrips } from '@/lib/curatedRoutes';
 import { generateItinerary } from '@/lib/trip-planner/planner';
 import { PlannerInput } from '@/lib/trip-planner/types';
 import { getRatingAggregates } from '@/lib/repositories/ratingRepository';
@@ -34,11 +36,16 @@ export const revalidate = 3600;
 // planner on the homepage. Computed by the same generateItinerary()
 // /gezi-planla calls; every distance/time on screen is a real result,
 // not a placeholder.
-const EXAMPLE_ACCOMMODATION = { label: 'Girne Merkez', city: 'Girne', lat: 35.3406, lng: 33.3193 };
+const EXAMPLE_ACCOMMODATION = { label: 'Girne Merkez', city: 'Girne', region: 'Girne' as const, lat: 35.3406, lng: 33.3193 };
 const EXAMPLE_MUST_VISIT = ['girne-kalesi', 'bellapais-manastiri', 'st-hilarion-kalesi'];
 
 export default async function HomePage() {
-  const [places, featured, regions] = await Promise.all([getAllPlaces(), getFeaturedPlaces(), getAllRegions()]);
+  const [places, featured, regions, curatedTrips] = await Promise.all([
+    getAllPlaces(),
+    getFeaturedPlaces(),
+    getAllRegions(),
+    getPublishedCuratedTrips(),
+  ]);
 
   // Powers the "highest-rated first" ordering in DiscoveryTeaser. Falls
   // back to an empty map (teaser then falls back to a category-diverse
@@ -75,6 +82,7 @@ export default async function HomePage() {
       <CategoryNav places={places} />
       <HistoryScene places={places} />
       <GeographyBand places={places} regionCount={regions.length} />
+      <CuratedRoutesBand trips={curatedTrips} />
       <PlanTripBand exampleDay={exampleDay} accommodation={exampleDay ? EXAMPLE_ACCOMMODATION : null} />
     </>
   );

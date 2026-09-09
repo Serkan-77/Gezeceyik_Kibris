@@ -9,7 +9,7 @@
 // (AddToTripButton). generateItinerary/scoring/scheduling are untouched.
 
 import { useState, useMemo } from 'react';
-import { Category, Place } from '@/types/place';
+import { Category, Place, Region } from '@/types/place';
 import { BusRoute } from '@/types/transit';
 import { PlannerInput, TripItinerary } from '@/lib/trip-planner/types';
 import { generateItinerary } from '@/lib/trip-planner/planner';
@@ -21,13 +21,13 @@ import { tr } from '@/lib/i18n/tr';
 import { CarIcon, WalkIcon, BusIcon, CheckIcon } from '@/components/ui/icons';
 
 const ACCOMMODATION_OPTIONS = [
-  { label: 'Girne Merkez', city: 'Girne', lat: 35.3406, lng: 33.3193 },
-  { label: 'Gazimağusa Merkez', city: 'Gazimağusa', lat: 35.1264, lng: 33.9421 },
-  { label: 'Lefkoşa (Kuzey)', city: 'Lefkoşa', lat: 35.1857, lng: 33.3823 },
-  { label: 'İskele / Long Beach', city: 'İskele', lat: 35.2912, lng: 33.8878 },
-  { label: 'Güzelyurt Merkez', city: 'Güzelyurt', lat: 35.1985, lng: 32.9951 },
-  { label: 'Lefke Merkez', city: 'Lefke', lat: 35.1157, lng: 32.8475 },
-] as const;
+  { label: 'Girne Merkez', city: 'Girne', region: 'Girne', lat: 35.3406, lng: 33.3193 },
+  { label: 'Gazimağusa Merkez', city: 'Gazimağusa', region: 'Gazimağusa', lat: 35.1264, lng: 33.9421 },
+  { label: 'Lefkoşa (Kuzey)', city: 'Lefkoşa', region: 'Lefkoşa', lat: 35.1857, lng: 33.3823 },
+  { label: 'İskele / Long Beach', city: 'İskele', region: 'İskele', lat: 35.2912, lng: 33.8878 },
+  { label: 'Güzelyurt Merkez', city: 'Güzelyurt', region: 'Güzelyurt', lat: 35.1985, lng: 32.9951 },
+  { label: 'Lefke Merkez', city: 'Lefke', region: 'Lefke', lat: 35.1157, lng: 32.8475 },
+] as const satisfies readonly { label: string; city: string; region: Region; lat: number; lng: number }[];
 
 const TRANSPORT_OPTIONS = [
   { value: 'car', label: 'Araç', icon: CarIcon },
@@ -73,7 +73,13 @@ export function PlannerExperience({ categories, places, transitRoutes }: Props) 
 
   function handleGenerate() {
     const input: PlannerInput = {
-      accommodation: { lat: accommodation.lat, lng: accommodation.lng, label: accommodation.label, city: accommodation.city },
+      accommodation: {
+        lat: accommodation.lat,
+        lng: accommodation.lng,
+        label: accommodation.label,
+        city: accommodation.city,
+        region: accommodation.region,
+      },
       days,
       transport,
       pace,

@@ -3,7 +3,7 @@ import { generateItinerary } from './planner';
 import { Place } from '@/types/place';
 import { PlannerInput } from './types';
 
-const ACCOMMODATION = { lat: 35.341, lng: 33.318, label: 'Girne hotel', city: 'Girne' };
+const ACCOMMODATION = { lat: 35.341, lng: 33.318, label: 'Girne hotel', city: 'Girne', region: 'Girne' as const };
 
 function makePlace(overrides: Partial<Place> = {}): Place {
   return {
@@ -80,5 +80,43 @@ describe('generateItinerary', () => {
     const places = ['a', 'b'].map((slug) => makePlace({ slug }));
     const itinerary = generateItinerary(makeInput({ days: 3, pace: 'intensive' }), places); // wants 12
     expect(itinerary.totalPlaces).toBe(2);
+  });
+
+  it('orders region clusters nearest-first from the accommodation and caps each day at one cross-region hop', () => {
+    const girnePlace = makePlace({ slug: 'girne', region: 'Girne', latitude: ACCOMMODATION.lat, longitude: ACCOMMODATION.lng });
+    const lefkosaPlace = makePlace({ slug: 'lefkosa', region: 'Lefkoşa', latitude: 35.1857, longitude: 33.3823 });
+    const magusaPlace = makePlace({ slug: 'magusa', region: 'Gazimağusa', latitude: 35.1264, longitude: 33.9421 });
+
+    const input = makeInput({ days: 2, pace: 'intensive', mustVisitSlugs: ['girne', 'lefkosa', 'magusa'] });
+    const itinerary = generateItinerary(input, [girnePlace, lefkosaPlace, magusaPlace]);
+
+    expect(itinerary.days).toHaveLength(2);
+    expect(itinerary.days[0].regions).toEqual(['Girne', 'Lefkoşa']); // Lefkoşa is the nearer of the two other regions
+    expect(itinerary.days[1].regions).toEqual(['Gazimağusa']);
+    itinerary.days.forEach((d) => expect(d.regions.length).toBeLessThanOrEqual(2));
+  });
+
+  it('models a real bus departure for a public-transport day that starts outside the accommodation region', () => {
+    const magusaPlace = makePlace({ slug: 'magusa', region: 'Gazimağusa', latitude: 35.1264, longitude: 33.9421 });
+    const route = {
+      id: 'girne-magusa',
+      operator: 'Kombos',
+      fromRegion: 'Girne' as const,
+      toRegion: 'Gazimağusa' as const,
+      fromStop: { name: 'Kombos binası', city: 'Girne' },
+      toStop: { name: 'Komtur', city: 'Gazimağusa' },
+      durationMinutes: 75,
+      fareTRY: 350,
+      schedule: { type: 'fixed' as const, times: ['09:00'] },
+      sourceUrl: 'https://example.com',
+      lastVerifiedAt: '2026-01-01',
+      verificationStatus: 'unverified' as const,
+    };
+
+    const input = makeInput({ days: 1, pace: 'relaxed', transport: 'public', mustVisitSlugs: ['magusa'] });
+    const itinerary = generateItinerary(input, [magusaPlace], [route]);
+
+    expect(itinerary.days[0].startTravel?.transitDetail?.operator).toBe('Kombos');
+    expect(itinerary.days[0].startTravel?.transitDetail?.departureTime).toBe('09:00');
   });
 });

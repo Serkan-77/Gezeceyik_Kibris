@@ -43,6 +43,9 @@ export default async function AdminDashboardPage() {
           <Button href="/admin/transit" variant="ghost" size="sm">
             Otobüs Hatları
           </Button>
+          <Button href="/admin/curated-routes" variant="ghost" size="sm">
+            Hazır Rotalar
+          </Button>
           <form action={logoutAction}>
             <Button type="submit" variant="ghost" size="sm">
               Çıkış Yap

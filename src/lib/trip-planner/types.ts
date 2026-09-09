@@ -13,6 +13,8 @@ export type Pace = 'relaxed' | 'balanced' | 'intensive';
 export type AccommodationLocation = LatLng & {
   label: string;
   city: string;
+  /** The accommodation's region — every day's morning departure and evening return are measured from here. */
+  region: Region;
 };
 
 export interface PlannerInput {
@@ -68,18 +70,38 @@ export interface ItineraryStop {
   transitDetail?: TransitDetail;
 }
 
+/** A single travel leg to/from the accommodation, at the start or end of a day. */
+export interface DayTransitLeg {
+  travelMin: number;
+  distanceKm: number;
+  /** Present only when transport is 'public' and a real bus route covers this leg. */
+  transitDetail?: TransitDetail;
+}
+
 export interface ItineraryDay {
   dayNumber: number;
   date?: string;
+  /** The first stop's region — the day's primary region. */
   region: Region;
+  /** Every distinct region visited this day, in visiting order. Length > 1 means the day crosses regions mid-day. */
+  regions: Region[];
   stops: ItineraryStop[];
-  /** Total travel time for the day in minutes */
+  /**
+   * The morning leg from the accommodation to the first stop. Only
+   * modelled (non-undefined) when the first stop is outside the
+   * accommodation's own region — a same-region day is assumed to start
+   * right at the first stop, same as before.
+   */
+  startTravel?: DayTransitLeg;
+  /** The evening leg back to the accommodation, modelled under the same rule as startTravel. */
+  endTravel?: DayTransitLeg;
+  /** Total travel time for the day in minutes, including startTravel/endTravel when present */
   totalTravelMin: number;
   /** Total visit time in minutes */
   totalVisitMin: number;
   /** Total estimated cost (admission only) */
   totalCost: number;
-  /** Total km driven */
+  /** Total km driven, including startTravel/endTravel when present */
   totalKm: number;
 }
 

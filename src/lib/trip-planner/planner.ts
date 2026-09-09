@@ -10,7 +10,7 @@
 
 import { Place, Region } from '@/types/place';
 import { BusRoute } from '@/types/transit';
-import { PlannerInput, TripItinerary, ItineraryDay } from './types';
+import { AccommodationLocation, PlannerInput, TransportMode, TripItinerary, ItineraryDay } from './types';
 import { scorePlaceForInput } from './scoring';
 import { scheduleDay } from './scheduleDay';
 import { haversineKm } from './distance';
@@ -23,7 +23,23 @@ const PLACES_PER_DAY: Record<PlannerInput['pace'], number> = {
 };
 
 /**
- * Sort a list of places into a nearest-neighbour route starting from accommodation.
+ * A new stop is never scheduled to arrive after this hour — a candidate
+ * that would only be reachable this late (a long cross-region hop eating
+ * the whole afternoon, an evening-only bus, etc.) is left for a later day
+ * instead, rather than producing a "23:41 — Büyük Han" itinerary. A day is
+ * always allowed at least one stop even if it runs past this, so a distant
+ * region never produces a silently empty day.
+ */
+const DAY_END_HOUR = 19;
+
+function timeToMinutes(hhmm: string): number {
+  const [h, m] = hhmm.split(':').map(Number);
+  return h * 60 + m;
+}
+
+/**
+ * Sort a list of places into a nearest-neighbour route starting from a
+ * given point (the accommodation, or wherever the previous cluster ended).
  */
 function nearestNeighbourSort(
   places: Place[],
@@ -63,6 +79,94 @@ function nearestNeighbourSort(
 }
 
 /**
+ * Groups selected places by region and orders the regions by distance from
+ * the accommodation — nearest first, farthest last (a car-owner naturally
+ * wants to explore close by before committing to a long drive, and a
+ * public-transport visitor wants to minimise cross-region bus hops). Within
+ * each region, places are then nearest-neighbour sorted from the
+ * accommodation so the day's route inside that region is still sensible.
+ */
+function clusterByRegionNearestFirst(selected: Place[], accommodation: AccommodationLocation): Place[] {
+  const regions = [...new Set(selected.map((p) => p.region))];
+
+  const nearestKmInRegion = (region: Region): number => {
+    const inRegion = selected.filter((p) => p.region === region && p.latitude && p.longitude);
+    if (inRegion.length === 0) return Infinity;
+    return Math.min(
+      ...inRegion.map((p) =>
+        haversineKm({ lat: accommodation.lat, lng: accommodation.lng }, { lat: p.latitude, lng: p.longitude })
+      )
+    );
+  };
+
+  const orderedRegions = regions.sort((a, b) => nearestKmInRegion(a) - nearestKmInRegion(b));
+
+  return orderedRegions.flatMap((region) =>
+    nearestNeighbourSort(
+      selected.filter((p) => p.region === region),
+      accommodation.lat,
+      accommodation.lng
+    )
+  );
+}
+
+/**
+ * Chunks a region-clustered, nearest-neighbour-ordered place list into up to
+ * `maxDays` real, scheduled days — actually re-scheduling (via scheduleDay)
+ * after each tentative addition so the decision to close a day is based on
+ * what the day would really look like, not just a place count. A day closes
+ * early — even under `ppd` places — the moment either:
+ *   - a THIRD distinct region would enter it (never more than one
+ *     cross-region hop per day: "finish Mağusa this morning, bus to Girne
+ *     this afternoon" is fine, a same-day Mağusa → Girne → Lefkoşa chain
+ *     is not), or
+ *   - the next candidate would only be reachable after DAY_END_HOUR (a long
+ *     hop eating the whole afternoon, or only an evening bus available).
+ * A day is always given at least one stop so a distant, bus-poor region
+ * never produces a silently empty day; any place that still doesn't fit by
+ * the last available day is simply left unscheduled rather than crammed in.
+ */
+function buildDaySchedules(
+  ordered: Place[],
+  ppd: number,
+  maxDays: number,
+  transport: TransportMode,
+  accommodation: AccommodationLocation,
+  transitRoutes: BusRoute[]
+): ItineraryDay[] {
+  const days: ItineraryDay[] = [];
+  const remaining = [...ordered];
+  let dayNumber = 1;
+
+  while (remaining.length > 0 && dayNumber <= maxDays) {
+    const dayPlaces: Place[] = [];
+    let dayRegions: Region[] = [];
+
+    while (dayPlaces.length < ppd && remaining.length > 0) {
+      const candidate = remaining[0];
+      const isNewRegion = !dayRegions.includes(candidate.region);
+      if (isNewRegion && dayRegions.length >= 2) break; // would be this day's 3rd region
+
+      const trial = scheduleDay([...dayPlaces, candidate], dayNumber, transport, accommodation, transitRoutes);
+      const trialArrivalMin = timeToMinutes(trial.stops[trial.stops.length - 1].arrivalTime);
+
+      if (dayPlaces.length > 0 && trialArrivalMin > DAY_END_HOUR * 60) break;
+
+      dayPlaces.push(candidate);
+      dayRegions = trial.regions;
+      remaining.shift();
+    }
+
+    if (dayPlaces.length === 0) break; // shouldn't happen (a day always accepts its first candidate), but never loop forever
+
+    days.push(scheduleDay(dayPlaces, dayNumber, transport, accommodation, transitRoutes));
+    dayNumber++;
+  }
+
+  return days;
+}
+
+/**
  * Generate a deterministic trip itinerary from PlannerInput and the pool of
  * candidate places to schedule from.
  */
@@ -93,43 +197,28 @@ export function generateItinerary(
     ...others.map(({ place }) => place).slice(0, Math.max(0, totalNeeded - mustVisits.length)),
   ].slice(0, totalNeeded);
 
-  // 3. Sort using nearest-neighbour from accommodation
-  const sorted = nearestNeighbourSort(
-    selected,
-    input.accommodation.lat,
-    input.accommodation.lng
-  );
+  // 3. Cluster by region (nearest region first), nearest-neighbour within each
+  const ordered = clusterByRegionNearestFirst(selected, input.accommodation);
 
-  // 4. Chunk into days
-  const days: ItineraryDay[] = [];
+  // 4. Chunk into real, schedule-aware days — at most one cross-region hop
+  // per day, and never a stop scheduled past DAY_END_HOUR
+  const days = buildDaySchedules(ordered, ppd, input.days, input.transport, input.accommodation, transitRoutes);
+
   let totalCost = 0;
   let totalKm = 0;
   let totalDurationMin = 0;
+  let totalPlaces = 0;
 
-  for (let day = 0; day < input.days; day++) {
-    const dayPlaces = sorted.slice(day * ppd, (day + 1) * ppd);
-    if (dayPlaces.length === 0) continue;
-
-    // Determine the dominant region for the day
-    const regionCounts: Partial<Record<Region, number>> = {};
-    dayPlaces.forEach((p) => {
-      regionCounts[p.region] = (regionCounts[p.region] ?? 0) + 1;
-    });
-    const dominantRegion = (Object.entries(regionCounts) as [Region, number][]).sort(
-      (a, b) => b[1] - a[1]
-    )[0][0];
-
-    const itDay = scheduleDay(dayPlaces, day + 1, input.transport, dominantRegion, transitRoutes);
-    days.push(itDay);
-
+  for (const itDay of days) {
     totalCost += itDay.totalCost;
     totalKm += itDay.totalKm;
     totalDurationMin += itDay.totalVisitMin + itDay.totalTravelMin;
+    totalPlaces += itDay.stops.length;
   }
 
   return {
     days,
-    totalPlaces: selected.length,
+    totalPlaces,
     totalCost: parseFloat(totalCost.toFixed(2)),
     totalKm: parseFloat(totalKm.toFixed(1)),
     totalDurationMin,

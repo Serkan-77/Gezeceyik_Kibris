@@ -16,6 +16,7 @@ const exploreLinks = [
 
 const planLinks = [
   { href: '/gezi-planla', label: 'Gezi Planla' },
+  { href: '/rotalar', label: 'Hazır Rotalar' },
   { href: '/favoriler', label: 'Favorilerim' },
   { href: '/places?category=Natural+Attraction', label: 'Doğa' },
   { href: '/places?category=Archaeological+Site', label: 'Arkeolojik Alanlar' },

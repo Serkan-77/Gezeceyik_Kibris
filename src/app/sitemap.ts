@@ -14,6 +14,7 @@
 
 import { MetadataRoute } from 'next';
 import { getAllPlaceSlugsWithUpdatedAt } from '@/lib/places';
+import * as curatedRouteRepository from '@/lib/repositories/curatedRouteRepository';
 import { SITE_URL as BASE_URL } from '@/lib/config';
 
 interface StaticPageEntry {
@@ -31,6 +32,7 @@ const STATIC_PAGES: StaticPageEntry[] = [
   { path: '/historical-places', changeFrequency: 'weekly', priority: 0.8 },
   { path: '/harita', changeFrequency: 'weekly', priority: 0.7 },
   { path: '/gezi-planla', changeFrequency: 'monthly', priority: 0.6 },
+  { path: '/rotalar', changeFrequency: 'monthly', priority: 0.6 },
   { path: '/hakkimizda', changeFrequency: 'yearly', priority: 0.5 },
   { path: '/sss', changeFrequency: 'monthly', priority: 0.6 },
   { path: '/veri-kaynaklari', changeFrequency: 'monthly', priority: 0.5 },
@@ -54,6 +56,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     );
   }
 
+  let curatedRouteEntries: { slug: string; updatedAt: string }[] = [];
+  try {
+    curatedRouteEntries = (await curatedRouteRepository.findPublished()).map(({ slug, updatedAt }) => ({ slug, updatedAt }));
+  } catch (err) {
+    console.warn(
+      '[sitemap] Could not list curated route slugs — sitemap will omit /rotalar/[slug] pages. ' +
+        `Reason: ${err instanceof Error ? err.message : String(err)}`
+    );
+  }
+
   const staticPages: MetadataRoute.Sitemap = STATIC_PAGES.map(({ path, changeFrequency, priority }) => ({
     url: `${BASE_URL}${path}`,
     changeFrequency,
@@ -67,5 +79,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  return [...staticPages, ...placePages];
+  const curatedRoutePages: MetadataRoute.Sitemap = curatedRouteEntries.map(({ slug, updatedAt }) => ({
+    url: `${BASE_URL}/rotalar/${slug}`,
+    lastModified: new Date(updatedAt),
+    changeFrequency: 'monthly' as const,
+    priority: 0.6,
+  }));
+
+  return [...staticPages, ...placePages, ...curatedRoutePages];
 }
