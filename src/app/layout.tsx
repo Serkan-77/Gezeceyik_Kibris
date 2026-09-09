@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter, Fraunces, JetBrains_Mono } from 'next/font/google';
+import { Inter, Anton, Source_Serif_4, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
@@ -17,23 +17,34 @@ const inter = Inter({
   display: 'swap',
 });
 
-// Display face — carries destination names, headlines and story. Fraunces'
-// optical sizing and warm ink traps read as an editorial travel voice, not
-// a bookish serif; italic is used for in-family emphasis. UI chrome (nav,
-// buttons, labels, filters) stays on the sans for legibility at small sizes.
-const fraunces = Fraunces({
+// Headline/index face — a single-weight, tall, condensed grotesk. No
+// italics, no optical warmth: headlines are set, not written, like a
+// survey plate or gazetteer title block. Carries H1s, era names, section
+// numerals — never body copy.
+const anton = Anton({
   subsets: ['latin', 'latin-ext'],
-  weight: ['400', '500', '600', '700'],
-  style: ['normal', 'italic'],
-  variable: '--font-fraunces',
+  weight: '400',
+  variable: '--font-anton',
   display: 'swap',
 });
 
-// Numeral/technical face — coordinates, prices, hours, distances only.
-// Never used for prose or UI copy.
+// Reading face — long-form prose only (place descriptions, history essays,
+// About/FAQ copy): a book serif for the archival-document register, distinct
+// from the grotesk headline and the mono instrument readouts around it.
+const sourceSerif = Source_Serif_4({
+  subsets: ['latin', 'latin-ext'],
+  weight: ['400', '500', '600'],
+  style: ['normal', 'italic'],
+  variable: '--font-source-serif',
+  display: 'swap',
+});
+
+// Instrument face — coordinates, prices, hours, distances, index numbers,
+// nav labels. Its role is deliberately larger here than "numerals only":
+// this is the field-notebook/survey-readout voice that frames the whole UI.
 const jbMono = JetBrains_Mono({
   subsets: ['latin', 'latin-ext'],
-  weight: ['400', '500'],
+  weight: ['400', '500', '600'],
   variable: '--font-jbmono',
   display: 'swap',
 });
@@ -100,7 +111,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="tr" className={`${inter.variable} ${fraunces.variable} ${jbMono.variable}`} suppressHydrationWarning>
+    <html lang="tr" className={`${inter.variable} ${anton.variable} ${sourceSerif.variable} ${jbMono.variable}`} suppressHydrationWarning>
       <head>
         {/* Flips scroll-reveal motion (see [data-motion] in globals.css) from
             "default visible" to "hidden until observed" — only once JS is

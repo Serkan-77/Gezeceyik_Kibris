@@ -101,59 +101,6 @@ export default async function PlaceDetailPage({ params }: Props) {
 
   return (
     <article className="pb-20 lg:pb-0">
-      <div className="relative min-h-[68dvh] w-full overflow-hidden bg-deep sm:min-h-[76dvh]">
-        {place.image ? (
-          <Image src={place.image} alt={`${place.name}, ${place.city}, Kuzey Kıbrıs`} fill className="object-cover" priority sizes="100vw" />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center bg-deep">
-            <span className="font-display text-4xl italic text-white/20">Gezeceyik Kıbrıs</span>
-          </div>
-        )}
-
-        <div
-          className="absolute inset-0"
-          style={{ background: 'linear-gradient(0deg, rgb(13 46 66 / 0.88) 0%, rgb(13 46 66 / 0.35) 32%, transparent 62%)' }}
-          aria-hidden="true"
-        />
-
-        <div className="absolute inset-0 flex flex-col justify-end">
-          <Container className="pb-8">
-            <div className="flex items-center gap-2 text-xs uppercase tracking-[0.1em] text-white/85">
-              <span>{tr.categories[place.category]}</span>
-              {representative && place.image && (
-                <span className="rounded-full bg-white/15 px-2 py-0.5 text-[10px] normal-case tracking-normal text-white/90">
-                  Temsili görsel
-                </span>
-              )}
-            </div>
-
-            <h1 className="mt-2 font-display text-page-title font-bold leading-tight text-white text-balance">{place.name}</h1>
-
-            <p className="mt-2 max-w-xl text-body-sm leading-relaxed text-white/80 text-pretty">{place.shortDescription}</p>
-
-            <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-body-sm text-white/75">
-              {hasLocation ? (
-                <a href="#geo" className="font-medium text-white underline decoration-brand-bright/60 underline-offset-4 hover:decoration-brand-bright">
-                  {place.city}, {place.region}
-                </a>
-              ) : (
-                <span>{place.city}, {place.region}</span>
-              )}
-              <PlaceOpenStatus openingHours={place.openingHours} dark />
-              {place.admission && (
-                <span className="font-mono text-xs tabular-nums text-white/70">
-                  {place.admission.isFree
-                    ? tr.place.free
-                    : place.admission.adultPrice !== undefined
-                      ? `${place.admission.adultPrice.toLocaleString('tr-TR')} ${place.admission.currency ?? 'TRY'}`
-                      : null}
-                </span>
-              )}
-            </div>
-          </Container>
-        </div>
-      </div>
-
       <Container className="pt-5">
         <Breadcrumbs
           items={[
@@ -166,11 +113,60 @@ export default async function PlaceDetailPage({ params }: Props) {
       </Container>
       <JsonLd data={touristAttractionSchema(place, ratingSummary)} />
 
-      <Container className="py-10">
+      <Container className="pt-6">
         <div className="grid gap-10 lg:grid-cols-[1fr_320px] lg:items-start">
           <div className="min-w-0">
+            <p className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.1em] text-brand">
+              <span>§01 — {tr.categories[place.category]}</span>
+              {representative && place.image && <span className="text-faint">· Temsili görsel</span>}
+            </p>
+
+            <h1 className="mt-2 font-display text-hero leading-[0.86] text-strong text-balance">{place.name}</h1>
+
+            <p className="mt-4 max-w-xl font-serif text-lg leading-relaxed text-ink-soft text-pretty">{place.shortDescription}</p>
+
+            <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 font-mono text-xs uppercase tracking-[0.05em] text-muted">
+              {hasLocation ? (
+                <a href="#geo" className="font-semibold text-strong underline decoration-brand/50 underline-offset-4 hover:decoration-brand">
+                  {place.city}, {place.region}
+                </a>
+              ) : (
+                <span>{place.city}, {place.region}</span>
+              )}
+              <PlaceOpenStatus openingHours={place.openingHours} />
+              {place.admission && (
+                <span className="tabular-nums">
+                  {place.admission.isFree
+                    ? tr.place.free
+                    : place.admission.adultPrice !== undefined
+                      ? `${place.admission.adultPrice.toLocaleString('tr-TR')} ${place.admission.currency ?? 'TRY'}`
+                      : null}
+                </span>
+              )}
+            </div>
+
+            <div className="relative mt-7 aspect-[16/10] w-full overflow-hidden border border-line bg-deep sm:aspect-[16/9]">
+              {place.image ? (
+                <Image src={place.image} alt={`${place.name}, ${place.city}, Kuzey Kıbrıs`} fill className="object-cover" priority sizes="(max-width: 1024px) 100vw, 65vw" />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center">
+                  <span className="font-display text-2xl text-white/20">Gezeceyik Kıbrıs</span>
+                </div>
+              )}
+            </div>
+            <div className="flex items-center justify-between gap-3 border border-t-0 border-line bg-surface px-3 py-2">
+              <span className="font-mono text-[11px] uppercase tracking-[0.05em] text-strong">
+                {place.name}, {place.city}
+              </span>
+              {hasLocation && (
+                <span className="hidden font-mono text-[10px] uppercase tracking-[0.06em] text-faint sm:inline">
+                  {Math.abs(place.latitude).toFixed(2)}°N {Math.abs(place.longitude).toFixed(2)}°E
+                </span>
+              )}
+            </div>
+
             {place.verificationStatus === 'verified' ? (
-              <p className="max-w-2xl text-caption leading-relaxed text-subtle">
+              <p className="mt-5 max-w-2xl font-mono text-[11px] leading-relaxed text-subtle">
                 <span className="text-success">✓</span> Resmi kaynaklarla doğrulandı
                 {place.lastVerifiedAt && ` · ${new Date(place.lastVerifiedAt).toLocaleDateString('tr-TR')}`}
                 {place.sourceUrl && (
@@ -183,7 +179,7 @@ export default async function PlaceDetailPage({ params }: Props) {
                 )}
               </p>
             ) : (
-              <p className="max-w-2xl text-caption leading-relaxed text-warning">
+              <p className="mt-5 max-w-2xl border border-warning/30 bg-warning-soft px-3 py-2.5 font-mono text-[11px] leading-relaxed text-warning">
                 Açılış saatleri, fiyatlar ve iletişim bilgileri <strong className="font-semibold">örnek veridir</strong>, bağımsız
                 olarak doğrulanmamıştır. Ziyaret öncesi resmi kaynaklara başvurun.
                 {place.sourceUrl && (
@@ -200,8 +196,8 @@ export default async function PlaceDetailPage({ params }: Props) {
               </p>
             )}
 
-            <div className="mt-6 max-w-2xl">
-              <p className="font-display text-block-title leading-relaxed text-ink-soft text-pretty">{place.description}</p>
+            <div className="mt-8 max-w-2xl">
+              <p className="font-serif text-xl leading-relaxed text-ink-soft text-pretty">{place.description}</p>
             </div>
 
             <div className="mt-10">
@@ -211,7 +207,7 @@ export default async function PlaceDetailPage({ params }: Props) {
             {place.gallery && place.gallery.length > 0 && (
               <div className="mt-10 flex gap-4 overflow-x-auto">
                 {place.gallery.map((src, i) => (
-                  <div key={src} className={`relative aspect-[4/3] shrink-0 overflow-hidden rounded-sm bg-surface-muted ${i === 0 ? 'w-72 sm:w-96' : 'w-56 sm:w-72'}`}>
+                  <div key={src} className={`relative aspect-[4/3] shrink-0 overflow-hidden border border-line bg-surface-muted ${i === 0 ? 'w-72 sm:w-96' : 'w-56 sm:w-72'}`}>
                     <Image src={src} alt={`${place.name} — ${i + 2}`} fill sizes="400px" className="object-cover" />
                   </div>
                 ))}
@@ -225,14 +221,15 @@ export default async function PlaceDetailPage({ params }: Props) {
             {hasLocation && (
               <section id="geo" className="mt-16 scroll-mt-24 border-t border-line pt-12" aria-labelledby="geo-heading">
                 <div className="mb-6">
-                  <h2 id="geo-heading" className="font-display text-block-title font-semibold text-strong">
-                    Konum ve Çevre
+                  <p className="font-mono text-xs uppercase tracking-[0.14em] text-brand">§ Konum ve Çevre</p>
+                  <h2 id="geo-heading" className="mt-1 font-display text-block-title text-strong">
+                    Nerede?
                   </h2>
-                  <p className="mt-1.5 text-body-sm text-subtle">
+                  <p className="mt-1.5 font-serif text-body-sm text-subtle">
                     {nearbyPoints.length > 0 ? `Yakında ${nearbyPoints.length} yer daha var.` : place.address}
                   </p>
                 </div>
-                <div className="h-80 w-full overflow-hidden rounded-lg border border-line sm:h-96">
+                <div className="h-80 w-full overflow-hidden border border-line sm:h-96">
                   <PlaceGeoContextWrapper
                     place={{ slug: place.slug, name: place.name, lat: place.latitude, lng: place.longitude }}
                     nearby={nearbyPoints}
@@ -243,10 +240,11 @@ export default async function PlaceDetailPage({ params }: Props) {
 
             {nearby.length > 0 && (
               <section className="mt-16 border-t border-line pt-12" aria-labelledby="nearby-heading">
-                <h2 id="nearby-heading" className="font-display text-block-title font-semibold text-strong">
+                <p className="font-mono text-xs uppercase tracking-[0.14em] text-brand">§ Devamı</p>
+                <h2 id="nearby-heading" className="mt-1 font-display text-block-title text-strong">
                   Madem buradasın…
                 </h2>
-                <p className="mt-1.5 max-w-lg text-body-sm text-subtle">Bölgedeyken ziyaret etmeye değer diğer yerler.</p>
+                <p className="mt-1.5 max-w-lg font-serif text-body-sm text-subtle">Bölgedeyken ziyaret etmeye değer diğer yerler.</p>
                 <div className="mt-6">
                   {nearby.slice(0, 4).map((p) => (
                     <DiscoveryRow key={p.slug} place={p} rating={nearbyRatings.get(p.id)} />
@@ -257,7 +255,7 @@ export default async function PlaceDetailPage({ params }: Props) {
 
             <div className="mt-14 border-t border-line pt-8">
               <p className="font-display text-block-title text-strong">Bu durağı gördün. Sırada ne var?</p>
-              <Link href="/gezi-planla" className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:underline">
+              <Link href="/gezi-planla" className="mt-2 inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-[0.05em] text-brand hover:underline">
                 Tüm rotanı oluştur →
               </Link>
             </div>

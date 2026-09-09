@@ -15,7 +15,7 @@ export function Breadcrumbs({ items }: { items: BreadcrumbItem[] }) {
 
   return (
     <>
-      <nav aria-label="Sayfa yolu" className="flex items-center gap-1.5 overflow-x-auto whitespace-nowrap text-caption text-subtle">
+      <nav aria-label="Sayfa yolu" className="flex items-center gap-1.5 overflow-x-auto whitespace-nowrap font-mono text-[11px] uppercase tracking-[0.04em] text-subtle">
         {items.map((item, i) => {
           const isLast = i === items.length - 1;
           return (

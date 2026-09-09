@@ -40,7 +40,7 @@ function dotIcon(state: MarkerState): L.DivIcon {
       html: `<div style="
         width:18px;height:18px;border-radius:9999px;
         background:var(--color-ink);border:2px solid white;
-        box-shadow:0 0 0 5px rgb(3 137 190 / 0.28), 0 2px 6px rgb(23 25 28 / 0.35);
+        box-shadow:0 0 0 5px color-mix(in srgb, var(--color-brand) 28%, transparent), 0 2px 6px rgb(23 25 28 / 0.35);
       "></div>`,
       className: '',
       iconSize: [18, 18],
@@ -98,8 +98,8 @@ function clusterIcon(count: number): L.DivIcon {
   return L.divIcon({
     html: `<div style="
       width:${size}px;height:${size}px;border-radius:9999px;
-      background:rgb(3 137 190 / 0.16);border:1.5px solid rgb(3 137 190 / 0.55);
-      box-shadow:0 2px 8px rgb(13 46 66 / 0.18), inset 0 0 0 4px rgb(255 255 255 / 0.55);
+      background:color-mix(in srgb, var(--color-brand) 16%, transparent);border:1.5px solid color-mix(in srgb, var(--color-brand) 55%, transparent);
+      box-shadow:0 2px 8px color-mix(in srgb, var(--color-ink) 18%, transparent), inset 0 0 0 4px rgb(255 255 255 / 0.55);
       display:flex;align-items:center;justify-content:center;
       font:700 ${fontSize}px var(--font-mono);color:var(--color-brand-strong);
     ">${count}</div>`,
@@ -122,7 +122,8 @@ function buildPreviewNode(
 
   const representative = isImageRepresentative(place.verificationStatus);
   const todayKey = DAY_KEYS[new Date().getDay()];
-  const todayVal = place.openingHours?.[todayKey];
+  const alwaysOpen = place.openingHours?.alwaysOpen ?? false;
+  const todayVal = alwaysOpen ? undefined : place.openingHours?.[todayKey];
   const admissionStr = place.admission?.isFree
     ? tr.place.free
     : place.admission?.adultPrice !== undefined
@@ -141,7 +142,9 @@ function buildPreviewNode(
     <p class="harita-preview-meta">${tr.categories[place.category]} · ${place.city}</p>
     <p class="harita-preview-name">${place.name}</p>
     ${
-      todayVal !== undefined
+      alwaysOpen
+        ? `<p class="harita-preview-fact is-open">${tr.place.alwaysOpenBadge}</p>`
+        : todayVal !== undefined
         ? `<p class="harita-preview-fact ${todayVal ? 'is-open' : ''}">${todayVal === null ? tr.place.closedToday : `${tr.place.openToday} · ${todayVal}`}</p>`
         : admissionStr
         ? `<p class="harita-preview-fact">${admissionStr}</p>`

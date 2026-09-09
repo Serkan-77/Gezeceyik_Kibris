@@ -48,6 +48,7 @@ const openingHoursSchema = z
     friday: z.string().nullish(),
     saturday: z.string().nullish(),
     sunday: z.string().nullish(),
+    alwaysOpen: z.boolean().optional(),
   })
   .partial()
   .optional();

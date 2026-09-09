@@ -392,3 +392,52 @@ export function CloudLightningIcon(props: IconProps) {
     </svg>
   );
 }
+
+// ── Category marks — one small icon per Category, used next to the
+// category label wherever a place is listed (card/row/marker). Reads from
+// icon + label, never hue, per the design system's category rule.
+
+export function RuinsIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 21h18M5 21V11l-1-2h3l-1 2v10M11 21V8l-1-3h3l-1 3v13M17 21v-8l-1-2h3l-1 2v8" />
+    </svg>
+  );
+}
+
+export function MonasteryIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 2v3M10.3 3.2h3.4M7 12a5 5 0 0110 0v1H7v-1z" />
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 21v-8h14v8M5 21h14M9.5 21v-5h5v5" />
+    </svg>
+  );
+}
+
+export function ChurchIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 2v3M10.3 3.2h3.4M12 6l6 6.5H6L12 6z" />
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 12.5V21h12v-8.5M10 21v-5h4v5" />
+    </svg>
+  );
+}
+
+export function PeakIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <circle cx="18" cy="6.5" r="1.8" strokeWidth={1.5} />
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.5 20L9 8l3.5 5.5L14.5 11 21.5 20H2.5z" />
+    </svg>
+  );
+}
+
+export function FamilyIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <circle cx="8.5" cy="7.5" r="2.5" strokeWidth={1.5} />
+      <circle cx="17" cy="9.5" r="2" strokeWidth={1.5} />
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 20.5v-2a4.5 4.5 0 019 0v2M14.5 20.5v-1.5a3 3 0 016 0v1.5" />
+    </svg>
+  );
+}

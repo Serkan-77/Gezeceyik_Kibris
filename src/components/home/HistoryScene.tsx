@@ -1,12 +1,15 @@
 'use client';
 // components/home/HistoryScene.tsx
-// Layers of History — cycles through real, well-documented eras (a genuine
-// place per era, sourced from that place's own history text; no invented
-// pairing). Miken has no genuinely Mycenaean-era place in the dataset yet,
-// so it stays in the chronology strip as a real date range but is never
-// one of the featured (clickable/auto-advancing) slides — showing it
-// would mean fabricating a place/era match. Auto-advances every 6s;
-// clicking a timeline era jumps straight to it and resets the timer.
+// "Kıbrıs Atlas" rebuild. Layers of History — cycles through real,
+// well-documented eras (a genuine place per era, sourced from that
+// place's own history text; no invented pairing). Miken has no genuinely
+// Mycenaean-era place in the dataset yet, so it stays in the chronology
+// strip as a real date range but is never one of the featured
+// (clickable/auto-advancing) slides. Auto-advances every 4.5s; clicking a
+// timeline era jumps straight to it and resets the timer. The photograph
+// is a framed plate with its own caption strip below it, matching the
+// card grammar used everywhere else — no gradient scrim, no floating
+// badge chips on the image.
 
 import { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
@@ -72,68 +75,63 @@ export function HistoryScene({ places }: HistorySceneProps) {
 
   return (
     <section className="border-t border-line bg-surface" aria-labelledby="history-scene-heading">
-      <div className={`grid ${imageOnLeft ? 'lg:grid-cols-[1fr_minmax(0,44%)]' : 'lg:grid-cols-[minmax(0,44%)_1fr]'}`}>
-        <Reveal
-          className={`flex flex-col justify-center px-4 py-16 sm:px-6 sm:py-24 lg:px-10 lg:py-0 xl:px-16 ${imageOnLeft ? 'lg:order-2' : 'lg:order-1'}`}
-        >
-          <p className="font-mono text-xs uppercase tracking-[0.14em] text-brand">{era.range}</p>
-          <h2 id="history-scene-heading" className="mt-2 font-display text-display font-bold leading-[0.9] text-strong transition-opacity duration-500">
+      <Container className="py-14 sm:py-20 lg:py-24">
+        <div className={`grid gap-8 lg:items-center lg:gap-16 xl:gap-20 ${imageOnLeft ? 'lg:grid-cols-[1fr_minmax(0,42%)]' : 'lg:grid-cols-[minmax(0,42%)_1fr]'}`}>
+        <Reveal className={`flex flex-col justify-center ${imageOnLeft ? 'lg:order-2' : 'lg:order-1'}`}>
+          <p className="font-mono text-xs uppercase tracking-[0.14em] text-brand">§03 — Tarihin Katmanları · {era.range}</p>
+          <h2 id="history-scene-heading" className="mt-2 font-display text-display leading-[0.86] text-strong transition-opacity duration-500">
             {era.label}
           </h2>
-          <p key={place.slug} className="mt-6 max-w-md font-display italic text-block-title leading-relaxed text-ink-soft text-pretty">
+          <p key={place.slug} className="mt-6 max-w-md font-serif text-xl italic leading-relaxed text-ink-soft text-pretty">
             &ldquo;{statement}&rdquo;
           </p>
           <Link
             href={`/places/${place.slug}`}
-            className="mt-7 inline-flex w-fit items-center gap-1.5 border-b border-brand/40 pb-0.5 text-sm font-semibold text-strong transition-colors hover:border-brand hover:text-brand"
+            className="mt-7 inline-flex w-fit items-center gap-1.5 border-b border-brand pb-0.5 font-mono text-xs uppercase tracking-[0.05em] text-strong transition-colors hover:text-brand"
           >
             {place.name} ↗
           </Link>
         </Reveal>
 
-        <div
-          className={`relative min-h-[360px] sm:min-h-[480px] lg:min-h-[620px] ${imageOnLeft ? 'lg:order-1' : 'lg:order-2'}`}
-        >
-          {/* All slide images stay mounted, stacked, and crossfade via opacity —
-              swapping the <Image> itself (previously keyed by src) unmounted/
-              remounted it on every era change, which reads as an instant cut
-              rather than a transition ("ışınlanıyor gibi"). */}
-          {slides.map((slide, i) => (
-            <div
-              key={slide.place.slug}
-              className="absolute inset-0 transition-opacity duration-700 ease-[var(--ease-out)]"
-              style={{ opacity: i === activeIdx ? 1 : 0 }}
-              aria-hidden={i === activeIdx ? undefined : true}
-            >
-              {slide.place.image && (
-                <Image
-                  src={slide.place.image}
-                  alt={`${slide.place.name}, ${slide.place.city}, Kuzey Kıbrıs`}
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 56vw"
-                  className="object-cover"
-                  priority={i === 0}
-                />
-              )}
-            </div>
-          ))}
-          <div
-            className="absolute inset-x-0 bottom-0 h-32"
-            style={{ background: 'linear-gradient(0deg, rgb(13 46 66 / 0.5) 0%, transparent 100%)' }}
-            aria-hidden="true"
-          />
-          <div className="absolute bottom-4 left-4 flex items-center gap-2">
+        <div className={imageOnLeft ? 'lg:order-1' : 'lg:order-2'}>
+          <div className="relative min-h-[320px] w-full overflow-hidden border border-line sm:min-h-[420px] lg:aspect-[4/5] lg:min-h-0">
+            {/* All slide images stay mounted, stacked, and crossfade via opacity —
+                swapping the <Image> itself (previously keyed by src) unmounted/
+                remounted it on every era change, which reads as an instant cut
+                rather than a transition ("ışınlanıyor gibi"). */}
+            {slides.map((slide, i) => (
+              <div
+                key={slide.place.slug}
+                className="absolute inset-0 transition-opacity duration-700 ease-[var(--ease-out)]"
+                style={{ opacity: i === activeIdx ? 1 : 0 }}
+                aria-hidden={i === activeIdx ? undefined : true}
+              >
+                {slide.place.image && (
+                  <Image
+                    src={slide.place.image}
+                    alt={`${slide.place.name}, ${slide.place.city}, Kuzey Kıbrıs`}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 40vw"
+                    className="object-cover"
+                    priority={i === 0}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+          <div className="flex items-center justify-between gap-3 border border-t-0 border-line bg-surface px-3 py-2.5">
+            <span className="font-mono text-[11px] uppercase tracking-[0.05em] text-strong">{place.name}</span>
             {representative && (
-              <span className="rounded-full bg-white/92 px-2.5 py-1 text-[11px] font-medium text-ink-soft shadow-card">Temsili görsel</span>
+              <span className="font-mono text-[10px] uppercase tracking-[0.06em] text-faint">Temsili görsel</span>
             )}
-            <span className="rounded-full bg-deep/70 px-2.5 py-1 text-[11px] font-medium text-white backdrop-blur-sm">{place.name}</span>
           </div>
         </div>
-      </div>
+        </div>
+      </Container>
 
-      <Container className="py-8 sm:py-10">
+      <Container className="border-t border-line py-8 sm:py-10">
         <div className="relative hidden sm:block">
-          <div className="absolute left-0 right-0 top-2.5 h-px bg-line" aria-hidden="true" />
+          <div className="absolute left-0 right-0 top-[5px] h-px bg-line" aria-hidden="true" />
           <ol className="relative flex justify-between" aria-label="Tarihsel dönemler, kronolojik sırayla">
             {ERAS.map((e, i) => {
               const current = e.label === era.label;
@@ -153,11 +151,11 @@ export function HistoryScene({ places }: HistorySceneProps) {
                     aria-label={e.label}
                   >
                     <span
-                      className={current ? 'h-[11px] w-[11px] rounded-full bg-brand ring-4 ring-brand/15' : 'h-[9px] w-[9px] rounded-full border-2 border-line bg-surface'}
+                      className={current ? 'h-[10px] w-[10px] bg-brand ring-2 ring-offset-2 ring-brand/25 ring-offset-surface' : 'h-[8px] w-[8px] border border-line bg-surface'}
                       aria-hidden="true"
                     />
                     <span>
-                      <span className={`block whitespace-nowrap font-display text-base font-semibold ${current ? 'text-brand' : 'text-strong'}`}>{e.label}</span>
+                      <span className={`block whitespace-nowrap font-mono text-[12px] font-semibold uppercase tracking-[0.04em] ${current ? 'text-brand' : 'text-strong'}`}>{e.label}</span>
                       <span className="block whitespace-nowrap font-mono text-[10px] tabular-nums text-subtle">{e.range}</span>
                     </span>
                   </button>
@@ -170,7 +168,7 @@ export function HistoryScene({ places }: HistorySceneProps) {
         <ol className="grid grid-cols-2 gap-x-5 gap-y-3 sm:hidden" aria-label="Tarihsel dönemler, kronolojik sırayla">
           {ERAS.map((e) => (
             <li key={e.label} className="flex items-baseline gap-2">
-              <span className={`font-display text-sm font-semibold ${e.label === era.label ? 'text-brand' : 'text-strong'}`}>{e.label}</span>
+              <span className={`font-mono text-xs font-semibold uppercase tracking-[0.04em] ${e.label === era.label ? 'text-brand' : 'text-strong'}`}>{e.label}</span>
               <span className="font-mono text-[10px] tabular-nums text-subtle">{e.range}</span>
             </li>
           ))}

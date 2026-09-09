@@ -23,8 +23,9 @@ export default async function FavorilerPage() {
 
   return (
     <Container className="py-10 sm:py-14">
-      <h1 className="font-display text-page-title font-semibold text-strong text-balance">Kaydettiğim Yerler</h1>
-      <p className="mt-3 max-w-xl text-body leading-relaxed text-muted">Favorilerinize eklediğiniz Kuzey Kıbrıs yerleri.</p>
+      <p className="font-mono text-xs uppercase tracking-[0.14em] text-brand">§06 — Favorilerim</p>
+      <h1 className="mt-1 font-display text-page-title leading-[0.9] text-strong text-balance">Kaydettiğim Yerler</h1>
+      <p className="mt-3 max-w-xl font-serif text-body leading-relaxed text-muted">Favorilerinize eklediğiniz Kuzey Kıbrıs yerleri.</p>
       <div className="mt-8">
         <FavorilerClient places={places} />
       </div>

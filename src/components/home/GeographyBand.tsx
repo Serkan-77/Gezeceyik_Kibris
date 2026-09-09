@@ -22,24 +22,20 @@ export function GeographyBand({ places, regionCount }: GeographyBandProps) {
     <section className="on-ink relative overflow-hidden bg-deep py-20 sm:py-28" aria-labelledby="geo-band-heading">
       <div className="absolute inset-0">
         <IslandPinMap places={places} className="h-full w-full" />
-        <div
-          className="absolute inset-0"
-          style={{ background: 'linear-gradient(100deg, rgb(13 46 66 / 0.92) 0%, rgb(13 46 66 / 0.6) 42%, rgb(13 46 66 / 0.15) 72%, rgb(13 46 66 / 0) 100%)' }}
-          aria-hidden="true"
-        />
+        <div className="absolute inset-0 bg-gradient-to-r from-deep from-10% via-deep/70 via-45% to-deep/0 to-90%" aria-hidden="true" />
       </div>
 
       <Container className="relative flex flex-col items-start gap-8 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-lg">
-          <Eyebrow tone="on-ink">Harita</Eyebrow>
+          <Eyebrow tone="on-ink">§04 — Harita</Eyebrow>
           <SplitHeading
             as="h2"
             id="geo-band-heading"
             text={`${places.length} yer. ${regionCount} bölge. Tek ada.`}
-            className="mt-2 font-display text-section-title font-semibold leading-[1.05] text-white text-balance"
+            className="mt-2 font-display text-section-title leading-[0.94] text-white text-balance"
           />
           <Reveal delayMs={120}>
-            <p className="mt-5 max-w-sm text-body-sm leading-relaxed text-on-ink-muted text-pretty">
+            <p className="mt-5 max-w-sm font-serif text-body leading-relaxed text-on-ink-muted text-pretty">
               Kuzey Kıbrıs&apos;taki her nokta gerçek koordinatlarıyla haritada. Bölgeyi gezin, yakınındakileri
               görün, rotanızı oradan başlatın.
             </p>
@@ -48,7 +44,7 @@ export function GeographyBand({ places, regionCount }: GeographyBandProps) {
         <Reveal delayMs={200}>
           <Link
             href="/harita"
-            className="group inline-flex shrink-0 items-center gap-2 rounded-full border border-white/25 bg-deep/40 px-6 py-3.5 text-sm font-semibold text-white backdrop-blur-sm transition-colors hover:border-white/50"
+            className="group inline-flex shrink-0 items-center gap-2 border border-white/30 bg-deep/40 px-6 py-3.5 font-mono text-xs uppercase tracking-[0.06em] text-white backdrop-blur-sm transition-colors hover:border-white"
           >
             Haritayı aç
             <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />

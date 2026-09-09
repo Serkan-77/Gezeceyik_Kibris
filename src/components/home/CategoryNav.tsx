@@ -37,7 +37,7 @@ export function CategoryNav({ places }: CategoryNavProps) {
                   >
                     <Icon className="h-6 w-6 shrink-0 text-brand transition-transform duration-[var(--duration-base)] ease-[var(--ease-out)] group-hover:-translate-y-0.5" />
                     <span>
-                      <span className="block font-display text-sm font-semibold text-strong">{label}</span>
+                      <span className="block font-mono text-[11px] font-semibold uppercase tracking-[0.05em] text-strong">{label}</span>
                       <span className="block font-mono text-[11px] tabular-nums text-subtle">{count} yer</span>
                     </span>
                   </Link>

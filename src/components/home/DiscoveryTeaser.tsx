@@ -17,20 +17,16 @@ import { Eyebrow } from '@/components/ui/Eyebrow';
 // instead of showing an arbitrary tail of unrated places.
 const FALLBACK_CATEGORIES: Category[] = ['Castle', 'Beach', 'Historical Place', 'Monastery'];
 
-// Bento roles for exactly 4 picks: a tall lead card spanning both rows on
-// the left, two square cards stacked top-right, one wide card beneath
-// them. `undefined` entries fall back to the grid's natural (mobile) flow.
+// Plate layout for exactly 4 picks: a tall lead plate spanning both rows
+// on the left, two plates stacked top-right, one wide plate beneath them.
+// Grid items stretch to fill their row-span by default — PlaceCard's
+// `fillHeight` then lets the photo (not the caption strip) absorb that
+// extra height.
 const BENTO_ITEM_CLASSES = [
   'col-span-2 lg:col-span-1 lg:col-start-1 lg:row-start-1 lg:row-span-2',
   'lg:col-start-2 lg:row-start-1',
   'lg:col-start-3 lg:row-start-1',
   'col-span-2 lg:col-start-2 lg:col-span-2 lg:row-start-2',
-];
-const BENTO_ASPECT_CLASSES = [
-  'aspect-[16/10] lg:aspect-auto lg:h-full',
-  undefined,
-  undefined,
-  'aspect-[16/9] lg:aspect-[21/9]',
 ];
 // Matches BENTO_ITEM_CLASSES: the lead and wide cards run up to full
 // viewport width on mobile, so next/image needs the wider `sizes` a 'lg'
@@ -74,31 +70,31 @@ export function DiscoveryTeaser({ places, ratings }: DiscoveryTeaserProps) {
   return (
     <section className="bg-paper py-16 sm:py-24" aria-labelledby="discovery-heading">
       <Container>
-        <div className="flex flex-wrap items-end justify-between gap-4">
+        <div className="flex flex-wrap items-end justify-between gap-4 border-b border-line pb-5">
           <div>
-            <Eyebrow>Katalog</Eyebrow>
+            <Eyebrow>§02 — Katalog</Eyebrow>
             <SplitHeading
               as="h2"
               id="discovery-heading"
               text="Keşfedecek çok şey var."
-              className="mt-2 font-display text-section-title font-semibold text-strong text-balance"
+              className="mt-2 font-display text-section-title text-strong text-balance"
             />
           </div>
-          <Link href="/places" className="flex items-center gap-1.5 text-sm font-semibold text-brand hover:underline">
+          <Link href="/places" className="flex items-center gap-1.5 font-mono text-xs uppercase tracking-[0.05em] text-brand hover:underline">
             {places.length} yerin tamamı
             <ArrowRightIcon className="h-3.5 w-3.5" />
           </Link>
         </div>
 
-        <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
+        <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
           {picks.map((place, i) => (
             <Reveal key={place.slug} delayMs={i * 70} className={BENTO_ITEM_CLASSES[i] ?? ''}>
               <PlaceCard
                 place={place}
                 size={BENTO_SIZES[i]}
                 rating={ratings.get(place.id)}
-                aspectClassName={BENTO_ASPECT_CLASSES[i]}
                 fillHeight={i === 0}
+                index={i}
               />
             </Reveal>
           ))}

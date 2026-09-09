@@ -87,8 +87,9 @@ export function DiscoveryExplorer({ places, categories, regions, lockedCategory,
   return (
     <div>
       <div className="max-w-2xl">
-        <h1 className="font-display text-page-title font-semibold text-strong text-balance">{title}</h1>
-        <p className="mt-3 text-body leading-relaxed text-muted text-pretty">{subtitle}</p>
+        <p className="font-mono text-xs uppercase tracking-[0.14em] text-brand">§01 — Keşfet</p>
+        <h1 className="mt-1 font-display text-page-title leading-[0.9] text-strong text-balance">{title}</h1>
+        <p className="mt-3 font-serif text-body leading-relaxed text-muted text-pretty">{subtitle}</p>
       </div>
 
       <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -134,12 +135,12 @@ export function DiscoveryExplorer({ places, categories, regions, lockedCategory,
         </Button>
       </div>
 
-      <p className="mt-6 text-sm text-subtle">{filtered.length} yer bulundu</p>
+      <p className="mt-6 font-mono text-xs uppercase tracking-[0.05em] text-subtle">{filtered.length} yer bulundu</p>
 
       {filtered.length === 0 ? (
-        <div className="mt-16 flex flex-col items-center justify-center py-16 text-center">
+        <div className="mt-16 flex flex-col items-center justify-center border border-line py-16 text-center">
           <p className="font-display text-block-title text-strong">Bu kriterlere uyan yer yok</p>
-          <p className="mt-2 max-w-sm text-body-sm text-subtle">
+          <p className="mt-2 max-w-sm font-serif text-body-sm text-subtle">
             Arama teriminizi veya filtrelerinizi değiştirmeyi deneyin.
           </p>
         </div>
@@ -155,8 +156,8 @@ export function DiscoveryExplorer({ places, categories, regions, lockedCategory,
                 size={i === 0 ? 'lg' : 'md'}
                 priority={i < 4}
                 rating={ratings[place.id]}
-                aspectClassName={i === 0 ? 'aspect-[16/10] lg:aspect-auto lg:h-full' : undefined}
                 fillHeight={i === 0}
+                index={i}
               />
             </div>
           ))}

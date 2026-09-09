@@ -22,7 +22,7 @@ export async function WeatherBand() {
                 <div className="flex items-center gap-3 px-4 py-5 sm:justify-center sm:px-3">
                   <Icon className="h-6 w-6 shrink-0 text-brand" />
                   <span>
-                    <span className="block font-display text-sm font-semibold text-strong">{region}</span>
+                    <span className="block font-mono text-[11px] font-semibold uppercase tracking-[0.05em] text-strong">{region}</span>
                     <span className="block font-mono text-[11px] tabular-nums text-subtle">
                       {temperatureC !== null ? `${temperatureC}°C` : '—'} · {label}
                     </span>

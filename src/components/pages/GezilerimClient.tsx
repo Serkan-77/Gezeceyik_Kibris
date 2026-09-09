@@ -55,8 +55,8 @@ export function GezilerimClient() {
               >
                 <ChevronDownIcon className={`h-4 w-4 shrink-0 text-subtle transition-transform ${isOpen ? 'rotate-180' : ''}`} />
                 <div className="min-w-0">
-                  <p className="truncate font-display text-card-title font-semibold text-strong">{trip.label}</p>
-                  <p className="text-meta text-subtle">
+                  <p className="truncate font-serif text-card-title font-semibold text-strong">{trip.label}</p>
+                  <p className="font-mono text-meta text-subtle">
                     {formatDate(trip.createdAt)} · {itinerary.days.length} gün · {itinerary.totalPlaces} yer
                   </p>
                 </div>

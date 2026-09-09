@@ -1,16 +1,16 @@
 'use client';
 // components/layout/Navbar.tsx
-// Ground-up rebuild. Wordmark carries the brand's personality (a warm
-// Fraunces italic on "Kıbrıs", set against a plain-weight "Gezeceyik") so
-// the surrounding UI can stay quiet. Desktop: wordmark + category links +
-// harita/favoriler + Gezi Planla CTA. Mobile: hamburger → full-screen
-// slide-in.
+// "Kıbrıs Atlas" rebuild. Wordmark is a plotted instrument-panel lockup
+// (mono label + condensed display word), not a script/italic logotype.
+// Desktop nav is an underline strip, not a sliding pill. Mobile: hamburger
+// → full-screen numbered takeover (see below), its own experience rather
+// than the desktop list narrowed into a dropdown.
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
-import { HeartIcon, CompassIcon, RouteIcon, MenuIcon, CloseIcon } from '@/components/ui/icons';
+import { HeartIcon, CompassIcon, RouteIcon, MenuIcon, CloseIcon, ArrowRightIcon } from '@/components/ui/icons';
 import { useDraftRoute } from '@/context/DraftRouteContext';
 
 interface NavLink {
@@ -47,9 +47,18 @@ export function Navbar() {
     Promise.resolve().then(() => setOpen(false));
   }, [pathname]);
 
-  // Shrinks the bar and gives it a shadow once the page scrolls under it —
-  // it now visibly reacts instead of sitting static at the same size
-  // whether the page is at the top or three screens down.
+  // The mobile sheet is a full-screen takeover, not a dropdown — lock body
+  // scroll behind it so the page underneath doesn't scroll with it.
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
+
+  // Shrinks the bar once the page scrolls under it.
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
     onScroll();
@@ -57,8 +66,8 @@ export function Navbar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // A single pill slides between nav links (hover, falling back to the
-  // active route) instead of each link owning its own static background.
+  // A single underline bar slides between nav links (hover, falling back
+  // to the active route) instead of each link owning a static background.
   const updateIndicator = useCallback((href: string | null) => {
     const container = navListRef.current;
     const target = href ? linkRefs.current[href] : null;
@@ -83,8 +92,8 @@ export function Navbar() {
 
   return (
     <header
-      className={`sticky top-0 z-nav w-full border-b bg-paper/95 backdrop-blur-md transition-shadow duration-300 ${
-        scrolled ? 'border-line shadow-[0_2px_16px_-6px_rgb(13_46_66_/_0.18)]' : 'border-line/80 shadow-none'
+      className={`sticky top-0 z-nav w-full border-b border-line bg-paper/95 backdrop-blur-md transition-shadow duration-300 ${
+        scrolled ? 'shadow-[0_2px_0_0_var(--color-line)]' : 'shadow-none'
       }`}
     >
       <div
@@ -92,16 +101,16 @@ export function Navbar() {
           scrolled ? 'h-14' : 'h-16'
         }`}
       >
-        <Link href="/" className="group flex shrink-0 items-baseline gap-1.5" aria-label="Gezeceyik Kıbrıs, Ana Sayfa">
-          <span className="font-sans text-[15px] font-bold tracking-tight text-strong">Gezeceyik</span>
-          <span className="font-display text-[17px] italic text-brand">Kıbrıs</span>
+        <Link href="/" className="group flex shrink-0 items-baseline gap-2" aria-label="Gezeceyik Kıbrıs, Ana Sayfa">
+          <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-subtle">Gezeceyik</span>
+          <span className="font-display text-xl leading-none text-brand">Kıbrıs</span>
         </Link>
 
-        <nav className="hidden items-center gap-0.5 lg:flex" aria-label="Ana navigasyon">
-          <ul ref={navListRef} className="relative flex items-center gap-0.5">
+        <nav className="hidden items-center lg:flex" aria-label="Ana navigasyon">
+          <ul ref={navListRef} className="relative flex items-center gap-1">
             <span
               aria-hidden="true"
-              className="absolute inset-y-1 z-0 rounded-full bg-brand/10 transition-all duration-300 ease-[var(--ease-out)]"
+              className="absolute bottom-0 left-0 z-0 h-[2px] bg-brand transition-all duration-300 ease-[var(--ease-out)]"
               style={indicator ? { left: indicator.left, width: indicator.width, opacity: 1 } : { width: 0, opacity: 0 }}
             />
             {primaryLinks.map(({ href, label }) => (
@@ -113,7 +122,7 @@ export function Navbar() {
                   href={href}
                   onMouseEnter={() => setHoveredHref(href)}
                   onMouseLeave={() => setHoveredHref(null)}
-                  className={`block rounded-full px-3.5 py-2 text-sm font-medium transition-colors ${
+                  className={`block px-3 py-2 font-mono text-[12px] uppercase tracking-[0.05em] transition-colors ${
                     isActive(href) ? 'text-brand' : 'text-muted hover:text-strong'
                   }`}
                 >
@@ -128,14 +137,14 @@ export function Navbar() {
           <Link
             href="/rotam"
             aria-label={showBadge ? `Rotam, ${count} durak` : 'Rotam'}
-            className={`relative flex items-center gap-1.5 rounded-sm px-2.5 py-2 text-sm font-medium transition-colors hover:bg-surface-muted ${
+            className={`relative flex items-center gap-1.5 px-2.5 py-2 font-mono text-[12px] uppercase tracking-[0.05em] transition-colors hover:bg-surface-muted ${
               isActive('/rotam') ? 'text-brand' : 'text-muted'
             }`}
           >
             <RouteIcon className="h-[18px] w-[18px]" />
             <span className="hidden xl:inline">Rotam</span>
             {showBadge && (
-              <span className="absolute -right-0.5 -top-0.5 flex h-[16px] min-w-[16px] items-center justify-center rounded-full bg-brand px-1 text-[10px] font-semibold tabular-nums text-white">
+              <span className="absolute -right-0.5 -top-0.5 flex h-[16px] min-w-[16px] items-center justify-center rounded-full bg-brand px-1 font-mono text-[10px] font-semibold tabular-nums text-white">
                 {count}
               </span>
             )}
@@ -143,7 +152,7 @@ export function Navbar() {
           <Link
             href="/gezilerim"
             aria-label="Gezilerim"
-            className={`flex items-center gap-1.5 rounded-sm px-2.5 py-2 text-sm font-medium transition-colors hover:bg-surface-muted ${
+            className={`flex items-center gap-1.5 px-2.5 py-2 font-mono text-[12px] uppercase tracking-[0.05em] transition-colors hover:bg-surface-muted ${
               isActive('/gezilerim') ? 'text-brand' : 'text-muted'
             }`}
           >
@@ -153,21 +162,21 @@ export function Navbar() {
           <Link
             href="/favoriler"
             aria-label="Favorilerim"
-            className={`flex items-center gap-1.5 rounded-sm px-2.5 py-2 text-sm font-medium transition-colors hover:bg-surface-muted ${
+            className={`flex items-center gap-1.5 px-2.5 py-2 font-mono text-[12px] uppercase tracking-[0.05em] transition-colors hover:bg-surface-muted ${
               isActive('/favoriler') ? 'text-brand' : 'text-muted'
             }`}
           >
             <HeartIcon filled={isActive('/favoriler')} className="h-[18px] w-[18px]" />
             <span className="hidden xl:inline">Favoriler</span>
           </Link>
-          <Button href="/gezi-planla" size="sm" className="ml-1">
+          <Button href="/gezi-planla" size="sm" className="ml-2">
             Gezi Planla
           </Button>
         </div>
 
         <button
           type="button"
-          className="flex h-11 w-11 items-center justify-center rounded-sm text-strong transition-colors hover:bg-surface-muted lg:hidden"
+          className="flex h-11 w-11 items-center justify-center text-strong transition-colors hover:bg-surface-muted lg:hidden"
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
           aria-controls="mobile-nav"
@@ -178,63 +187,79 @@ export function Navbar() {
       </div>
 
       {open && (
-        <div id="mobile-nav" className="border-t border-line bg-paper lg:hidden">
-          <nav className="mx-auto max-w-[1320px] px-4 py-4 sm:px-6" aria-label="Mobil navigasyon">
-            <ul className="space-y-0.5">
-              {primaryLinks.map(({ href, label }) => (
-                <li key={href}>
-                  <Link
-                    href={href}
-                    className={`flex min-h-11 items-center rounded-sm px-3 py-2.5 text-base font-medium transition-colors ${
-                      isActive(href) ? 'bg-surface-muted text-brand' : 'text-muted hover:bg-surface-muted hover:text-strong'
-                    }`}
-                  >
-                    {label}
-                  </Link>
-                </li>
-              ))}
-              <li>
-                <Link
-                  href="/rotam"
-                  className={`flex min-h-11 items-center justify-between rounded-sm px-3 py-2.5 text-base font-medium transition-colors ${
-                    isActive('/rotam') ? 'bg-surface-muted text-brand' : 'text-muted hover:bg-surface-muted hover:text-strong'
-                  }`}
-                >
-                  Rotam
-                  {showBadge && (
-                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-brand px-1.5 text-xs font-semibold tabular-nums text-white">
-                      {count}
-                    </span>
-                  )}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/gezilerim"
-                  className={`flex min-h-11 items-center rounded-sm px-3 py-2.5 text-base font-medium transition-colors ${
-                    isActive('/gezilerim') ? 'bg-surface-muted text-brand' : 'text-muted hover:bg-surface-muted hover:text-strong'
-                  }`}
-                >
-                  Gezilerim
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/favoriler"
-                  className={`flex min-h-11 items-center rounded-sm px-3 py-2.5 text-base font-medium transition-colors ${
-                    isActive('/favoriler') ? 'bg-surface-muted text-brand' : 'text-muted hover:bg-surface-muted hover:text-strong'
-                  }`}
-                >
-                  Favorilerim
-                </Link>
-              </li>
-            </ul>
-            <div className="mt-4 border-t border-surface-muted pt-4">
-              <Button href="/gezi-planla" className="w-full">
+        <div
+          id="mobile-nav"
+          className="fixed inset-x-0 bottom-0 z-overlay overflow-y-auto border-t border-line bg-paper lg:hidden"
+          style={{ top: scrolled ? '3.5rem' : '4rem' }}
+        >
+          <div className="flex min-h-full flex-col px-5 pb-8 pt-7 sm:px-8">
+            <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-subtle">Kuzey Kıbrıs&apos;ı keşfet</p>
+
+            <nav aria-label="Mobil navigasyon" className="mt-4">
+              <ul className="border-y border-line">
+                {primaryLinks.map(({ href, label }, i) => (
+                  <li key={href} className={i > 0 ? 'border-t border-line' : ''}>
+                    <Link
+                      href={href}
+                      className="group flex min-h-14 items-center justify-between gap-4 py-3.5 active:opacity-60"
+                    >
+                      <span className="flex items-baseline gap-3">
+                        <span className="font-mono text-[11px] tabular-nums text-faint">{String(i + 1).padStart(2, '0')}</span>
+                        <span className={`font-display text-2xl leading-none ${isActive(href) ? 'text-brand' : 'text-strong'}`}>
+                          {label}
+                        </span>
+                      </span>
+                      <ArrowRightIcon className="h-4 w-4 shrink-0 text-faint transition-transform group-active:translate-x-1" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
+            <div className="mt-5 grid grid-cols-3 gap-2.5">
+              <Link
+                href="/rotam"
+                className={`relative flex flex-col items-center gap-2 border py-4 text-center transition-colors active:opacity-70 ${
+                  isActive('/rotam') ? 'border-brand bg-brand/5' : 'border-line'
+                }`}
+              >
+                <RouteIcon className={`h-5 w-5 ${isActive('/rotam') ? 'text-brand' : 'text-muted'}`} />
+                <span className={`font-mono text-[11px] uppercase tracking-[0.04em] ${isActive('/rotam') ? 'text-brand' : 'text-strong'}`}>Rotam</span>
+                {showBadge && (
+                  <span className="absolute right-2 top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand px-1 font-mono text-[10px] font-semibold tabular-nums text-white">
+                    {count}
+                  </span>
+                )}
+              </Link>
+              <Link
+                href="/gezilerim"
+                className={`flex flex-col items-center gap-2 border py-4 text-center transition-colors active:opacity-70 ${
+                  isActive('/gezilerim') ? 'border-brand bg-brand/5' : 'border-line'
+                }`}
+              >
+                <CompassIcon className={`h-5 w-5 ${isActive('/gezilerim') ? 'text-brand' : 'text-muted'}`} />
+                <span className={`font-mono text-[11px] uppercase tracking-[0.04em] ${isActive('/gezilerim') ? 'text-brand' : 'text-strong'}`}>Gezilerim</span>
+              </Link>
+              <Link
+                href="/favoriler"
+                className={`flex flex-col items-center gap-2 border py-4 text-center transition-colors active:opacity-70 ${
+                  isActive('/favoriler') ? 'border-brand bg-brand/5' : 'border-line'
+                }`}
+              >
+                <HeartIcon filled={isActive('/favoriler')} className={`h-5 w-5 ${isActive('/favoriler') ? 'text-brand' : 'text-muted'}`} />
+                <span className={`font-mono text-[11px] uppercase tracking-[0.04em] ${isActive('/favoriler') ? 'text-brand' : 'text-strong'}`}>Favoriler</span>
+              </Link>
+            </div>
+
+            <div className="mt-auto pt-8">
+              <Button href="/gezi-planla" size="lg" className="w-full">
                 Gezi Planla
               </Button>
+              <p className="mt-5 text-center font-mono text-[10px] uppercase tracking-[0.14em] text-faint">
+                35°10′N 33°22′E — Akdeniz&apos;in doğusu
+              </p>
             </div>
-          </nav>
+          </div>
         </div>
       )}
     </header>

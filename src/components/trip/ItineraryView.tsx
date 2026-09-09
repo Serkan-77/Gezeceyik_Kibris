@@ -103,10 +103,10 @@ export function ItineraryView({ itinerary }: Props) {
                   onClick={() => setActiveDay(i)}
                   className={`flex flex-col items-start gap-1 border-b-2 py-3 text-left transition-colors ${current ? 'border-brand' : 'border-transparent'}`}
                 >
-                  <span className={`font-display text-lg font-semibold ${current ? 'text-brand' : 'text-strong'}`}>
+                  <span className={`font-mono text-lg font-semibold tabular-nums ${current ? 'text-brand' : 'text-strong'}`}>
                     {String(d.dayNumber).padStart(2, '0')}
                   </span>
-                  <span className="whitespace-nowrap text-meta text-subtle">
+                  <span className="whitespace-nowrap font-mono text-meta text-subtle">
                     {d.region} · {tr.trip.stops(d.stops.length)}
                   </span>
                 </button>
@@ -161,7 +161,7 @@ export function ItineraryView({ itinerary }: Props) {
                     <span className="flex h-7 w-7 shrink-0 items-center justify-center self-start rounded-full border-2 border-brand bg-surface font-mono text-xs font-bold text-brand">
                       {i + 1}
                     </span>
-                    <span className="relative h-24 w-28 shrink-0 overflow-hidden rounded-sm bg-surface-muted sm:w-36">
+                    <span className="relative h-24 w-28 shrink-0 overflow-hidden border border-line bg-surface-muted sm:w-36">
                       {stop.place.image && <Image src={stop.place.image} alt="" fill sizes="112px" className="object-cover" />}
                       {representative && stop.place.image && (
                         <span className="absolute bottom-1 left-1 rounded-full bg-white/92 px-1.5 py-0.5 text-[9px] font-medium text-ink-soft">
@@ -173,7 +173,7 @@ export function ItineraryView({ itinerary }: Props) {
                       <span className="font-mono text-[11px] tabular-nums text-subtle">
                         {stop.arrivalTime} – {stop.departureTime}
                       </span>
-                      <span className="mt-0.5 block font-display text-card-title font-semibold leading-tight text-strong">{stop.place.name}</span>
+                      <span className="mt-0.5 block font-serif text-card-title font-semibold leading-tight text-strong">{stop.place.name}</span>
                       <span className="mt-1 line-clamp-2 block text-meta text-muted">{stop.place.shortDescription}</span>
                       <span className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-meta">
                         {stop.admissionCost > 0 ? (

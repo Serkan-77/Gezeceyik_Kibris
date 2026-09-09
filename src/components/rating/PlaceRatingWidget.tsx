@@ -83,8 +83,8 @@ export function PlaceRatingWidget({ placeId, initialAverage, initialCount }: Pla
   }
 
   return (
-    <div className="rounded-md border border-line bg-surface p-5 sm:p-6">
-      <h2 className="font-display text-block-title font-semibold text-strong">{tr.rating.question}</h2>
+    <div className="border border-line bg-surface p-5 sm:p-6">
+      <h2 className="font-display text-block-title text-strong">{tr.rating.question}</h2>
 
       <div
         role="radiogroup"
@@ -109,7 +109,7 @@ export function PlaceRatingWidget({ placeId, initialAverage, initialCount }: Pla
               onClick={() => handleRate(value)}
               className="flex h-11 w-11 items-center justify-center rounded-full text-line transition-colors hover:bg-surface-muted disabled:pointer-events-none"
             >
-              <StarIcon filled={filled} className={`h-6 w-6 ${filled ? 'text-terracotta' : 'text-line'}`} />
+              <StarIcon filled={filled} className={`h-6 w-6 ${filled ? 'text-ochre' : 'text-line'}`} />
             </button>
           );
         })}
@@ -128,11 +128,11 @@ export function PlaceRatingWidget({ placeId, initialAverage, initialCount }: Pla
           </p>
         ) : (
           <p className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 text-body-sm">
-            <span className="font-display text-block-title font-semibold text-strong">
-              {average?.toFixed(1)} <StarIcon filled className="inline h-4 w-4 -translate-y-0.5 text-terracotta" />
+            <span className="font-mono text-2xl font-semibold tabular-nums text-strong">
+              {average?.toFixed(1)} <StarIcon filled className="inline h-4 w-4 -translate-y-0.5 text-ochre" />
             </span>
             {descriptor && <span className="font-medium text-strong">{descriptor}</span>}
-            <span className="text-subtle">{tr.rating.reviewCount(count)}</span>
+            <span className="font-mono text-subtle">{tr.rating.reviewCount(count)}</span>
           </p>
         )}
       </div>

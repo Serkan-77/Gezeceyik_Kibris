@@ -33,11 +33,11 @@ export function Footer() {
   return (
     <footer className="on-ink bg-deep" role="contentinfo">
       <div className="mx-auto max-w-[1320px] px-4 pb-8 pt-14 sm:px-6 lg:px-8">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
-          <div className="lg:col-span-2">
-            <Link href="/" className="mb-5 inline-flex items-baseline gap-1.5" aria-label="Gezeceyik Kıbrıs, Ana Sayfa">
-              <span className="font-sans text-base font-bold tracking-tight text-white">Gezeceyik</span>
-              <span className="font-display text-lg italic text-brand-bright">Kıbrıs</span>
+        <div className="grid gap-10 border-t border-white/10 pt-10 sm:grid-cols-2 lg:grid-cols-5 lg:divide-x lg:divide-white/10">
+          <div className="lg:col-span-2 lg:pr-8">
+            <Link href="/" className="mb-5 inline-flex items-baseline gap-2" aria-label="Gezeceyik Kıbrıs, Ana Sayfa">
+              <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-on-ink-subtle">Gezeceyik</span>
+              <span className="font-display text-xl leading-none text-brand-bright">Kıbrıs</span>
             </Link>
             <p className="max-w-sm text-body-sm leading-relaxed text-on-ink-muted">
               Kuzey Kıbrıs&apos;taki en iyi müzeleri, kaleleri, arkeolojik alanları, plajları ve tarihi
@@ -53,7 +53,7 @@ export function Footer() {
             </p>
           </div>
 
-          <div>
+          <div className="lg:pl-8">
             <h3 className="mb-4 font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-on-ink-subtle">
               Keşfet
             </h3>
@@ -68,7 +68,7 @@ export function Footer() {
             </ul>
           </div>
 
-          <div>
+          <div className="lg:pl-8">
             <h3 className="mb-4 font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-on-ink-subtle">
               Gezi Planla
             </h3>
@@ -83,7 +83,7 @@ export function Footer() {
             </ul>
           </div>
 
-          <div>
+          <div className="lg:pl-8">
             <h3 className="mb-4 font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-on-ink-subtle">
               Kurumsal
             </h3>

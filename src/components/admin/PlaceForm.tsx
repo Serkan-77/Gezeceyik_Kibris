@@ -5,7 +5,7 @@
 // passed in as a prop from the Server Component page — see
 // "Passing actions as props" in Next.js's mutating-data guide.
 
-import { useActionState } from 'react';
+import { useActionState, useState } from 'react';
 import { PlaceInput, CATEGORIES, REGIONS, VERIFICATION_STATUSES } from '@/lib/db/placeSchema';
 import { PlaceFormState } from '@/app/admin/actions';
 import { Button } from '@/components/ui/Button';
@@ -52,6 +52,7 @@ const initialState: PlaceFormState = {};
 
 export function PlaceForm({ place, action }: Props) {
   const [state, formAction, pending] = useActionState(action, initialState);
+  const [alwaysOpen, setAlwaysOpen] = useState(place?.openingHours?.alwaysOpen ?? false);
 
   return (
     <form action={formAction} className="space-y-8">
@@ -151,12 +152,30 @@ export function PlaceForm({ place, action }: Props) {
           Her gün için serbest metin girin (örn. &quot;08:00–17:00&quot;). Boş bırakmak &quot;kapalı / sabit saat
           yok&quot; anlamına gelir.
         </p>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {DAYS.map((day) => (
-            <Field key={day} label={DAY_LABELS[day]} htmlFor={`hours_${day}`}>
-              <Input id={`hours_${day}`} name={`hours_${day}`} defaultValue={place?.openingHours?.[day] ?? ''} placeholder="08:00–17:00" />
-            </Field>
-          ))}
+        <label className="flex cursor-pointer items-center gap-2 text-sm text-muted">
+          <input
+            type="checkbox"
+            name="alwaysOpen"
+            checked={alwaysOpen}
+            onChange={(e) => setAlwaysOpen(e.target.checked)}
+            className="h-4 w-4 rounded-sm border-line accent-brand"
+          />
+          Her saat gidilebilir (giriş/çıkış saatine bağlı değil — açık hava alanı vb.)
+        </label>
+        <div aria-hidden={alwaysOpen} className={alwaysOpen ? 'pointer-events-none opacity-40' : undefined}>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {DAYS.map((day) => (
+              <Field key={day} label={DAY_LABELS[day]} htmlFor={`hours_${day}`}>
+                <Input
+                  id={`hours_${day}`}
+                  name={`hours_${day}`}
+                  defaultValue={place?.openingHours?.[day] ?? ''}
+                  placeholder="08:00–17:00"
+                  disabled={alwaysOpen}
+                />
+              </Field>
+            ))}
+          </div>
         </div>
       </section>
 

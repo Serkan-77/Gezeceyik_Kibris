@@ -10,9 +10,11 @@
 // both return `undefined`, then the real value fills in after mount.
 
 import { useEffect, useState } from 'react';
-import { OpeningHours } from '@/types/place';
 
-export type DayKey = keyof OpeningHours;
+// A plain literal union, not `keyof OpeningHours` — that type also carries
+// non-day flags like `alwaysOpen` (see types/place.ts), which must never
+// be treated as a weekday key.
+export type DayKey = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
 
 export const DAY_KEYS: DayKey[] = [
   'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday',

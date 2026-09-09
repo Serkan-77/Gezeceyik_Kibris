@@ -69,12 +69,13 @@ export function PlaceEssentials({ place }: PlaceEssentialsProps) {
   }
 
   return (
-    <div className="rounded-md border border-line bg-surface p-5">
-      <h2 className="mb-1 font-display text-block-title font-semibold text-strong">{tr.place.visitorInfo}</h2>
+    <div className="border border-line bg-surface p-5">
+      <p className="font-mono text-xs uppercase tracking-[0.1em] text-brand">Fiş</p>
+      <h2 className="mt-1 font-display text-block-title text-strong">{tr.place.visitorInfo}</h2>
       <dl className="mt-3 divide-y divide-line">
         <div className="flex items-start justify-between gap-4 py-3">
-          <dt className="shrink-0 text-label font-medium uppercase tracking-wider text-subtle">{rows[0].label}</dt>
-          <dd className="text-right text-body-sm font-medium text-strong">{rows[0].value}</dd>
+          <dt className="shrink-0 font-mono text-[10px] font-medium uppercase tracking-[0.06em] text-subtle">{rows[0].label}</dt>
+          <dd className="text-right font-mono text-[13px] font-medium text-strong">{rows[0].value}</dd>
         </div>
         {place.openingHours && (
           <div className="py-3">
@@ -83,8 +84,8 @@ export function PlaceEssentials({ place }: PlaceEssentialsProps) {
         )}
         {rows.slice(1).map((row) => (
           <div key={row.label} className="flex items-start justify-between gap-4 py-3">
-            <dt className="shrink-0 text-label font-medium uppercase tracking-wider text-subtle">{row.label}</dt>
-            <dd className="text-right text-body-sm font-medium text-strong">{row.value}</dd>
+            <dt className="shrink-0 font-mono text-[10px] font-medium uppercase tracking-[0.06em] text-subtle">{row.label}</dt>
+            <dd className="text-right font-mono text-[13px] font-medium text-strong">{row.value}</dd>
           </div>
         ))}
       </dl>

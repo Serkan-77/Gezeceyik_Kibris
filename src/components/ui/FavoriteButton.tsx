@@ -30,9 +30,9 @@ export function FavoriteButton({ slug, name, className = '', size = 'md' }: Favo
       }}
       aria-pressed={active}
       aria-label={active ? `${name} favorilerden çıkar` : `${name} favorilere ekle`}
-      className={`flex ${dim} items-center justify-center rounded-full bg-white/90 text-ink shadow-card backdrop-blur-sm transition-colors hover:bg-white ${className}`}
+      className={`flex ${dim} items-center justify-center border border-line bg-surface/95 text-ink backdrop-blur-sm transition-colors hover:border-ink ${className}`}
     >
-      <HeartIcon filled={active} className={`${iconDim} ${active ? 'text-terracotta' : ''}`} />
+      <HeartIcon filled={active} className={`${iconDim} ${active ? 'text-ochre' : ''}`} />
     </button>
   );
 }

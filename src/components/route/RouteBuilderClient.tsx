@@ -236,7 +236,7 @@ export function RouteBuilderClient({ mode, initialRoute, places }: RouteBuilderC
       <div className="min-w-0">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:gap-3">
           <div className="flex-1">
-            <label htmlFor="route-name" className="mb-1.5 block text-label font-medium uppercase tracking-wider text-subtle">
+            <label htmlFor="route-name" className="mb-1.5 block font-mono text-[10px] font-medium uppercase tracking-[0.06em] text-subtle">
               Rota Adı
             </label>
             <Input
@@ -288,10 +288,10 @@ export function RouteBuilderClient({ mode, initialRoute, places }: RouteBuilderC
                     )}
                   </span>
                   <span className="min-w-0">
-                    <span className="block truncate font-display text-card-title font-semibold text-strong group-hover:text-brand">
+                    <span className="block truncate font-serif text-card-title font-semibold text-strong group-hover:text-brand">
                       {stop.place.name}
                     </span>
-                    <span className="block truncate text-meta text-subtle">{stop.place.city}</span>
+                    <span className="block truncate font-mono text-meta text-subtle">{stop.place.city}</span>
                   </span>
                 </Link>
                 <div className="flex shrink-0 items-center gap-1">
@@ -334,7 +334,7 @@ export function RouteBuilderClient({ mode, initialRoute, places }: RouteBuilderC
         {stops.length > 1 && <p className="mt-3 text-caption text-faint">{tr.route.abstractRouteNote}</p>}
 
         <div className="mt-8 border-t border-line pt-6">
-          <h2 className="mb-3 font-display text-block-title font-semibold text-strong">{tr.route.addMore}</h2>
+          <h2 className="mb-3 font-display text-block-title text-strong">{tr.route.addMore}</h2>
           <AddStopSearch places={places} inRouteSlugs={inRouteSlugs} pendingSlug={pendingAddSlug} onAdd={handleAddPlace} />
         </div>
 

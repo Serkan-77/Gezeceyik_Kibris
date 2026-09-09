@@ -67,8 +67,9 @@ function mailtoFor(subject: string): string {
 export default function IletisimPage() {
   return (
     <Container size="narrow" className="py-12 sm:py-16">
-      <h1 className="mb-2 font-display text-block-title font-semibold text-strong">İletişim</h1>
-      <p className="mb-10 max-w-xl text-body leading-relaxed text-muted">
+      <p className="font-mono text-xs uppercase tracking-[0.14em] text-brand">§00 — Kurumsal</p>
+      <h1 className="mb-2 mt-1 font-display text-block-title text-strong">İletişim</h1>
+      <p className="mb-10 max-w-xl font-serif text-body leading-relaxed text-muted">
         Yanlış bir bilgi mi gördünüz, teknik bir sorunla mı karşılaştınız, yoksa bir öneriniz mi var?
         Aşağıdaki konulardan size uygun olanı seçip doğrudan e-posta gönderebilirsiniz.
       </p>
@@ -77,8 +78,8 @@ export default function IletisimPage() {
         {REASONS.map((reason) => (
           <div key={reason.title} className="flex flex-col gap-3 py-5 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
             <div className="min-w-0">
-              <p className="font-display text-card-title font-semibold text-strong">{reason.title}</p>
-              <p className="mt-1 text-body-sm text-muted">{reason.description}</p>
+              <p className="font-display text-card-title text-strong">{reason.title}</p>
+              <p className="mt-1 font-serif text-body-sm text-muted">{reason.description}</p>
             </div>
             <Button href={mailtoFor(reason.subject)} variant="secondary" className="shrink-0 sm:w-auto">
               E-posta gönder

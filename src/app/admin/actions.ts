@@ -125,6 +125,7 @@ function parsePlaceForm(formData: FormData): PlaceInput {
       friday: dayHours(formData, 'friday'),
       saturday: dayHours(formData, 'saturday'),
       sunday: dayHours(formData, 'sunday'),
+      alwaysOpen: formData.get('alwaysOpen') === 'on',
     },
     admission: {
       isFree,
@@ -159,6 +160,29 @@ function zodErrorMessage(err: unknown): string {
   return err instanceof Error ? err.message : String(err);
 }
 
+// Every statically-cached (revalidate: N) route that reads place data
+// through lib/places.ts, independent of /places and /places/[slug]. Each
+// of these routes has its OWN ISR window, so revalidating only /places
+// (the old behavior) left a freshly-edited place's photo, name, or hours
+// stale on every one of these — the exact "shows on some pages, not
+// others" bug a place edit used to produce. /rotam and /rotam/[id] are
+// excluded: they're already fully dynamic (no revalidate), so nothing to
+// invalidate there.
+const PLACE_DEPENDENT_ROUTES = [
+  '/',
+  '/museums',
+  '/castles',
+  '/beaches',
+  '/historical-places',
+  '/harita',
+  '/gezi-planla',
+  '/favoriler',
+] as const;
+
+function revalidatePlaceDependentRoutes(): void {
+  for (const path of PLACE_DEPENDENT_ROUTES) revalidatePath(path);
+}
+
 export async function createPlaceAction(_prevState: PlaceFormState, formData: FormData): Promise<PlaceFormState> {
   await requireAdminSession();
 
@@ -171,6 +195,7 @@ export async function createPlaceAction(_prevState: PlaceFormState, formData: Fo
 
   revalidatePath('/admin');
   revalidatePath('/places');
+  revalidatePlaceDependentRoutes();
   redirect('/admin');
 }
 
@@ -195,6 +220,7 @@ export async function updatePlaceAction(
   revalidatePath('/places');
   revalidatePath(`/places/${originalSlug}`);
   if (input.slug !== originalSlug) revalidatePath(`/places/${input.slug}`);
+  revalidatePlaceDependentRoutes();
   redirect('/admin');
 }
 
@@ -205,6 +231,8 @@ export async function archivePlaceAction(formData: FormData): Promise<void> {
   await placeRepository.archivePlace(slug);
   revalidatePath('/admin');
   revalidatePath('/places');
+  revalidatePath(`/places/${slug}`);
+  revalidatePlaceDependentRoutes();
 }
 
 export async function togglePublishAction(formData: FormData): Promise<void> {
@@ -219,6 +247,8 @@ export async function togglePublishAction(formData: FormData): Promise<void> {
   }
   revalidatePath('/admin');
   revalidatePath('/places');
+  revalidatePath(`/places/${slug}`);
+  revalidatePlaceDependentRoutes();
 }
 
 // ─── Transit route mutations ────────────────────────────────────

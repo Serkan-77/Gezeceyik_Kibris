@@ -171,15 +171,16 @@ const GROUPS: FaqGroup[] = [
 export default function SssPage() {
   return (
     <Container size="narrow" className="py-12 sm:py-16">
-      <h1 className="mb-2 font-display text-block-title font-semibold text-strong">Sıkça Sorulan Sorular</h1>
-      <p className="mb-10 max-w-xl text-body leading-relaxed text-muted">
+      <p className="font-mono text-xs uppercase tracking-[0.14em] text-brand">§00 — Kurumsal</p>
+      <h1 className="mb-2 mt-1 font-display text-block-title text-strong">Sıkça Sorulan Sorular</h1>
+      <p className="mb-10 max-w-xl font-serif text-body leading-relaxed text-muted">
         Rota oluşturma, Gezeceyik Puanı ve verilerimiz hakkında en çok sorulanlar.
       </p>
 
       <div className="space-y-10">
         {GROUPS.map((group) => (
           <section key={group.title}>
-            <h2 className="mb-3 text-label font-semibold uppercase tracking-wider text-subtle">{group.title}</h2>
+            <h2 className="mb-3 font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-subtle">{group.title}</h2>
             <div className="divide-y divide-line border-y border-line">
               {group.items.map((item) => (
                 <details key={item.q} className="group py-1">
@@ -189,7 +190,7 @@ export default function SssPage() {
                       +
                     </span>
                   </summary>
-                  <p className="pb-4 pr-8 text-body-sm leading-relaxed text-muted">{item.a}</p>
+                  <p className="pb-4 pr-8 font-serif text-body-sm leading-relaxed text-muted">{item.a}</p>
                 </details>
               ))}
             </div>

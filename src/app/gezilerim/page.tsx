@@ -24,13 +24,14 @@ export const metadata: Metadata = {
 export default function GezilerimPage() {
   return (
     <Container className="py-10 sm:py-14">
-      <h1 className="font-display text-page-title font-semibold text-strong text-balance">Gezilerim</h1>
-      <p className="mt-3 max-w-xl text-body leading-relaxed text-muted">
+      <p className="font-mono text-xs uppercase tracking-[0.14em] text-brand">§05 — Gezilerim</p>
+      <h1 className="mt-1 font-display text-page-title leading-[0.9] text-strong text-balance">Gezilerim</h1>
+      <p className="mt-3 max-w-xl font-serif text-body leading-relaxed text-muted">
         Kendi oluşturduğun rotalar ve Gezi Planla ile kaydettiğin programlar.
       </p>
 
       <section className="mt-10">
-        <h2 className="font-display text-section-title font-semibold text-strong">{tr.route.savedRoutesTitle}</h2>
+        <h2 className="font-display text-section-title text-strong">{tr.route.savedRoutesTitle}</h2>
         <div className="mt-5">
           <SavedRoutesClient />
         </div>

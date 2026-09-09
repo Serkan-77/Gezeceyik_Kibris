@@ -1,67 +1,72 @@
 @import "tailwindcss";
 
 /* ══════════════════════════════════════════════════════════════════
-   DESIGN TOKENS — Gezeceyik Kıbrıs
-   Ground-up rebuild. Mediterranean identity: clear sea blue as the one
-   true interactive color, warm limestone/cream as the base, deep sea
-   for immersive dark moments, olive and terracotta rationed as quiet
-   accents. Photography carries color — the UI stays restrained so real
-   places, not chrome, do the work.
+   DESIGN TOKENS — Gezeceyik Kıbrıs — "Kıbrıs Atlas"
+   Second ground-up rebuild. The editorial-travel-magazine system this
+   replaced (soft rounded cards, italic serif, blurred shadows) is gone.
+   This is a field-survey / gazetteer register instead: a deep chart-blue
+   ink as the one interactive color — nautical chart / cartographic-survey
+   blue, not a SaaS blue — printed-paper neutrals, hard edges, hairline
+   rules, and a mono "instrument readout" voice running through nav,
+   labels and data. Ochre stays as a rationed secondary (ratings/medals)
+   — never a second brand color.
    ══════════════════════════════════════════════════════════════════ */
 @theme inline {
-  /* ── Brand — Clear Mediterranean Blue is the one interactive color:
-     links, primary actions, active nav, focus rings, map markers. Deep
-     Sea is rationed for full-bleed immersive sections (map scene,
-     footer) — never a general dark-surface substitute. ── */
-  --color-brand:         #1C6E93;
-  --color-brand-hover:   #175A78;
-  --color-brand-strong:  #14495F;
-  --color-brand-bright:  #4FA8CE; /* on-dark accent only, never small text on light */
+  /* ── Brand — chart-blue ink is the one interactive color: links,
+     primary actions, active nav, focus rings, map markers. Reads as a
+     surveyor's stamped blue ink on paper, not a SaaS accent. ── */
+  --color-brand:         #1D5C82;
+  --color-brand-hover:   #164A69;
+  --color-brand-strong:  #0F3450;
+  --color-brand-bright:  #6BB0D6; /* on-dark accent only, never small text on light */
 
-  --color-deep:          #0D2E42; /* Deep Sea — immersive dark sections only */
-  --color-deep-soft:     #143C54;
+  --color-deep:          #0E1E28; /* ink-blue near-black — immersive dark sections only */
+  --color-deep-soft:     #16303F;
 
   /* Quiet accents — used sparingly, never as a base or a system color. */
-  --color-olive:         #6B7A4C;
-  --color-olive-soft:    #E9ECDD;
-  --color-terracotta:    #B5652F;
-  --color-terracotta-soft: #F3E4D5;
+  --color-olive:         #5E6B3E;
+  --color-olive-soft:    #E7E6D4;
+  --color-ochre:         #B3811E; /* ratings, medals, highlight marks */
+  --color-ochre-soft:    #F1E4C4;
 
-  /* ── Neutrals — warm limestone/stone family, never cool SaaS gray. ── */
-  --color-ink:           #1C1B18;
-  --color-ink-soft:      #29271F;
-  --color-paper:         #F7F4EC; /* Sun-bleached cream — default page ground */
-  --color-surface:       #FCFBF7;
-  --color-surface-muted: #EFEADC;
-  --color-line:          #DFD8C4;
+  /* ── Neutrals — printed-parchment family, never cool SaaS gray. ── */
+  --color-ink:           #17140F;
+  --color-ink-soft:      #241F16;
+  --color-paper:         #F0ECE0; /* topographic paper — default page ground */
+  --color-surface:       #F8F6EE;
+  --color-surface-muted: #E4DEC9;
+  --color-line:          #B7AD8E; /* visible hairline rule, not a faint SaaS divider */
 
-  --color-strong:        #1C1B18;
-  --color-muted:         #5C574A;
-  --color-subtle:        #8A8370;
-  --color-faint:         #B8AF98;
+  --color-strong:        #17140F;
+  --color-muted:         #56503F;
+  --color-subtle:        #7C7460;
+  --color-faint:         #A79E82;
   --color-on-ink-strong:  #FFFFFF;
   --color-on-ink-muted:   rgb(255 255 255 / 66%);
   --color-on-ink-subtle:  rgb(255 255 255 / 42%);
 
   /* ── Category — read from icon + label, never hue. One neutral pair. ── */
-  --color-cat:      #1C1B18;
-  --color-cat-soft: #EFEADC;
+  --color-cat:      #17140F;
+  --color-cat-soft: #E4DEC9;
 
   /* ── Semantic state ─────────────────────────────────────────────── */
-  --color-success:      #276B3E;
-  --color-success-soft: #E7F0E4;
+  --color-success:      #2B6B34;
+  --color-success-soft: #E4EEDF;
   --color-warning:      #8A5A12;
-  --color-warning-soft: #FBF0DD;
-  --color-danger:       #A32E2E;
-  --color-danger-soft:  #F8E7E4;
+  --color-warning-soft: #F3E7CC;
+  --color-danger:       #9A2E1F;
+  --color-danger-soft:  #F3E1DA;
 
   /* ── Typography ─────────────────────────────────────────────────
-     Fraunces carries destination names, headlines and story — real
-     optical warmth for an editorial travel voice. Inter runs the
-     interface (nav, filters, controls, body copy) for legibility at
-     small sizes. JetBrains Mono is reserved for genuinely measured
-     facts: distance, duration, price, coordinates, counts. */
-  --font-display: var(--font-fraunces), Georgia, serif;
+     Anton sets headlines, era names and section numerals — a single
+     heavy condensed grotesk, plotted rather than written; no italics.
+     Source Serif reads long-form prose (descriptions, history essays)
+     — the one warm, human voice in the system. Inter runs interactive
+     chrome (nav, filters, buttons). JetBrains Mono is the instrument
+     face — coordinates, prices, hours, index numbers, nav labels — and
+     carries a much larger share of the UI than "numerals only". */
+  --font-display: var(--font-anton), 'Arial Narrow', sans-serif;
+  --font-serif:   var(--font-source-serif), Georgia, serif;
   --font-sans:    var(--font-inter), system-ui, sans-serif;
   --font-mono:    var(--font-jbmono), ui-monospace, SFMono-Regular, monospace;
 
@@ -79,26 +84,28 @@
   --text-card-title:     1.0625rem;
   --text-card-title--line-height: 1.35;
   --text-block-title:    clamp(1.25rem, 1.05rem + 0.7vw, 1.5rem);
-  --text-block-title--line-height: 1.3;
+  --text-block-title--line-height: 1.15;
   --text-section-title:  clamp(1.75rem, 1.3rem + 1.7vw, 2.5rem);
-  --text-section-title--line-height: 1.1;
+  --text-section-title--line-height: 0.98;
   --text-page-title:     clamp(2.125rem, 1.5rem + 2.4vw, 3.25rem);
-  --text-page-title--line-height: 1.05;
+  --text-page-title--line-height: 0.94;
   --text-hero:           clamp(2.75rem, 1.7rem + 4vw, 5rem);
-  --text-hero--line-height: 1.02;
+  --text-hero--line-height: 0.92;
   --text-display:        clamp(3.5rem, 2rem + 6.5vw, 7.5rem);
-  --text-display--line-height: 0.96;
+  --text-display--line-height: 0.86;
 
-  /* ── Radius — small, purposeful. Not a rounded-everything system. ── */
-  --radius-sm: 0.375rem;
-  --radius-md: 0.625rem;
-  --radius-lg: 1rem;
+  /* ── Radius — architectural, not rounded. Printed matter has corners,
+     not softened ones; the few genuine circles (favorite toggle, stepper)
+     use Tailwind's literal rounded-full, not this scale. ── */
+  --radius-sm: 0px;
+  --radius-md: 1px;
+  --radius-lg: 2px;
 
-  /* ── Shadows — soft, tinted to ink, reserved for genuinely floating
-     elements (popovers, sticky action bars) — never static content. ── */
-  --shadow-card: 0 1px 2px rgb(28 27 24 / 0.05), 0 1px 1px rgb(28 27 24 / 0.03);
-  --shadow-lift: 0 18px 30px -14px rgb(28 27 24 / 0.18), 0 4px 10px -4px rgb(28 27 24 / 0.08);
-  --shadow-ink:  0 24px 48px -18px rgb(13 46 66 / 0.55);
+  /* ── Shadows — hard-edge, stamped offsets instead of soft blur; a
+     printed card lifted off the page, not a SaaS elevation system. ── */
+  --shadow-card: 0 0 0 1px rgb(23 20 15 / 0.08);
+  --shadow-lift: 4px 4px 0 0 var(--color-ink);
+  --shadow-ink:  6px 6px 0 0 rgb(23 20 15 / 0.9);
 
   /* ── Containers ─────────────────────────────────────────────────── */
   --max-width-site:   1320px;
@@ -157,6 +164,16 @@ body {
 
 .font-display {
   font-family: var(--font-display);
+  /* Anton ships one weight/style; without this, a stray font-bold or
+     italic class elsewhere synthesizes a fake bold/oblique onto an
+     already-heavy condensed face, which reads as muddy at display sizes. */
+  font-synthesis: none;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.font-serif {
+  font-family: var(--font-serif);
 }
 
 .font-mono {
@@ -275,11 +292,10 @@ img {
   align-items: center;
   justify-content: center;
   color: white !important;
-  background: rgb(13 46 66 / 0.45);
-  border-radius: 9999px;
+  background: rgb(23 20 15 / 0.55);
 }
 .harita-preview .leaflet-popup-close-button:hover {
-  background: rgb(13 46 66 / 0.65);
+  background: rgb(23 20 15 / 0.75);
   color: white !important;
 }
 
@@ -300,17 +316,21 @@ img {
 }
 .harita-preview-tag {
   position: absolute;
-  bottom: 6px;
-  left: 6px;
-  background: rgb(255 255 255 / 0.92);
+  bottom: 0;
+  left: 0;
+  background: rgb(248 246 238 / 0.95);
   color: var(--color-ink-soft);
+  font-family: var(--font-mono);
   font-size: 9px;
-  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   padding: 2px 6px;
-  border-radius: 9999px;
+  border-top: 1px solid var(--color-line);
+  border-right: 1px solid var(--color-line);
 }
 .harita-preview-meta {
   margin: 12px 14px 0;
+  font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 500;
   text-transform: uppercase;
@@ -319,9 +339,9 @@ img {
 }
 .harita-preview-name {
   margin: 3px 14px 0;
-  font-family: var(--font-display);
-  font-size: 16px;
+  font-family: var(--font-serif);
   font-weight: 600;
+  font-size: 16px;
   line-height: 1.25;
   color: var(--color-strong);
 }
@@ -378,7 +398,6 @@ img {
   line-height: 1;
   color: var(--color-muted);
   border: 1px solid var(--color-line);
-  border-radius: 9999px;
   padding: 0;
   background: var(--color-surface);
   cursor: pointer;
@@ -389,9 +408,9 @@ img {
   border-color: var(--color-faint);
 }
 .harita-preview-icon-btn[data-action='favorite'][aria-pressed='true'] {
-  color: var(--color-terracotta);
-  border-color: var(--color-terracotta-soft);
-  background: var(--color-terracotta-soft);
+  color: var(--color-ochre);
+  border-color: var(--color-ochre-soft);
+  background: var(--color-ochre-soft);
 }
 .harita-preview-icon-btn[data-action='route'][aria-pressed='true'] {
   color: white;
@@ -475,6 +494,28 @@ img {
   }
   [data-motion="words"][data-enter="true"] .word-inner {
     transform: translateY(0);
+  }
+
+  /* Route-stop markers (trip planner, route builder) plot onto the map
+     like a surveyor's pin being set, not a UI element fading in. Each
+     marker's inline `animation-delay` (set at creation time, keyed to its
+     stop order) staggers the sequence along the route. */
+  [data-marker-enter] {
+    animation: marker-drop var(--duration-slow) var(--ease-out) backwards;
+  }
+}
+
+@keyframes marker-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-14px) scale(0.5);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(2px) scale(1.05);
+  }
+  to {
+    transform: translateY(0) scale(1);
   }
 }
 

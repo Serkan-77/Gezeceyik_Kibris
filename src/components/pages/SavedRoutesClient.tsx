@@ -67,8 +67,8 @@ export function SavedRoutesClient() {
           className="group flex items-center justify-between gap-4 rounded-md border border-line bg-surface px-5 py-4 transition-colors hover:border-ink"
         >
           <div className="min-w-0">
-            <p className="truncate font-display text-card-title font-semibold text-strong">{route.name ?? tr.route.unnamedRoute}</p>
-            <p className="text-meta text-subtle">
+            <p className="truncate font-serif text-card-title font-semibold text-strong">{route.name ?? tr.route.unnamedRoute}</p>
+            <p className="font-mono text-meta text-subtle">
               {tr.route.stopCount(route.stopCount)} · {tr.route.updatedAt(formatDate(route.updatedAt))}
             </p>
           </div>

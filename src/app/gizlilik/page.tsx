@@ -20,15 +20,16 @@ export const metadata: Metadata = {
 };
 
 const sectionClass = 'space-y-3';
-const headingClass = 'font-display text-card-title font-semibold text-strong';
-const paragraphClass = 'text-body-sm leading-relaxed text-muted';
+const headingClass = 'font-display text-card-title text-strong';
+const paragraphClass = 'font-serif text-body-sm leading-relaxed text-muted';
 const linkClass = 'text-brand hover:underline';
 
 export default function GizlilikPage() {
   return (
     <Container size="narrow" className="py-12 sm:py-16">
-      <h1 className="mb-2 font-display text-block-title font-semibold text-strong">Gizlilik Politikası</h1>
-      <p className="mb-10 text-meta text-subtle">Son güncelleme: 5 Eylül 2026</p>
+      <p className="font-mono text-xs uppercase tracking-[0.14em] text-brand">§00 — Kurumsal</p>
+      <h1 className="mb-2 mt-1 font-display text-block-title text-strong">Gizlilik Politikası</h1>
+      <p className="mb-10 font-mono text-[11px] uppercase tracking-[0.05em] text-subtle">Son güncelleme: 5 Eylül 2026</p>
 
       <div className="space-y-8">
         <section className={sectionClass}>

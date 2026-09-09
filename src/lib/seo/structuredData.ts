@@ -76,6 +76,11 @@ export function breadcrumbSchema(items: BreadcrumbItem[]) {
  */
 function openingHoursSpecification(place: Place): object[] | undefined {
   if (!place.openingHours) return undefined;
+
+  if (place.openingHours.alwaysOpen) {
+    return [{ '@type': 'OpeningHoursSpecification', dayOfWeek: Object.values(SCHEMA_DAY_NAMES), opens: '00:00', closes: '23:59' }];
+  }
+
   const spec: object[] = [];
 
   for (const day of WEEK_ORDER) {

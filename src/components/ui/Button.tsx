@@ -10,37 +10,37 @@ export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'ink' | 'white' 
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 const variantClass: Record<ButtonVariant, string> = {
-  // Clear Mediterranean Blue — the one brand action color, so every
-  // primary action site-wide reads as the same brand, not a rotating
-  // palette.
+  // Clay/terracotta — the one brand action color, so every primary
+  // action site-wide reads as the same brand, not a rotating palette.
+  // Stamped-offset shadow that snaps flush on press, like a physical
+  // button, not a soft SaaS lift.
   primary:
-    'bg-brand text-white hover:bg-brand-hover shadow-[0_1px_0_rgb(255_255_255_/_0.14)_inset] hover:shadow-lift',
+    'border border-brand bg-brand text-white shadow-[3px_3px_0_0_var(--color-ink)] hover:bg-brand-hover active:translate-x-[3px] active:translate-y-[3px] active:shadow-none',
   secondary:
-    'border border-line bg-surface text-strong hover:border-ink hover:text-ink',
+    'border border-ink bg-surface text-strong shadow-[3px_3px_0_0_var(--color-ink)] hover:bg-surface-muted active:translate-x-[3px] active:translate-y-[3px] active:shadow-none',
   ghost:
     'text-muted hover:text-strong hover:bg-surface-muted',
-  // Outline that inverts to solid ink on hover — its own tactile step
-  // between the flat primary and the plain outlined secondary.
+  // Flat inverted step between the shadowed primary and plain ghost —
+  // solid ink, no offset shadow of its own.
   ink:
-    'border-2 border-ink text-ink hover:bg-ink hover:text-white',
-  // Solid white on a photograph (hero, cards over imagery) — its own step
-  // so a dark-surface primary action never needs a semi-transparent hack.
+    'border border-ink bg-ink text-white hover:bg-ink-soft',
+  // Solid white on a photograph (hero, cards over imagery).
   white:
-    'bg-white text-ink hover:bg-white/90',
+    'border border-white bg-white text-ink shadow-[3px_3px_0_0_rgb(255_255_255_/_0.35)] hover:bg-white/90 active:translate-x-[3px] active:translate-y-[3px] active:shadow-none',
   'outline-on-ink':
-    'border border-white/25 text-white/85 hover:border-white/50 hover:text-white',
+    'border border-white/40 text-white/90 hover:border-white hover:text-white',
   'ghost-on-ink':
     'text-white/70 hover:text-white hover:bg-white/10',
   // Destructive confirmation only (route/rating deletion) — never a
   // general-purpose "error" button.
   danger:
-    'bg-danger text-white hover:bg-danger/90',
+    'border border-danger bg-danger text-white hover:bg-danger/90',
 };
 
 const sizeClass: Record<ButtonSize, string> = {
-  sm: 'h-9 gap-1.5 px-3.5 text-sm',
-  md: 'h-11 gap-2 px-5 text-sm',
-  lg: 'h-[3.25rem] gap-2 px-6 text-[0.9375rem]',
+  sm: 'h-9 gap-1.5 px-3.5 text-xs',
+  md: 'h-11 gap-2 px-5 text-[13px]',
+  lg: 'h-[3.25rem] gap-2 px-7 text-sm',
 };
 
 interface CommonProps {
@@ -60,8 +60,10 @@ type ButtonAsLink = CommonProps &
 
 export type ButtonProps = ButtonAsButton | ButtonAsLink;
 
+// Sharp corners, uppercase mono-tracked label — an instrument switch,
+// not a rounded marketing pill.
 const base =
-  'inline-flex shrink-0 items-center justify-center rounded-full font-semibold tracking-[-0.01em] transition-[color,background-color,box-shadow,transform] duration-[var(--duration-fast)] active:scale-[0.98] disabled:pointer-events-none disabled:opacity-40';
+  'inline-flex shrink-0 items-center justify-center font-mono font-semibold uppercase tracking-[0.06em] transition-[color,background-color,transform,box-shadow] duration-[var(--duration-fast)] disabled:pointer-events-none disabled:opacity-40';
 
 export function Button({
   variant = 'primary',

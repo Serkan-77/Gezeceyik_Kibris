@@ -20,7 +20,7 @@ function stopIcon(order: number, focused: boolean): L.DivIcon {
     html: `<div data-marker-enter style="
       width:${size}px;height:${size}px;border-radius:9999px;
       background:${focused ? 'var(--color-ink)' : 'var(--color-brand)'};border:2.5px solid white;
-      box-shadow:0 3px 8px rgba(23,25,28,0.3)${focused ? ', 0 0 0 4px rgb(3 137 190 / 0.25)' : ''};
+      box-shadow:0 3px 8px rgba(23,25,28,0.3)${focused ? ', 0 0 0 4px color-mix(in srgb, var(--color-brand) 25%, transparent)' : ''};
       display:flex;align-items:center;justify-content:center;
       font:700 12px var(--font-sans);color:white;
       transition:width 150ms,height 150ms;

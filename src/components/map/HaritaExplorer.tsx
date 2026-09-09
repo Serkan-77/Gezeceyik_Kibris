@@ -17,6 +17,7 @@ import { Select } from '@/components/ui/Select';
 import { tr } from '@/lib/i18n/tr';
 import { isImageRepresentative } from '@/lib/format';
 import { SearchIcon, ListIcon, MapIcon, ArrowRightIcon, PinIcon } from '@/components/ui/icons';
+import { CATEGORY_ICONS } from '@/lib/categoryIcons';
 
 const ALL = '__all__';
 
@@ -75,6 +76,7 @@ export function HaritaExplorer({ places, categories, regions }: HaritaExplorerPr
           {filtered.map((place) => {
             const representative = isImageRepresentative(place.verificationStatus);
             const active = place.slug === selectedSlug;
+            const CategoryIcon = CATEGORY_ICONS[place.category];
             return (
               <button
                 key={place.slug}
@@ -86,13 +88,16 @@ export function HaritaExplorer({ places, categories, regions }: HaritaExplorerPr
                   className={`absolute inset-y-0 left-0 w-[3px] transition-colors ${active ? 'bg-brand' : 'bg-transparent'}`}
                   aria-hidden="true"
                 />
-                <span className="relative h-16 w-20 shrink-0 overflow-hidden rounded-sm bg-surface-muted">
+                <span className="relative h-16 w-20 shrink-0 overflow-hidden border border-line bg-surface-muted">
                   {place.image && <Image src={place.image} alt="" fill sizes="80px" className="object-cover" />}
-                  {representative && place.image && <span className="absolute bottom-1 left-1 rounded-sm bg-white/90 px-1 text-[8px] font-medium text-ink-soft">Temsili</span>}
+                  {representative && place.image && <span className="absolute bottom-0 left-0 bg-surface/90 px-1 font-mono text-[8px] uppercase text-ink-soft">Temsili</span>}
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block text-[10px] font-medium uppercase tracking-wider text-subtle">{tr.categories[place.category]}</span>
-                  <span className={`block truncate font-display text-base font-semibold ${active ? 'text-brand-strong' : 'text-strong'}`}>{place.name}</span>
+                  <span className="flex items-center gap-1.5 font-mono text-[10px] font-medium uppercase tracking-[0.05em] text-subtle">
+                    <CategoryIcon className="h-3 w-3 shrink-0" />
+                    {tr.categories[place.category]}
+                  </span>
+                  <span className={`block truncate font-serif text-base font-semibold ${active ? 'text-brand-strong' : 'text-strong'}`}>{place.name}</span>
                   <span className="mt-0.5 flex items-center gap-1 truncate text-meta text-subtle">
                     <PinIcon className="h-3 w-3 shrink-0" />
                     {place.city}
@@ -116,15 +121,15 @@ export function HaritaExplorer({ places, categories, regions }: HaritaExplorerPr
         <PlacesMapWrapper places={places} visibleSlugs={visibleSlugs} selectedSlug={selectedSlug} onSelect={setSelectedSlug} />
       </div>
 
-      {/* Floating pill instead of a full-width bar — overlaps the active
+      {/* Floating switch instead of a full-width bar — overlaps the active
           view (list or map) rather than claiming its own permanent row, so
           both panels get the full viewport height beneath it. */}
       <div className="pointer-events-none absolute inset-x-0 bottom-4 z-[var(--z-index-map-controls)] flex justify-center lg:hidden">
-        <div className="pointer-events-auto flex items-center gap-0.5 rounded-full border border-line bg-paper/95 p-1 shadow-lift backdrop-blur-sm">
+        <div className="pointer-events-auto flex items-center border border-ink bg-paper/95 shadow-lift backdrop-blur-sm">
           <button
             type="button"
             onClick={() => setMobileView('list')}
-            className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition-colors ${mobileView === 'list' ? 'bg-brand text-white' : 'text-muted'}`}
+            className={`flex items-center gap-1.5 px-4 py-2.5 font-mono text-xs uppercase tracking-[0.05em] transition-colors ${mobileView === 'list' ? 'bg-ink text-white' : 'text-muted'}`}
           >
             <ListIcon className="h-4 w-4" />
             Liste
@@ -132,7 +137,7 @@ export function HaritaExplorer({ places, categories, regions }: HaritaExplorerPr
           <button
             type="button"
             onClick={() => setMobileView('map')}
-            className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition-colors ${mobileView === 'map' ? 'bg-brand text-white' : 'text-muted'}`}
+            className={`flex items-center gap-1.5 border-l border-ink px-4 py-2.5 font-mono text-xs uppercase tracking-[0.05em] transition-colors ${mobileView === 'map' ? 'bg-ink text-white' : 'text-muted'}`}
           >
             <MapIcon className="h-4 w-4" />
             Harita

@@ -16,16 +16,17 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-const sectionClass = 'space-y-3';
-const headingClass = 'font-display text-card-title font-semibold text-strong';
-const paragraphClass = 'text-body-sm leading-relaxed text-muted';
+const sectionClass = 'space-y-3 border-t border-line pt-6';
+const headingClass = 'font-display text-card-title text-strong';
+const paragraphClass = 'font-serif text-body-sm leading-relaxed text-muted';
 
 export default function HakkimizdaPage() {
   return (
     <Container size="narrow" className="py-12 sm:py-16">
-      <h1 className="mb-4 font-display text-block-title font-semibold text-strong">Hakkımızda</h1>
+      <p className="font-mono text-xs uppercase tracking-[0.14em] text-brand">§00 — Kurumsal</p>
+      <h1 className="mb-4 mt-1 font-display text-block-title text-strong">Hakkımızda</h1>
 
-      <p className="mb-10 max-w-2xl font-display text-block-title italic leading-relaxed text-ink-soft text-pretty">
+      <p className="mb-10 max-w-2xl font-serif text-2xl italic leading-relaxed text-ink-soft text-pretty">
         Kuzey Kıbrıs&apos;ı yalnızca görmek değil; anlamak, bağlamını bilmek ve kendi hızında keşfetmek
         için bir yer.
       </p>

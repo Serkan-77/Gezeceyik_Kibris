@@ -42,12 +42,24 @@ interface PlaceWeeklyHoursProps {
 export function PlaceWeeklyHours({ openingHours }: PlaceWeeklyHoursProps) {
   const todayKey = useTodayKey();
 
+  if (openingHours.alwaysOpen) {
+    return (
+      <div>
+        <p className="mb-2 font-mono text-[10px] font-medium uppercase tracking-[0.06em] text-subtle">{tr.place.openingHours}</p>
+        <p className="flex items-center gap-1.5 px-2 py-1.5 text-body-sm font-medium text-success">
+          <span className="h-[6px] w-[6px] shrink-0 rounded-full bg-success" aria-hidden="true" />
+          {tr.place.alwaysOpen}
+        </p>
+      </div>
+    );
+  }
+
   const classifications = WEEK_ORDER.map((day) => classifyDayHours(openingHours[day]));
   if (!hasAnyDayInfo(classifications)) return null; // no real data for any day — nothing honest to show
 
   return (
     <div>
-      <p className="mb-2 text-label font-medium uppercase tracking-wider text-subtle">{tr.place.openingHours}</p>
+      <p className="mb-2 font-mono text-[10px] font-medium uppercase tracking-[0.06em] text-subtle">{tr.place.openingHours}</p>
       <ul>
         {WEEK_ORDER.map((day, i) => {
           const classification = classifications[i];
@@ -88,9 +100,9 @@ export function PlaceWeeklyHours({ openingHours }: PlaceWeeklyHoursProps) {
           }
 
           return (
-            <li key={day} className={`flex items-center justify-between gap-3 rounded-sm px-2 py-1.5 text-body-sm ${rowClass}`}>
+            <li key={day} className={`flex items-center justify-between gap-3 px-2 py-1.5 text-body-sm ${rowClass}`}>
               <span className={labelClass}>{FULL_DAY_LABEL[day]}</span>
-              <span className={`tabular-nums ${toneClass}`}>{valueText}</span>
+              <span className={`font-mono tabular-nums ${toneClass}`}>{valueText}</span>
             </li>
           );
         })}

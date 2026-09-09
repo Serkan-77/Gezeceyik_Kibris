@@ -34,15 +34,15 @@ export function PlanTripBand({ exampleDay, accommodation }: PlanTripBandProps) {
       <Container>
         <div className={`grid gap-10 lg:gap-16 ${hasExample ? 'lg:grid-cols-[minmax(0,42%)_1fr] lg:items-center' : 'justify-items-center text-center'}`}>
           <div>
-            <Eyebrow>Planlayıcı</Eyebrow>
+            <Eyebrow>§05 — Planlayıcı</Eyebrow>
             <SplitHeading
               as="h2"
               id="plan-band-heading"
               text="Bir günü, dakikası dakikasına planla."
-              className="mt-2 max-w-md font-display text-section-title font-semibold text-strong text-balance"
+              className="mt-2 max-w-md font-display text-section-title text-strong text-balance"
             />
             <Reveal delayMs={100}>
-              <p className="mt-4 max-w-sm text-body leading-relaxed text-muted text-pretty">
+              <p className="mt-4 max-w-sm font-serif text-body leading-relaxed text-muted text-pretty">
                 Konaklamanı, süreni ve ilgi alanlarını gir; seyahat süreleri gerçek mesafelerden hesaplanmış, güne
                 göre sıralanmış bir program al.
               </p>
@@ -67,17 +67,17 @@ export function PlanTripBand({ exampleDay, accommodation }: PlanTripBandProps) {
 
           {hasExample && (
             <Reveal delayMs={140} className="relative">
-              <div className="overflow-hidden rounded-lg border border-line bg-surface p-2 shadow-lift sm:p-3">
-                <div className="h-72 w-full overflow-hidden rounded-md sm:h-96 lg:h-[420px]">
+              <div className="overflow-hidden border border-line bg-surface p-2 shadow-lift sm:p-3">
+                <div className="h-72 w-full overflow-hidden border border-line sm:h-96 lg:h-[420px]">
                   <RouteMapWrapper day={exampleDay} accommodation={accommodation} />
                 </div>
               </div>
               {firstStop?.image && (
-                <div className="absolute -bottom-5 -left-5 hidden items-center gap-2.5 rounded-md border border-line bg-surface py-1.5 pl-1.5 pr-3.5 shadow-lift sm:flex">
-                  <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded">
+                <div className="absolute -bottom-5 -left-5 hidden items-center gap-2.5 border border-line bg-surface py-1.5 pl-1.5 pr-3.5 shadow-lift sm:flex">
+                  <div className="relative h-9 w-9 shrink-0 overflow-hidden border border-line">
                     <Image src={firstStop.image} alt="" fill sizes="36px" className="object-cover" />
                   </div>
-                  <span className="text-xs text-muted">
+                  <span className="font-mono text-[11px] text-muted">
                     Örnek gün <span className="font-semibold text-strong">{firstStop.name}</span> ile başlıyor
                   </span>
                 </div>

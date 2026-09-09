@@ -1,10 +1,13 @@
 // components/home/Hero.tsx
-// Arrival. One confident full-bleed photograph, a destination statement,
-// and a clear next step. Server-rendered — no client JS required for the
-// entrance to look intentional; CSS-only fade-up (see globals.css).
+// "Kıbrıs Atlas" rebuild. Replaces the full-bleed gradient-scrim photo
+// hero with a split masthead: headline and stats set in ink on plain
+// paper at left, a single framed photograph — a specimen plate, not a
+// backdrop — at right, captioned like an atlas entry. No dark overlay,
+// no white-on-photo text.
 
 import Image from 'next/image';
 import { Place } from '@/types/place';
+import { Container } from '@/components/ui/Container';
 import { Button } from '@/components/ui/Button';
 import { ArrowRightIcon } from '@/components/ui/icons';
 import { isImageRepresentative } from '@/lib/format';
@@ -21,90 +24,73 @@ export function Hero({ placeCount, regionCount, feature }: HeroProps) {
   const representative = feature ? isImageRepresentative(feature.verificationStatus) : false;
 
   return (
-    <section className="relative overflow-hidden bg-deep" aria-labelledby="hero-heading">
-      <div className="absolute inset-0">
-        {feature?.image ? (
-          <Image src={feature.image} alt={`${feature.name}, ${feature.city}, Kuzey Kıbrıs`} fill priority sizes="100vw" className="object-cover" />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center bg-deep">
-            <span className="font-display text-5xl italic text-white/15">Gezeceyik Kıbrıs</span>
+    <section className="border-b border-line bg-paper" aria-labelledby="hero-heading">
+      <Container className="grid gap-12 pb-12 pt-10 sm:pt-14 lg:grid-cols-[1.05fr_0.95fr] lg:items-end lg:gap-16 lg:pb-16 lg:pt-20">
+        <div data-motion="fade-up" data-enter="true">
+          <p className="font-mono text-xs uppercase tracking-[0.14em] text-brand">§01 — Kuzey Kıbrıs gezi rehberi</p>
+
+          <h1
+            id="hero-heading"
+            className="mt-3 font-display text-display leading-[0.86] text-strong text-balance"
+          >
+            Kuzey Kıbrıs&apos;ı
+            <br />
+            keşfet.
+          </h1>
+
+          <p className="mt-6 max-w-md font-serif text-lg leading-relaxed text-ink-soft text-pretty">
+            Tarihi kaleler, masmavi koylar ve saklı seyir noktaları. {placeCount} yeri keşfet, kendi rotanı
+            oluştur.
+          </p>
+
+          <dl className="mt-8 flex items-end gap-6 border-t border-line pt-5 sm:gap-10">
+            {[
+              { value: String(placeCount), label: 'yer' },
+              { value: String(regionCount), label: 'bölge' },
+              { value: '10.000+', label: 'yıllık tarih' },
+            ].map((stat, i) => (
+              <div key={stat.label} className={`flex flex-col ${i > 0 ? 'border-l border-line pl-6 sm:pl-10' : ''}`}>
+                <dd className="font-mono text-2xl font-semibold tabular-nums text-strong sm:text-3xl">{stat.value}</dd>
+                <dt className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.1em] text-subtle">{stat.label}</dt>
+              </div>
+            ))}
+          </dl>
+
+          <div className="mt-9 flex flex-wrap items-center gap-3">
+            <Button href="/places" size="lg" icon={<ArrowRightIcon className="h-4 w-4" />}>
+              Keşfet
+            </Button>
+            <Button href="/gezi-planla" size="lg" variant="secondary">
+              Rota Oluştur
+            </Button>
           </div>
-        )}
+        </div>
 
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'linear-gradient(100deg, rgb(13 46 66 / 0.78) 0%, rgb(13 46 66 / 0.42) 36%, rgb(13 46 66 / 0.08) 60%, rgb(13 46 66 / 0) 84%)',
-          }}
-          aria-hidden="true"
-        />
-        <div
-          className="absolute inset-x-0 bottom-0 h-40"
-          style={{ background: 'linear-gradient(0deg, rgb(13 46 66 / 0.6) 0%, transparent 100%)' }}
-          aria-hidden="true"
-        />
-
-        {feature && (
-          <p className="absolute bottom-7 right-5 z-10 flex items-center gap-2 text-xs uppercase tracking-[0.1em] text-white/70 sm:bottom-9 sm:right-9">
+        <div data-motion="fade-up" data-enter="true" style={{ transitionDelay: '100ms' }}>
+          <div className="relative aspect-[4/5] w-full overflow-hidden border border-line sm:aspect-[16/11] lg:aspect-[4/5]">
+            {feature?.image ? (
+              <Image src={feature.image} alt={`${feature.name}, ${feature.city}, Kuzey Kıbrıs`} fill priority sizes="(max-width: 1024px) 100vw, 45vw" className="object-cover" />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center bg-deep">
+                <span className="font-display text-2xl text-white/20">Gezeceyik</span>
+              </div>
+            )}
             {representative && (
-              <span className="rounded-full border border-white/20 bg-white/10 px-2 py-0.5 text-[10px] normal-case tracking-normal text-white/90 backdrop-blur-sm">
+              <span className="absolute left-0 top-0 border-b border-r border-line bg-surface/95 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.06em] text-subtle">
                 Temsili görsel
               </span>
             )}
-            <span className="font-mono">{feature.name}</span>
-          </p>
-        )}
-      </div>
-
-      <div className="relative mx-auto flex min-h-[92dvh] max-w-[1440px] flex-col justify-end px-6 pb-16 pt-32 sm:px-10 sm:pb-20 lg:px-16">
-        <p
-          data-motion="fade-up"
-          data-enter="true"
-          className="font-mono text-xs uppercase tracking-[0.14em] text-brand-bright"
-        >
-          Kuzey Kıbrıs gezi rehberi
-        </p>
-
-        <h1 id="hero-heading" data-motion="fade-up" data-enter="true" style={{ transitionDelay: '40ms' }} className="mt-3 max-w-3xl font-display text-display font-semibold leading-[0.96] tracking-tight text-white text-balance">
-          Kuzey Kıbrıs&apos;ı <span className="italic text-white/90">keşfet.</span>
-        </h1>
-
-        <div data-motion="fade-up" data-enter="true" style={{ transitionDelay: '90ms' }} className="mt-7 max-w-md">
-          <p className="text-body leading-relaxed text-white/80 text-pretty">
-            Tarihi kaleler, masmavi koylar ve saklı seyir noktaları. {placeCount} yeri keşfet, kendi rotanı oluştur.
-          </p>
-        </div>
-
-        <dl data-motion="fade-up" data-enter="true" style={{ transitionDelay: '140ms' }} className="mt-8 flex items-end gap-6 sm:gap-8">
-          {[
-            { value: String(placeCount), label: 'yer' },
-            { value: String(regionCount), label: 'bölge' },
-            { value: '10.000+', label: 'yıllık tarih' },
-          ].map((stat, i) => (
-            <div key={stat.label} className={`flex flex-col ${i > 0 ? 'border-l border-white/20 pl-6 sm:pl-8' : ''}`}>
-              <dt className="order-2 mt-0.5 text-xs text-white/55">{stat.label}</dt>
-              <dd className="order-1 font-mono text-2xl font-medium tabular-nums text-white sm:text-3xl">{stat.value}</dd>
+          </div>
+          {feature && (
+            <div className="flex items-center justify-between gap-3 border border-t-0 border-line bg-surface px-3 py-2.5">
+              <span className="font-mono text-[11px] uppercase tracking-[0.05em] text-strong">
+                {feature.name}, {feature.city}
+              </span>
+              <span className="hidden font-mono text-[10px] uppercase tracking-[0.08em] text-faint sm:inline">N35° E33°</span>
             </div>
-          ))}
-        </dl>
-
-        <div data-motion="fade-up" data-enter="true" style={{ transitionDelay: '200ms' }} className="mt-8 flex flex-wrap items-center gap-4">
-          <Button href="/places" size="lg" variant="primary" icon={<ArrowRightIcon className="h-4 w-4" />}>
-            Keşfet
-          </Button>
-          <Button href="/gezi-planla" size="lg" variant="outline-on-ink">
-            Rota Oluştur
-          </Button>
+          )}
         </div>
-      </div>
-
-      <div
-        aria-hidden="true"
-        className="absolute inset-x-0 bottom-6 hidden justify-center motion-safe:animate-[hero-scroll-cue_2.2s_ease-in-out_infinite] sm:flex"
-      >
-        <span className="h-9 w-px bg-gradient-to-b from-white/0 via-white/60 to-white/0" />
-      </div>
+      </Container>
     </section>
   );
 }

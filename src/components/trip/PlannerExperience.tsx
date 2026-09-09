@@ -41,9 +41,9 @@ const PACE_OPTIONS = [
   { value: 'intensive', label: 'Yoğun', hint: '~4 durak/gün' },
 ] as const;
 
-const choiceBase = 'rounded-md border px-4 py-3.5 text-left text-sm transition-colors duration-[var(--duration-fast)]';
-const choiceActive = 'border-brand bg-brand/5 font-medium text-brand';
-const choiceInactive = 'border-line text-muted hover:border-brand/40';
+const choiceBase = 'border px-4 py-3.5 text-left font-mono text-[13px] transition-colors duration-[var(--duration-fast)]';
+const choiceActive = 'border-brand bg-brand/5 font-semibold text-brand';
+const choiceInactive = 'border-line text-muted hover:border-ink';
 
 interface Props {
   categories: Category[];
@@ -95,8 +95,9 @@ export function PlannerExperience({ categories, places, transitRoutes }: Props) 
   return (
     <div>
       <div className="max-w-2xl">
-        <h1 className="font-display text-page-title font-semibold text-strong text-balance">Gezini planla</h1>
-        <p className="mt-3 text-body leading-relaxed text-muted text-pretty">
+        <p className="font-mono text-xs uppercase tracking-[0.14em] text-brand">§03 — Planlayıcı</p>
+        <h1 className="mt-1 font-display text-page-title leading-[0.9] text-strong text-balance">Gezini planla</h1>
+        <p className="mt-3 font-serif text-body leading-relaxed text-muted text-pretty">
           Konaklamanı, süreni ve ilgi alanlarını seç; günlere bölünmüş, gerçek mesafelerden hesaplanmış bir
           program oluşturalım.
         </p>
@@ -128,7 +129,7 @@ export function PlannerExperience({ categories, places, transitRoutes }: Props) 
             >
               −
             </button>
-            <span className="w-20 text-center font-display text-3xl font-semibold text-strong tabular-nums">{days}</span>
+            <span className="w-20 text-center font-mono text-3xl font-semibold text-strong tabular-nums">{days}</span>
             <button
               type="button"
               onClick={() => setDays((d) => Math.min(14, d + 1))}
@@ -215,7 +216,7 @@ export function PlannerExperience({ categories, places, transitRoutes }: Props) 
       {itinerary && (
         <div id="itinerary-result" className="mt-16 scroll-mt-20 border-t border-line pt-12">
           <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-            <h2 className="font-display text-section-title font-semibold text-strong">Programın hazır</h2>
+            <h2 className="font-display text-section-title text-strong">Programın hazır</h2>
             <Button variant={savedTripId ? 'ink' : 'secondary'} onClick={handleSave} disabled={!!savedTripId}>
               {savedTripId ? 'Kaydedildi ✓' : 'Geziyi Kaydet'}
             </Button>
@@ -230,7 +231,7 @@ export function PlannerExperience({ categories, places, transitRoutes }: Props) 
 function FieldGroup({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <h2 className="mb-3 font-display text-block-title font-semibold text-strong">{label}</h2>
+      <h2 className="mb-3 font-mono text-xs font-semibold uppercase tracking-[0.08em] text-strong">{label}</h2>
       {children}
     </div>
   );

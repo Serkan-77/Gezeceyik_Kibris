@@ -68,6 +68,8 @@ export const tr = {
     free: 'Ücretsiz',
     openToday: 'Bugün Açık',
     closedToday: 'Bugün Kapalı',
+    alwaysOpen: 'Her Saat Gidilebilir',
+    alwaysOpenBadge: 'Her Saat Açık',
     estimatedVisit: 'Tahmini Ziyaret',
     address: 'Adres',
     contact: 'İletişim',

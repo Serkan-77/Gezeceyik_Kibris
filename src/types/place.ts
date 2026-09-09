@@ -36,6 +36,13 @@ export interface OpeningHours {
   friday?: string | null;
   saturday?: string | null;
   sunday?: string | null;
+  /**
+   * True for places with no fixed entry/exit hours (open-air sites, ruins,
+   * viewpoints, etc.) — visitable any time of day. When set, this
+   * overrides the per-day fields everywhere hours are displayed; the
+   * per-day fields are ignored rather than required to be cleared out.
+   */
+  alwaysOpen?: boolean;
 }
 
 export interface Accessibility {
