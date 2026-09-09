@@ -325,3 +325,70 @@ export function ListIcon(props: IconProps) {
     </svg>
   );
 }
+
+export function SunIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <circle cx="12" cy="12" r="4" strokeWidth={1.5} />
+      <path
+        strokeLinecap="round"
+        strokeWidth={1.5}
+        d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"
+      />
+    </svg>
+  );
+}
+
+export function CloudIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.5 19H8a5 5 0 1 1 1.35-9.81A6 6 0 0 1 21 12.5 3.5 3.5 0 0 1 17.5 19z" />
+    </svg>
+  );
+}
+
+export function CloudSunIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeWidth={1.5} d="M8 3v1.5M3.3 6.3l1.1 1.1M2 11h1.5M13.7 6.3l-1.1 1.1" />
+      <circle cx="8" cy="9" r="2.6" strokeWidth={1.5} />
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.5 21H10a4 4 0 1 1 1.08-7.85A5 5 0 0 1 20.5 15 3 3 0 0 1 17.5 21z" />
+    </svg>
+  );
+}
+
+export function CloudFogIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16.5 15H9a4.5 4.5 0 1 1 1.2-8.84A5.5 5.5 0 0 1 20 8.5a3.5 3.5 0 0 1-3.5 6.5z" />
+      <path strokeLinecap="round" strokeWidth={1.5} d="M4 19h16M6 22h12" />
+    </svg>
+  );
+}
+
+export function CloudRainIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.5 15H8a4.5 4.5 0 1 1 1.2-8.84A5.5 5.5 0 0 1 21 8.5a3.5 3.5 0 0 1-3.5 6.5z" />
+      <path strokeLinecap="round" strokeWidth={1.5} d="M8 18l-1 3M12 18l-1 3M16 18l-1 3" />
+    </svg>
+  );
+}
+
+export function CloudSnowIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.5 15H8a4.5 4.5 0 1 1 1.2-8.84A5.5 5.5 0 0 1 21 8.5a3.5 3.5 0 0 1-3.5 6.5z" />
+      <path strokeLinecap="round" strokeWidth={1.5} d="M8 18v.01M8 21v.01M12 19v.01M12 22v.01M16 18v.01M16 21v.01" />
+    </svg>
+  );
+}
+
+export function CloudLightningIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.5 14H8a4.5 4.5 0 1 1 1.2-8.84A5.5 5.5 0 0 1 21 7.5a3.5 3.5 0 0 1-3.5 6.5z" />
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 15l-3 5h3l-2 4" />
+    </svg>
+  );
+}

@@ -7,6 +7,7 @@
 import { Metadata } from 'next';
 import { Hero } from '@/components/home/Hero';
 import { CategoryNav } from '@/components/home/CategoryNav';
+import { WeatherBand } from '@/components/home/WeatherBand';
 import { DiscoveryTeaser } from '@/components/home/DiscoveryTeaser';
 import { HistoryScene } from '@/components/home/HistoryScene';
 import { GeographyBand } from '@/components/home/GeographyBand';
@@ -69,8 +70,9 @@ export default async function HomePage() {
   return (
     <>
       <Hero placeCount={places.length} regionCount={regions.length} feature={heroFeature} />
-      <CategoryNav places={places} />
+      <WeatherBand />
       <DiscoveryTeaser places={places} ratings={ratings} />
+      <CategoryNav places={places} />
       <HistoryScene places={places} />
       <GeographyBand places={places} regionCount={regions.length} />
       <PlanTripBand exampleDay={exampleDay} accommodation={exampleDay ? EXAMPLE_ACCOMMODATION : null} />
