@@ -78,7 +78,7 @@ export function PlaceCard({ place, size = 'md', priority, rating, aspectClassNam
             </span>
             {index !== undefined && <span className="text-faint">N&deg;{String(index + 1).padStart(3, '0')}</span>}
           </p>
-          <h3 className="mt-1 font-serif text-[17px] font-semibold leading-tight text-strong">{place.name}</h3>
+          <h3 className="mt-1 line-clamp-2 min-h-[2.5em] font-serif text-[17px] font-semibold leading-tight text-strong">{place.name}</h3>
         </div>
         <p className="flex items-center gap-1.5 font-mono text-[11px] text-muted">
           <span>{place.city}, {place.region}</span>

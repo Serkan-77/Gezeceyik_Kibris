@@ -69,15 +69,10 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: 'Gezeceyik Kıbrıs' }],
   creator: 'Gezeceyik Kıbrıs',
-  // No openGraph/twitter `images` here: the previous default (`/og-image.jpg`)
-  // does not exist anywhere in `public/` — every social share preview on
-  // the whole site was silently pointing at a 404. Omitting `images`
-  // entirely means link previews fall back to text-only (title +
-  // description), which is a real, honest result — a broken image icon
-  // is worse. Add a real 1200×630 `public/og-image.jpg` and restore an
-  // `images` array here (and it will apply to every page that doesn't
-  // set its own, e.g. category pages) — see the launch report for this
-  // flagged as a manual follow-up.
+  // No openGraph/twitter `images` here: `app/opengraph-image.tsx` and
+  // `app/twitter-image.tsx` (see lib/seo/ogImage.tsx) supply the image via
+  // Next's file-convention auto-injection instead, and apply to every page
+  // that doesn't define its own opengraph-image/twitter-image.
   openGraph: {
     type: 'website',
     locale: 'tr_TR',
@@ -87,7 +82,7 @@ export const metadata: Metadata = {
       'Kuzey Kıbrıs\'taki en iyi gezilecek yerleri keşfedin. Müzeler, kaleler, plajlar, manastırlar, arkeolojik alanlar ve daha fazlası: açılış saatleri, fiyatlar ve ziyaretçi rehberleriyle.',
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: 'Gezeceyik Kıbrıs: Müzeler, Kaleler, Plajlar ve Kültür',
     description:
       'Kuzey Kıbrıs\'taki müzeleri, kaleleri, plajları, manastırları ve kültürel alanları keşfedin.',
