@@ -6,10 +6,11 @@
    replaced (soft rounded cards, italic serif, blurred shadows) is gone.
    This is a field-survey / gazetteer register instead: a deep chart-blue
    ink as the one interactive color — nautical chart / cartographic-survey
-   blue, not a SaaS blue — printed-paper neutrals, hard edges, hairline
-   rules, and a mono "instrument readout" voice running through nav,
-   labels and data. Ochre stays as a rationed secondary (ratings/medals)
-   — never a second brand color.
+   blue, not a SaaS blue — hard edges, hairline rules, and a mono
+   "instrument readout" voice running through nav, labels and data.
+   Ochre stays as a rationed secondary (ratings/medals) — never a second
+   brand color. Neutrals are true gray, not warm parchment/khaki — that
+   warm cast read as brown/yellow across the site and was dropped.
    ══════════════════════════════════════════════════════════════════ */
 @theme inline {
   /* ── Brand — chart-blue ink is the one interactive color: links,
@@ -29,26 +30,26 @@
   --color-ochre:         #B3811E; /* ratings, medals, highlight marks */
   --color-ochre-soft:    #F1E4C4;
 
-  /* ── Neutrals — printed-parchment family, never cool SaaS gray. ── */
-  --color-ink:           #17140F;
-  --color-ink-soft:      #241F16;
-  --color-paper:         #FAF9F7; /* off-white page ground — near-white, minimal tint */
+  /* ── Neutrals — true gray, no warm parchment/khaki tint. ── */
+  --color-ink:           #141414;
+  --color-ink-soft:      #1E1E1E;
+  --color-paper:         #FAFAFA; /* off-white page ground — near-white, minimal tint */
   --color-header:        #FFFFFF; /* header ground — crisp white, separated from the page by the line below it */
-  --color-surface:       #F8F6EE;
-  --color-surface-muted: #E4DEC9;
-  --color-line:          #B7AD8E; /* visible hairline rule, not a faint SaaS divider */
+  --color-surface:       #F4F4F4;
+  --color-surface-muted: #DADADA;
+  --color-line:          #A6A6A6; /* visible hairline rule, not a faint SaaS divider */
 
-  --color-strong:        #17140F;
-  --color-muted:         #56503F;
-  --color-subtle:        #7C7460;
-  --color-faint:         #A79E82;
+  --color-strong:        #141414;
+  --color-muted:         #4C4C4C;
+  --color-subtle:        #707070;
+  --color-faint:         #979797;
   --color-on-ink-strong:  #FFFFFF;
   --color-on-ink-muted:   rgb(255 255 255 / 66%);
   --color-on-ink-subtle:  rgb(255 255 255 / 42%);
 
   /* ── Category — read from icon + label, never hue. One neutral pair. ── */
-  --color-cat:      #17140F;
-  --color-cat-soft: #E4DEC9;
+  --color-cat:      #141414;
+  --color-cat-soft: #DADADA;
 
   /* ── Semantic state ─────────────────────────────────────────────── */
   --color-success:      #2B6B34;

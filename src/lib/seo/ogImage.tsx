@@ -43,7 +43,7 @@ export async function renderOgImage(): Promise<ImageResponse> {
           height: '100%',
           display: 'flex',
           position: 'relative',
-          background: '#FAF9F7',
+          background: '#FAFAFA',
         }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -90,7 +90,7 @@ export async function renderOgImage(): Promise<ImageResponse> {
               fontSize: 100,
               lineHeight: 0.92,
               letterSpacing: -1,
-              color: '#17140F',
+              color: '#141414',
             }}
           >
             <span>{trUpper('Gezeceyik')}</span>
@@ -107,7 +107,7 @@ export async function renderOgImage(): Promise<ImageResponse> {
               fontWeight: 600,
               fontSize: 21,
               lineHeight: 1.5,
-              color: '#56503F',
+              color: '#4C4C4C',
               maxWidth: 480,
             }}
           >

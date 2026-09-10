@@ -61,6 +61,22 @@ export default async function HomePage() {
   const heroPool = featured.length > 0 ? featured : places;
   const heroFeature =
     heroPool.find((p) => p.image && p.verificationStatus === 'verified') ?? heroPool.find((p) => p.image) ?? null;
+  // Smaller second photo that peeks out diagonally behind the main hero
+  // plate — prefers a different city from heroFeature so the pair reads as
+  // two distinct places. Excludes 'Othello Kalesi': its stored image is a
+  // mismatched apartment-block photo, not the castle — a data bug, not a
+  // selection bug. Remove this exclusion once that record's image is fixed.
+  const heroFeature2 =
+    heroPool.find(
+      (p) =>
+        p.image &&
+        p.verificationStatus === 'verified' &&
+        p.id !== heroFeature?.id &&
+        p.city !== heroFeature?.city &&
+        p.name !== 'Othello Kalesi'
+    ) ??
+    heroPool.find((p) => p.image && p.id !== heroFeature?.id && p.name !== 'Othello Kalesi') ??
+    null;
 
   const exampleInput: PlannerInput = {
     accommodation: EXAMPLE_ACCOMMODATION,
@@ -76,7 +92,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <Hero placeCount={places.length} regionCount={regions.length} feature={heroFeature} />
+      <Hero placeCount={places.length} regionCount={regions.length} feature={heroFeature} feature2={heroFeature2} />
       <WeatherBand />
       <DiscoveryTeaser places={places} ratings={ratings} />
       <CategoryNav places={places} />
