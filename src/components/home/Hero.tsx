@@ -20,10 +20,9 @@ interface HeroProps {
   placeCount: number;
   regionCount: number;
   feature: HeroFeature | null;
-  feature2?: HeroFeature | null;
 }
 
-export function Hero({ placeCount, regionCount, feature, feature2 }: HeroProps) {
+export function Hero({ placeCount, regionCount, feature }: HeroProps) {
   const representative = feature ? isImageRepresentative(feature.verificationStatus) : false;
 
   return (
@@ -87,22 +86,6 @@ export function Hero({ placeCount, regionCount, feature, feature2 }: HeroProps) 
 
         <div data-motion="fade-up" data-enter="true" style={{ transitionDelay: '100ms' }}>
           <div className="relative">
-            {/* Second, smaller plate — offset behind the main photo, down
-                and to the right, the same hard offset-duplicate motif as the
-                button shadows (border-ink, no rotation, no soft SaaS blur —
-                just a flat neutral drop for depth). */}
-            {feature2?.image && (
-              <div className="absolute -bottom-5 -right-5 z-0 hidden aspect-[4/5] w-[42%] overflow-hidden border border-ink shadow-[6px_6px_0_0_rgb(23_20_15_/_0.14)] sm:-bottom-7 sm:-right-7 sm:block sm:aspect-[16/10] lg:-bottom-10 lg:-right-10 lg:aspect-[3/4]">
-                <Image
-                  src={feature2.image}
-                  alt={`${feature2.name}, ${feature2.city}, Kuzey Kıbrıs`}
-                  fill
-                  sizes="(max-width: 1024px) 30vw, 20vw"
-                  className="object-cover"
-                />
-              </div>
-            )}
-
             <div className="relative z-10 aspect-[4/5] w-full overflow-hidden border border-ink bg-paper sm:aspect-[16/10] lg:aspect-[3/4]">
               {feature?.image ? (
                 <Image src={feature.image} alt={`${feature.name}, ${feature.city}, Kuzey Kıbrıs`} fill priority sizes="(max-width: 1024px) 100vw, 58vw" className="object-cover" />
