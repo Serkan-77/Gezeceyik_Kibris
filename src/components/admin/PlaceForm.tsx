@@ -149,8 +149,9 @@ export function PlaceForm({ place, action }: Props) {
       <section className="space-y-4">
         <h2 className="font-display text-card-title font-semibold text-strong">Açılış Saatleri</h2>
         <p className="text-meta text-subtle">
-          Her gün için serbest metin girin (örn. &quot;08:00–17:00&quot;). Boş bırakmak &quot;kapalı / sabit saat
-          yok&quot; anlamına gelir.
+          Her gün için serbest metin girin (örn. &quot;08:00–17:00&quot;). Boş bırakmak &quot;bilinmiyor&quot; anlamına
+          gelir — sitede &quot;Kapalı&quot; olarak gösterilmez. Bir günün gerçekten kapalı olduğunu biliyorsanız
+          o güne &quot;Kapalı&quot; yazın.
         </p>
         <label className="flex cursor-pointer items-center gap-2 text-sm text-muted">
           <input

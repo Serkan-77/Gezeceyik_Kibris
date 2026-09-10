@@ -82,8 +82,19 @@ function optionalNumber(formData: FormData, key: string): number | undefined {
   return Number.isFinite(num) ? num : undefined;
 }
 
-function dayHours(formData: FormData, day: string): string | null {
-  return optionalString(formData, `hours_${day}`) ?? null;
+/**
+ * A blank admin-form field means "we don't know this day's hours" — it
+ * must map to `undefined` (omitted key), never `null`. Per the documented
+ * contract in lib/format/openingHours.ts, `null` means "confirmed closed
+ * this day," which is a real, positive claim the admin form has no
+ * dedicated control to make — typing "Kapalı" into the field is how an
+ * admin records a genuinely confirmed closed day, since that's still
+ * plain text. (Older records saved before this fix may still carry an
+ * incorrect `null` from a blank field; see the openingHours data
+ * migration.)
+ */
+function dayHours(formData: FormData, day: string): string | undefined {
+  return optionalString(formData, `hours_${day}`);
 }
 
 function parseGallery(formData: FormData): string[] {

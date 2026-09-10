@@ -240,8 +240,8 @@ export function ItineraryView({ itinerary }: Props) {
       </div>
 
       <p className="mt-8 max-w-2xl text-meta leading-relaxed text-warning">
-        Bu program tahmini süreler ve örnek veriler kullanılarak otomatik oluşturulmuştur. Ziyaret öncesi açılış
-        saatlerini ve fiyatları resmi kaynaklardan doğrulayın.
+        Bu program tahmini süreler kullanılarak otomatik oluşturulmuştur; yer bilgilerinin bir kısmı henüz bağımsız
+        olarak doğrulanmamıştır. Ziyaret öncesi açılış saatlerini ve fiyatları resmi kaynaklardan doğrulayın.
       </p>
     </div>
   );

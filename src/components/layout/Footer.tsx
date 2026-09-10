@@ -45,9 +45,9 @@ export function Footer() {
               yerleri keşfedin. Tüm bölgeler, tek platform.
             </p>
             <p className="mt-5 max-w-sm text-caption leading-relaxed text-amber-400/80">
-              Açılış saatleri, fiyatlar ve iletişim bilgileri{' '}
-              <strong className="font-medium text-amber-300/90">örnek veridir</strong>, bağımsız olarak
-              doğrulanmamıştır. Ziyaret öncesi resmi kaynaklara başvurun.
+              Açılış saatleri, fiyatlar ve iletişim bilgilerinin çoğu henüz{' '}
+              <strong className="font-medium text-amber-300/90">bağımsız olarak doğrulanmamıştır</strong>. Ziyaret
+              öncesi resmi kaynaklara başvurun.
             </p>
             <p className="mt-6 font-mono text-[11px] uppercase tracking-[0.14em] text-on-ink-subtle">
               35°10′N 33°22′E — Akdeniz&apos;in doğusu

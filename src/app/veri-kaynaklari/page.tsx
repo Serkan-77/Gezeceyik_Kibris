@@ -1,13 +1,14 @@
 // app/veri-kaynaklari/page.tsx — Veri Kaynaklarımız (/veri-kaynaklari)
-// Static content page. Every figure and source domain named here was
-// pulled directly from the live `places`/`transitRoutes` tables (121
-// published places, 16 active transit routes) before writing this copy —
-// see the launch report for the exact audit. Update the counts if the
-// dataset changes meaningfully; don't let this page drift from reality.
+// Content page. Source domains are hand-written, but every count (total
+// published places, verified count, representative-image count) is read
+// live from Supabase below — never hardcode a number here, it will drift
+// from reality the next time a place is published/verified (see the
+// homepage's own `places.length`, the same single source of truth).
 
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { Container } from '@/components/ui/Container';
+import { getAllPlaces } from '@/lib/places';
 
 export const metadata: Metadata = {
   title: 'Veri Kaynaklarımız: Bilgileri Nasıl Doğruluyoruz?',
@@ -22,7 +23,17 @@ const headingClass = 'font-display text-card-title text-strong';
 const paragraphClass = 'font-serif text-body-sm leading-relaxed text-muted';
 const linkClass = 'text-brand hover:underline';
 
-export default function VeriKaynaklariPage() {
+export const revalidate = 3600;
+
+export default async function VeriKaynaklariPage() {
+  const places = await getAllPlaces();
+  const total = places.length;
+  const verifiedCount = places.filter((p) => p.verificationStatus === 'verified').length;
+  // Everything that isn't independently verified yet (includes the small
+  // number of deliberate sample/placeholder records) — same population
+  // that gets the "Temsili görsel" image label (lib/format.ts#isImageRepresentative).
+  const notYetVerifiedCount = total - verifiedCount;
+
   return (
     <Container size="narrow" className="py-12 sm:py-16">
       <p className="font-mono text-xs uppercase tracking-[0.14em] text-brand">§00 — Kurumsal</p>
@@ -75,10 +86,10 @@ export default function VeriKaynaklariPage() {
         <section className={sectionClass}>
           <h2 className={headingClass}>Doğrulanmış ve Doğrulanmamış Kayıtlar</h2>
           <p className={paragraphClass}>
-            Her yer kaydı iki durumdan birindedir. Bir kısmı (şu anda toplam 121 yerin yaklaşık 7&apos;si)
+            Her yer kaydı iki durumdan birindedir. Bir kısmı (şu anda toplam {total} yerin {verifiedCount}&apos;si)
             resmi kaynaklarla karşılaştırılarak <strong className="font-medium text-strong">doğrulanmıştır</strong> — bu
             yerlerin sayfasında yeşil bir onay işareti ve varsa kontrol tarihi görürsünüz. Geri kalan
-            büyük çoğunluk (yaklaşık 114 yer) kamuya açık kaynaklardan derlenmiş ama bağımsız olarak
+            büyük çoğunluk ({notYetVerifiedCount} yer) kamuya açık kaynaklardan derlenmiş ama bağımsız olarak
             teyit edilmemiştir; bu yerlerin sayfasında bunu açıkça belirten bir uyarı bulunur.
           </p>
           <p className={paragraphClass}>
@@ -90,8 +101,8 @@ export default function VeriKaynaklariPage() {
         <section className={sectionClass}>
           <h2 className={headingClass}>Görseller: Gerçek mi, Temsili mi?</h2>
           <p className={paragraphClass}>
-            Doğrulanmış yerlerin görselleri o yere aittir. Doğrulanmamış yerlerin çoğunda ise (yine
-            yaklaşık 114 yer) sayfada küçük bir <strong className="font-medium text-strong">&ldquo;Temsili görsel&rdquo;</strong> etiketi
+            Doğrulanmış yerlerin görselleri o yere aittir. Doğrulanmamış yerlerin çoğunda ise ({notYetVerifiedCount}
+            yer) sayfada küçük bir <strong className="font-medium text-strong">&ldquo;Temsili görsel&rdquo;</strong> etiketi
             görürsünüz — bu, görselin o yerin gerçek, kendine ait fotoğrafı olmadığı, konuyu temsil eden
             bir görsel olduğu anlamına gelir. Bunu her zaman açıkça işaretliyoruz, gizlemiyoruz.
           </p>

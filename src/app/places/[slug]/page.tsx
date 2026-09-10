@@ -178,10 +178,25 @@ export default async function PlaceDetailPage({ params }: Props) {
                   </>
                 )}
               </p>
+            ) : place.verificationStatus === 'sample' ? (
+              <p className="mt-5 max-w-2xl border border-warning/30 bg-warning-soft px-3 py-2.5 font-mono text-[11px] leading-relaxed text-warning">
+                {tr.common.sampleDataWarning}
+                {place.sourceUrl && (
+                  <>
+                    {' '}
+                    <a href={place.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:opacity-80">
+                      Resmi web sitesi ↗
+                    </a>
+                  </>
+                )}{' '}
+                <Link href="/veri-kaynaklari" className="underline underline-offset-2 hover:opacity-80">
+                  Nasıl doğruluyoruz?
+                </Link>
+              </p>
             ) : (
               <p className="mt-5 max-w-2xl border border-warning/30 bg-warning-soft px-3 py-2.5 font-mono text-[11px] leading-relaxed text-warning">
-                Açılış saatleri, fiyatlar ve iletişim bilgileri <strong className="font-semibold">örnek veridir</strong>, bağımsız
-                olarak doğrulanmamıştır. Ziyaret öncesi resmi kaynaklara başvurun.
+                Bu bilgiler henüz <strong className="font-semibold">bağımsız olarak doğrulanmamıştır</strong>. Ziyaret öncesi
+                resmi kaynaktan teyit etmenizi öneririz.
                 {place.sourceUrl && (
                   <>
                     {' '}

@@ -3,10 +3,23 @@
 // Ground-up rebuild. Search + region/category filters, URL-synced (so a
 // filtered view is shareable and back-button safe) driving a photo-first
 // grid — the first result runs large, the rest settle into a standard
-// grid, so 121 places never read as an identical card wall.
-
+// grid, so 122 places never read as an identical card wall.
+//
+// Crawlability: this component deliberately does NOT call
+// `useSearchParams()`. That hook forces Next.js to skip this component
+// during static prerendering and ship only the Suspense fallback in the
+// initial HTML (see node_modules/next/dist/docs/01-app/03-api-reference/
+// 04-functions/use-search-params.md, "Prerendering") — which is exactly
+// why a non-JS crawler used to see nothing here but a skeleton. Filter
+// state instead starts from plain defaults (so the full, real place grid
+// is what actually ships in the static HTML) and is synced from the
+// browser's own `window.location.search` in an effect, which only runs
+// post-hydration and has no effect on what gets prerendered. The
+// canonical URL for every page that renders this (see each page's
+// `alternates.canonical`) never carries query params anyway — filtered
+// views are shareable, just not separately indexed.
 import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Category, Place, Region } from '@/types/place';
 import { tr } from '@/lib/i18n/tr';
 import { PlaceCard } from './PlaceCard';
@@ -29,10 +42,34 @@ interface DiscoveryExplorerProps {
 export function DiscoveryExplorer({ places, categories, regions, lockedCategory, title, subtitle }: DiscoveryExplorerProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const [, startTransition] = useTransition();
-  const [queryInput, setQueryInput] = useState(searchParams.get('q') ?? '');
+  const [queryInput, setQueryInput] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<Category | typeof ALL>(lockedCategory ?? ALL);
+  const [selectedRegion, setSelectedRegion] = useState<Region | typeof ALL>(ALL);
   const [ratings, setRatings] = useState<Record<string, { average: number; count: number }>>({});
+
+  // One-time sync from the real URL, post-hydration only — restores a
+  // shared filtered link (e.g. /castles?region=Girne) for real visitors
+  // without ever touching what gets prerendered for crawlers. `window` is
+  // an external system React can't know about during render/SSR, so this
+  // read (and the state it seeds) can only happen inside an effect —
+  // there's no async boundary to defer it through the way the ratings
+  // fetch below does.
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get('q');
+    if (q) setQueryInput(q);
+    if (!lockedCategory) {
+      const category = params.get('category');
+      if (category) setSelectedCategory(category as Category);
+    }
+    const region = params.get('region');
+    if (region) setSelectedRegion(region as Region);
+    // Intentionally runs once on mount only.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     let cancelled = false;
@@ -56,20 +93,23 @@ export function DiscoveryExplorer({ places, categories, regions, lockedCategory,
     };
   }, [places]);
 
-  const selectedCategory = lockedCategory ?? (searchParams.get('category') as Category | null) ?? ALL;
-  const selectedRegion = (searchParams.get('region') as Region | null) ?? ALL;
-
   const setParam = useCallback(
-    (key: string, value: string | null) => {
-      const params = new URLSearchParams(searchParams.toString());
-      if (!value || value === ALL) params.delete(key);
-      else params.set(key, value);
+    (key: 'category' | 'region', value: string) => {
+      const nextCategory = key === 'category' ? (value as Category | typeof ALL) : selectedCategory;
+      const nextRegion = key === 'region' ? (value as Region | typeof ALL) : selectedRegion;
+      if (key === 'category') setSelectedCategory(nextCategory);
+      else setSelectedRegion(nextRegion);
+
+      const params = new URLSearchParams();
+      if (queryInput.trim()) params.set('q', queryInput.trim());
+      if (!lockedCategory && nextCategory !== ALL) params.set('category', nextCategory);
+      if (nextRegion !== ALL) params.set('region', nextRegion);
       const qs = params.toString();
       startTransition(() => {
         router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
       });
     },
-    [pathname, router, searchParams]
+    [pathname, router, queryInput, selectedCategory, selectedRegion, lockedCategory]
   );
 
   const filtered = useMemo(() => {

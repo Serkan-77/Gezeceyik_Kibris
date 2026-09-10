@@ -36,7 +36,7 @@ export function GeographyBand({ places, regionCount }: GeographyBandProps) {
           />
           <Reveal delayMs={120}>
             <p className="mt-5 max-w-sm font-serif text-body leading-relaxed text-on-ink-muted text-pretty">
-              Kuzey Kıbrıs&apos;taki her nokta gerçek koordinatlarıyla haritada. Bölgeyi gezin, yakınındakileri
+              Kuzey Kıbrıs&apos;taki yerleri haritada keşfet. Bölgeyi gezin, yakınındakileri
               görün, rotanızı oradan başlatın.
             </p>
           </Reveal>
