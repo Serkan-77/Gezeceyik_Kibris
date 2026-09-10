@@ -100,7 +100,7 @@ export function Navbar() {
 
   return (
     <header
-      className={`sticky top-0 z-nav w-full border-b border-line bg-paper/95 backdrop-blur-md transition-shadow duration-300 ${
+      className={`sticky top-0 z-nav w-full border-b border-line bg-header/95 backdrop-blur-md transition-shadow duration-300 ${
         scrolled ? 'shadow-[0_2px_0_0_var(--color-line)]' : 'shadow-none'
       }`}
     >
@@ -197,7 +197,7 @@ export function Navbar() {
       {open && mounted && createPortal(
         <div
           id="mobile-nav"
-          className="fixed inset-x-0 bottom-0 z-overlay overflow-y-auto border-t border-line bg-paper lg:hidden"
+          className="fixed inset-x-0 bottom-0 z-overlay overflow-y-auto border-t border-line bg-header lg:hidden"
           style={{ top: scrolled ? '3.5rem' : '4rem' }}
         >
           <div className="flex min-h-full flex-col px-5 pb-8 pt-7 sm:px-8">

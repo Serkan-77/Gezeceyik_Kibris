@@ -151,7 +151,7 @@ function buildPreviewNode(
         : ''
     }
     <div class="harita-preview-actions">
-      <a href="/places/${place.slug}" class="harita-preview-link">${tr.place.viewDetails} →</a>
+      <a href="/places/${place.slug}" class="harita-preview-link">${tr.place.viewDetails}</a>
       <span class="harita-preview-buttons">
         <button
           type="button"

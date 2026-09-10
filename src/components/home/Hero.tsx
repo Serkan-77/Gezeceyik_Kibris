@@ -31,7 +31,7 @@ export function Hero({ placeCount, regionCount, feature }: HeroProps) {
 
           <h1
             id="hero-heading"
-            className="mt-3 font-display text-display leading-[0.86] text-strong text-balance"
+            className="mt-3 font-display text-display leading-[0.86] text-strong text-balance pt-[0.12em] pb-[0.28em]"
           >
             Kuzey Kıbrıs&apos;ı
             <br />

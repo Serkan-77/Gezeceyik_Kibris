@@ -25,7 +25,7 @@ export default function GezilerimPage() {
   return (
     <Container className="py-10 sm:py-14">
       <p className="font-mono text-xs uppercase tracking-[0.14em] text-brand">§05 — Gezilerim</p>
-      <h1 className="mt-1 font-display text-page-title leading-[0.9] text-strong text-balance">Gezilerim</h1>
+      <h1 className="mt-1 font-display text-page-title leading-[0.9] text-strong text-balance pt-[0.5em] pb-[0.22em]">Gezilerim</h1>
       <p className="mt-3 max-w-xl font-serif text-body leading-relaxed text-muted">
         Kendi oluşturduğun rotalar ve Gezi Planla ile kaydettiğin programlar.
       </p>

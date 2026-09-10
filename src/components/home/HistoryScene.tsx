@@ -79,7 +79,7 @@ export function HistoryScene({ places }: HistorySceneProps) {
         <div className={`grid gap-8 lg:items-center lg:gap-16 xl:gap-20 ${imageOnLeft ? 'lg:grid-cols-[1fr_minmax(0,42%)]' : 'lg:grid-cols-[minmax(0,42%)_1fr]'}`}>
         <Reveal className={`flex flex-col justify-center ${imageOnLeft ? 'lg:order-2' : 'lg:order-1'}`}>
           <p className="font-mono text-xs uppercase tracking-[0.14em] text-brand">§03 — Tarihin Katmanları · {era.range}</p>
-          <h2 id="history-scene-heading" className="mt-2 font-display text-display leading-[0.86] text-strong transition-opacity duration-500">
+          <h2 id="history-scene-heading" className="mt-2 font-display text-display leading-[0.86] text-strong transition-opacity duration-500 pt-[0.12em] pb-[0.28em]">
             {era.label}
           </h2>
           <p key={place.slug} className="mt-6 max-w-md font-serif text-xl italic leading-relaxed text-ink-soft text-pretty">

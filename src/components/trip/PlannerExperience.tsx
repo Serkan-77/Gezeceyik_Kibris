@@ -102,7 +102,7 @@ export function PlannerExperience({ categories, places, transitRoutes }: Props) 
     <div>
       <div className="max-w-2xl">
         <p className="font-mono text-xs uppercase tracking-[0.14em] text-brand">§03 — Planlayıcı</p>
-        <h1 className="mt-1 font-display text-page-title leading-[0.9] text-strong text-balance">Gezini planla</h1>
+        <h1 className="mt-1 font-display text-page-title leading-[0.9] text-strong text-balance pt-[0.5em] pb-[0.22em]">Gezini planla</h1>
         <p className="mt-3 font-serif text-body leading-relaxed text-muted text-pretty">
           Konaklamanı, süreni ve ilgi alanlarını seç; günlere bölünmüş, gerçek mesafelerden hesaplanmış bir
           program oluşturalım.

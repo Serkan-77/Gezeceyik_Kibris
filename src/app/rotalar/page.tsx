@@ -28,7 +28,7 @@ export default async function CuratedRoutesPage() {
     <Container className="py-10 sm:py-14">
       <Breadcrumbs items={[{ name: 'Ana Sayfa', url: '/' }, { name: tr.curatedRoutes.listTitle, url: '/rotalar' }]} />
       <div className="mt-5 max-w-2xl">
-        <h1 className="font-display text-page-title leading-[0.9] text-strong text-balance">{tr.curatedRoutes.listTitle}</h1>
+        <h1 className="font-display text-page-title leading-[0.9] text-strong text-balance pt-[0.5em] pb-[0.22em]">{tr.curatedRoutes.listTitle}</h1>
         <p className="mt-3 font-serif text-body leading-relaxed text-muted text-pretty">{tr.curatedRoutes.listSubtitle}</p>
       </div>
 

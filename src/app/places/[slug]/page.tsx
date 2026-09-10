@@ -121,7 +121,7 @@ export default async function PlaceDetailPage({ params }: Props) {
               {representative && place.image && <span className="text-faint">· Temsili görsel</span>}
             </p>
 
-            <h1 className="mt-2 font-display text-hero leading-[0.86] text-strong text-balance">{place.name}</h1>
+            <h1 className="mt-2 font-display text-hero leading-[0.86] text-strong text-balance pt-[0.3em] pb-[0.24em]">{place.name}</h1>
 
             <p className="mt-4 max-w-xl font-serif text-lg leading-relaxed text-ink-soft text-pretty">{place.shortDescription}</p>
 
