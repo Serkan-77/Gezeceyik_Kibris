@@ -287,6 +287,7 @@ export const tr = {
     saved: 'Kaydedildi',
     saveFailed: 'Puanın kaydedilemedi, tekrar dene.',
     changeRating: 'Puanını değiştirebilirsin.',
+    changeCta: 'Değiştir',
   },
 
   // ─── Favorites ───────────────────────────────────────────────

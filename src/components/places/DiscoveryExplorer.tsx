@@ -29,6 +29,7 @@ import { Button } from '@/components/ui/Button';
 import { SearchIcon, MapIcon } from '@/components/ui/icons';
 
 const ALL = '__all__';
+type SortBy = 'default' | 'rating';
 
 interface DiscoveryExplorerProps {
   places: Place[];
@@ -46,6 +47,7 @@ export function DiscoveryExplorer({ places, categories, regions, lockedCategory,
   const [queryInput, setQueryInput] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<Category | typeof ALL>(lockedCategory ?? ALL);
   const [selectedRegion, setSelectedRegion] = useState<Region | typeof ALL>(ALL);
+  const [sortBy, setSortBy] = useState<SortBy>('default');
   const [ratings, setRatings] = useState<Record<string, { average: number; count: number }>>({});
 
   // One-time sync from the real URL, post-hydration only — restores a
@@ -66,6 +68,8 @@ export function DiscoveryExplorer({ places, categories, regions, lockedCategory,
     }
     const region = params.get('region');
     if (region) setSelectedRegion(region as Region);
+    const sort = params.get('sort');
+    if (sort === 'rating') setSortBy('rating');
     // Intentionally runs once on mount only.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -94,22 +98,25 @@ export function DiscoveryExplorer({ places, categories, regions, lockedCategory,
   }, [places]);
 
   const setParam = useCallback(
-    (key: 'category' | 'region', value: string) => {
+    (key: 'category' | 'region' | 'sort', value: string) => {
       const nextCategory = key === 'category' ? (value as Category | typeof ALL) : selectedCategory;
       const nextRegion = key === 'region' ? (value as Region | typeof ALL) : selectedRegion;
+      const nextSort = key === 'sort' ? (value as SortBy) : sortBy;
       if (key === 'category') setSelectedCategory(nextCategory);
-      else setSelectedRegion(nextRegion);
+      else if (key === 'region') setSelectedRegion(nextRegion);
+      else setSortBy(nextSort);
 
       const params = new URLSearchParams();
       if (queryInput.trim()) params.set('q', queryInput.trim());
       if (!lockedCategory && nextCategory !== ALL) params.set('category', nextCategory);
       if (nextRegion !== ALL) params.set('region', nextRegion);
+      if (nextSort === 'rating') params.set('sort', nextSort);
       const qs = params.toString();
       startTransition(() => {
         router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
       });
     },
-    [pathname, router, queryInput, selectedCategory, selectedRegion, lockedCategory]
+    [pathname, router, queryInput, selectedCategory, selectedRegion, sortBy, lockedCategory]
   );
 
   const filtered = useMemo(() => {
@@ -124,6 +131,19 @@ export function DiscoveryExplorer({ places, categories, regions, lockedCategory,
     });
   }, [places, selectedCategory, selectedRegion, queryInput]);
 
+  // Unrated places sort to the bottom (average -1) rather than being
+  // treated as a 0 — a genuine 0-star average would otherwise be
+  // indistinguishable from "nobody has voted yet".
+  const sorted = useMemo(() => {
+    if (sortBy !== 'rating') return filtered;
+    return [...filtered].sort((a, b) => {
+      const ra = ratings[a.id];
+      const rb = ratings[b.id];
+      const diff = (rb?.average ?? -1) - (ra?.average ?? -1);
+      return diff !== 0 ? diff : (rb?.count ?? 0) - (ra?.count ?? 0);
+    });
+  }, [filtered, sortBy, ratings]);
+
   return (
     <div>
       <div className="max-w-2xl">
@@ -132,7 +152,7 @@ export function DiscoveryExplorer({ places, categories, regions, lockedCategory,
         <p className="mt-3 font-serif text-body leading-relaxed text-muted text-pretty">{subtitle}</p>
       </div>
 
-      <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+      <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
         <div className="flex-1">
           <Input
             icon={<SearchIcon className="h-4 w-4" />}
@@ -170,6 +190,15 @@ export function DiscoveryExplorer({ places, categories, regions, lockedCategory,
             </option>
           ))}
         </Select>
+        <Select
+          value={sortBy}
+          onChange={(e) => setParam('sort', e.target.value)}
+          aria-label="Sıralama"
+          className="sm:w-56"
+        >
+          <option value="default">Öne çıkanlar</option>
+          <option value="rating">Gezeceyik Puanına göre</option>
+        </Select>
         <Button href="/harita" variant="secondary" icon={<MapIcon className="h-4 w-4" />} iconPosition="leading" className="shrink-0">
           Haritada gör
         </Button>
@@ -186,7 +215,7 @@ export function DiscoveryExplorer({ places, categories, regions, lockedCategory,
         </div>
       ) : (
         <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-          {filtered.map((place, i) => (
+          {sorted.map((place, i) => (
             // The lead card also spans 2 rows at lg so it sits flush against its
             // row-mates' combined height, instead of a taller 16:10 card leaving a
             // gap below the shorter square cards beside it in the same row.

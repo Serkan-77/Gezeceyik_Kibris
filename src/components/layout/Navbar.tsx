@@ -11,7 +11,7 @@ import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
-import { HeartIcon, CompassIcon, RouteIcon, MenuIcon, CloseIcon, ArrowRightIcon } from '@/components/ui/icons';
+import { HeartIcon, CompassIcon, RouteIcon, MenuIcon, CloseIcon, ArrowRightIcon, ChevronDownIcon } from '@/components/ui/icons';
 import { useDraftRoute } from '@/context/DraftRouteContext';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
 
@@ -20,34 +20,73 @@ interface NavLink {
   label: string;
 }
 
-const primaryLinks: NavLink[] = [
-  { href: '/places', label: 'Keşfet' },
+// Every category, not just the four with a dedicated SEO page — Manastır,
+// Kilise etc. previously had no way into the header at all and were only
+// reachable by picking them from the /places filter. The four with their
+// own route/metadata keep linking there; the rest fall back to the shared
+// /places explorer pre-filtered by category (see DiscoveryExplorer's URL
+// sync). "Aile Aktivitesi" is omitted — zero places carry that category
+// today, so it would only ever be a dead end.
+const exploreLinks: NavLink[] = [
+  { href: '/places', label: 'Tüm Yerler' },
   { href: '/museums', label: 'Müzeler' },
   { href: '/castles', label: 'Kaleler' },
   { href: '/beaches', label: 'Plajlar' },
   { href: '/historical-places', label: 'Tarihi Yerler' },
-  { href: '/harita', label: 'Harita' },
+  { href: '/places?category=Monastery', label: 'Manastırlar' },
+  { href: '/places?category=Archaeological+Site', label: 'Arkeolojik Alanlar' },
+  { href: '/places?category=Church', label: 'Kiliseler' },
+  { href: '/places?category=Natural+Attraction', label: 'Doğa Güzellikleri' },
+  { href: '/places?category=Viewpoint', label: 'Seyir Noktaları' },
+  { href: '/places?category=Cultural+Site', label: 'Kültürel Alanlar' },
 ];
+const EXPLORE_PATHS = ['/places', '/museums', '/castles', '/beaches', '/historical-places'];
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [hoveredHref, setHoveredHref] = useState<string | null>(null);
+  const [exploreOpen, setExploreOpen] = useState(false);
+  const [mobileExploreOpen, setMobileExploreOpen] = useState(false);
+  const [hoveredKey, setHoveredKey] = useState<string | null>(null);
   const [indicator, setIndicator] = useState<{ left: number; width: number } | null>(null);
-  const linkRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
+  const linkRefs = useRef<Record<string, HTMLElement | null>>({});
   const navListRef = useRef<HTMLUListElement>(null);
+  const exploreRef = useRef<HTMLLIElement>(null);
   const pathname = usePathname();
   const { count, hydrated } = useDraftRoute();
   const showBadge = hydrated && count > 0;
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/');
+  const isExploreActive = EXPLORE_PATHS.some((href) => isActive(href));
 
   // Close the mobile sheet on route change so a back-navigation never
   // leaves it stuck open. Deferred to a microtask (matches the pattern in
   // hooks/useFavorites etc.) to avoid a synchronous setState-in-effect.
   useEffect(() => {
-    Promise.resolve().then(() => setOpen(false));
+    Promise.resolve().then(() => {
+      setOpen(false);
+      setExploreOpen(false);
+      setMobileExploreOpen(false);
+    });
   }, [pathname]);
+
+  // Desktop Keşfet dropdown: closes on outside click or Escape, same as
+  // any disclosure that isn't a native <select>.
+  useEffect(() => {
+    if (!exploreOpen) return;
+    const onPointerDown = (e: PointerEvent) => {
+      if (exploreRef.current && !exploreRef.current.contains(e.target as Node)) setExploreOpen(false);
+    };
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setExploreOpen(false);
+    };
+    document.addEventListener('pointerdown', onPointerDown);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [exploreOpen]);
 
   // The mobile sheet is a full-screen takeover, not a dropdown — lock body
   // scroll behind it so the page underneath doesn't scroll with it.
@@ -70,9 +109,9 @@ export function Navbar() {
 
   // A single underline bar slides between nav links (hover, falling back
   // to the active route) instead of each link owning a static background.
-  const updateIndicator = useCallback((href: string | null) => {
+  const updateIndicator = useCallback((key: string | null) => {
     const container = navListRef.current;
-    const target = href ? linkRefs.current[href] : null;
+    const target = key ? linkRefs.current[key] : null;
     if (!container || !target) {
       setIndicator(null);
       return;
@@ -83,14 +122,14 @@ export function Navbar() {
   }, []);
 
   useEffect(() => {
-    const activeHref = primaryLinks.find((link) => isActive(link.href))?.href ?? null;
-    const target = hoveredHref ?? activeHref;
+    const activeKey = isExploreActive ? 'explore' : isActive('/harita') ? 'harita' : null;
+    const target = hoveredKey ?? activeKey;
     const recalc = () => updateIndicator(target);
     recalc();
     window.addEventListener('resize', recalc);
     return () => window.removeEventListener('resize', recalc);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- isActive reads pathname, already a dep
-  }, [hoveredHref, pathname, updateIndicator]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- isActive/isExploreActive read pathname, already a dep
+  }, [hoveredKey, pathname, updateIndicator]);
 
   return (
     <header
@@ -115,23 +154,66 @@ export function Navbar() {
               className="absolute bottom-0 left-0 z-0 h-[2px] bg-brand transition-all duration-300 ease-[var(--ease-out)]"
               style={indicator ? { left: indicator.left, width: indicator.width, opacity: 1 } : { width: 0, opacity: 0 }}
             />
-            {primaryLinks.map(({ href, label }) => (
-              <li key={href} className="relative z-10">
-                <Link
-                  ref={(el) => {
-                    linkRefs.current[href] = el;
-                  }}
-                  href={href}
-                  onMouseEnter={() => setHoveredHref(href)}
-                  onMouseLeave={() => setHoveredHref(null)}
-                  className={`block px-3 py-2 font-mono text-[12px] uppercase tracking-[0.05em] transition-colors ${
-                    isActive(href) ? 'text-brand' : 'text-muted hover:text-strong'
-                  }`}
-                >
-                  {label}
-                </Link>
-              </li>
-            ))}
+            <li
+              ref={exploreRef}
+              className="relative z-10"
+              onMouseEnter={() => {
+                setHoveredKey('explore');
+                setExploreOpen(true);
+              }}
+              onMouseLeave={() => {
+                setHoveredKey(null);
+                setExploreOpen(false);
+              }}
+            >
+              <Link
+                ref={(el) => {
+                  linkRefs.current.explore = el;
+                }}
+                href="/places"
+                onFocus={() => {
+                  setHoveredKey('explore');
+                  setExploreOpen(true);
+                }}
+                aria-expanded={exploreOpen}
+                className={`flex items-center gap-1 px-3 py-2 font-mono text-[12px] uppercase tracking-[0.05em] transition-colors ${
+                  isExploreActive ? 'text-brand' : 'text-muted hover:text-strong'
+                }`}
+              >
+                Keşfet
+                <ChevronDownIcon className={`h-3 w-3 transition-transform duration-200 ${exploreOpen ? 'rotate-180' : ''}`} />
+              </Link>
+
+              {exploreOpen && (
+                <div className="absolute left-0 top-full z-disclosure w-60 border border-line bg-paper py-1.5 shadow-lift">
+                  {exploreLinks.map(({ href, label }) => (
+                    <Link
+                      key={label}
+                      href={href}
+                      onClick={() => setExploreOpen(false)}
+                      className="block px-4 py-2 font-mono text-[11px] uppercase tracking-[0.05em] text-muted transition-colors hover:bg-surface-muted hover:text-strong"
+                    >
+                      {label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </li>
+            <li className="relative z-10">
+              <Link
+                ref={(el) => {
+                  linkRefs.current.harita = el;
+                }}
+                href="/harita"
+                onMouseEnter={() => setHoveredKey('harita')}
+                onMouseLeave={() => setHoveredKey(null)}
+                className={`block px-3 py-2 font-mono text-[12px] uppercase tracking-[0.05em] transition-colors ${
+                  isActive('/harita') ? 'text-brand' : 'text-muted hover:text-strong'
+                }`}
+              >
+                Harita
+              </Link>
+            </li>
           </ul>
         </nav>
 
@@ -206,22 +288,41 @@ export function Navbar() {
 
             <nav aria-label="Mobil navigasyon" className="mt-4">
               <ul className="border-y border-line">
-                {primaryLinks.map(({ href, label }, i) => (
-                  <li key={href} className={i > 0 ? 'border-t border-line' : ''}>
-                    <Link
-                      href={href}
-                      className="group flex min-h-14 items-center justify-between gap-4 py-3.5 active:opacity-60"
-                    >
-                      <span className="flex items-baseline gap-3">
-                        <span className="font-mono text-[11px] tabular-nums text-faint">{String(i + 1).padStart(2, '0')}</span>
-                        <span className={`font-display text-2xl leading-none ${isActive(href) ? 'text-brand' : 'text-strong'}`}>
-                          {label}
-                        </span>
-                      </span>
-                      <ArrowRightIcon className="h-4 w-4 shrink-0 text-faint transition-transform group-active:translate-x-1" />
-                    </Link>
-                  </li>
-                ))}
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => setMobileExploreOpen((v) => !v)}
+                    aria-expanded={mobileExploreOpen}
+                    aria-controls="mobile-explore-panel"
+                    className="flex min-h-14 w-full items-center justify-between gap-4 py-3.5 active:opacity-60"
+                  >
+                    <span className="flex items-baseline gap-3">
+                      <span className="font-mono text-[11px] tabular-nums text-faint">01</span>
+                      <span className={`font-display text-2xl leading-none ${isExploreActive ? 'text-brand' : 'text-strong'}`}>Keşfet</span>
+                    </span>
+                    <ChevronDownIcon className={`h-4 w-4 shrink-0 text-faint transition-transform ${mobileExploreOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  {mobileExploreOpen && (
+                    <ul id="mobile-explore-panel" className="border-t border-line pb-2">
+                      {exploreLinks.map(({ href, label }) => (
+                        <li key={label}>
+                          <Link href={href} className="flex min-h-11 items-center gap-3 py-2.5 pl-9 font-serif text-[17px] text-strong active:opacity-60">
+                            {label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+                <li className="border-t border-line">
+                  <Link href="/harita" className="group flex min-h-14 items-center justify-between gap-4 py-3.5 active:opacity-60">
+                    <span className="flex items-baseline gap-3">
+                      <span className="font-mono text-[11px] tabular-nums text-faint">02</span>
+                      <span className={`font-display text-2xl leading-none ${isActive('/harita') ? 'text-brand' : 'text-strong'}`}>Harita</span>
+                    </span>
+                    <ArrowRightIcon className="h-4 w-4 shrink-0 text-faint transition-transform group-active:translate-x-1" />
+                  </Link>
+                </li>
               </ul>
             </nav>
 

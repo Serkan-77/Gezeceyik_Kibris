@@ -38,6 +38,11 @@ export function PlaceRatingWidget({ placeId, initialAverage, initialCount }: Pla
   const [submitting, setSubmitting] = useState(false);
   const [justSaved, setJustSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Once the visitor has a rating on record, the star row collapses into a
+  // "you rated this" statement — re-opened only via the explicit Değiştir
+  // button below, so the interactive stars don't sit there implying the
+  // vote is still unset (Section "you rated here" state).
+  const [editing, setEditing] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -54,6 +59,7 @@ export function PlaceRatingWidget({ placeId, initialAverage, initialCount }: Pla
 
   const displayValue = hoverValue ?? myRating ?? 0;
   const descriptor = communityDescriptor(average, count);
+  const showStars = editing || myRating === null;
 
   async function handleRate(value: number) {
     if (submitting) return;
@@ -72,6 +78,7 @@ export function PlaceRatingWidget({ placeId, initialAverage, initialCount }: Pla
       setAverage(result.summary.average);
       setCount(result.summary.count);
       setMyRating(result.summary.myRating);
+      setEditing(false);
       setJustSaved(true);
       setTimeout(() => setJustSaved(false), 2000);
     } catch {
@@ -86,38 +93,54 @@ export function PlaceRatingWidget({ placeId, initialAverage, initialCount }: Pla
     <div className="border border-line bg-surface p-5 sm:p-6">
       <h2 className="font-display text-block-title text-strong">{tr.rating.question}</h2>
 
-      <div
-        role="radiogroup"
-        aria-label={tr.rating.puaniLabel}
-        className="mt-4 flex items-center gap-1"
-        onMouseLeave={() => setHoverValue(null)}
-      >
-        {STAR_VALUES.map((value) => {
-          const filled = value <= displayValue;
-          return (
-            <button
-              key={value}
-              type="button"
-              role="radio"
-              aria-checked={myRating === value}
-              aria-label={tr.rating.starLabel(value, starMeaning(value))}
-              id={`${groupId}-star-${value}`}
-              disabled={submitting}
-              onMouseEnter={() => setHoverValue(value)}
-              onFocus={() => setHoverValue(value)}
-              onBlur={() => setHoverValue(null)}
-              onClick={() => handleRate(value)}
-              className="flex h-11 w-11 items-center justify-center rounded-full text-line transition-colors hover:bg-surface-muted disabled:pointer-events-none"
-            >
-              <StarIcon filled={filled} className={`h-6 w-6 ${filled ? 'text-ochre' : 'text-line'}`} />
-            </button>
-          );
-        })}
-        <span className="ml-2 min-w-0 text-body-sm text-muted" aria-live="polite">
-          {displayValue > 0 ? starMeaning(displayValue) : null}
-          {justSaved && <span className="ml-1.5 text-success">· {tr.rating.saved} ✓</span>}
-        </span>
-      </div>
+      {showStars ? (
+        <div
+          role="radiogroup"
+          aria-label={tr.rating.puaniLabel}
+          className="mt-4 flex items-center gap-1"
+          onMouseLeave={() => setHoverValue(null)}
+        >
+          {STAR_VALUES.map((value) => {
+            const filled = value <= displayValue;
+            return (
+              <button
+                key={value}
+                type="button"
+                role="radio"
+                aria-checked={myRating === value}
+                aria-label={tr.rating.starLabel(value, starMeaning(value))}
+                id={`${groupId}-star-${value}`}
+                disabled={submitting}
+                onMouseEnter={() => setHoverValue(value)}
+                onFocus={() => setHoverValue(value)}
+                onBlur={() => setHoverValue(null)}
+                onClick={() => handleRate(value)}
+                className="flex h-11 w-11 items-center justify-center rounded-full text-line transition-colors hover:bg-surface-muted disabled:pointer-events-none"
+              >
+                <StarIcon filled={filled} className={`h-6 w-6 ${filled ? 'text-ochre' : 'text-line'}`} />
+              </button>
+            );
+          })}
+          <span className="ml-2 min-w-0 text-body-sm text-muted" aria-live="polite">
+            {displayValue > 0 ? starMeaning(displayValue) : null}
+          </span>
+        </div>
+      ) : (
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border border-line bg-surface-muted px-4 py-3">
+          <p className="flex items-center gap-1.5 text-body-sm text-strong" aria-live="polite">
+            <StarIcon filled className="h-4 w-4 shrink-0 text-ochre" />
+            {tr.rating.myRatingLabel(myRating!)}
+            {justSaved && <span className="text-success">· {tr.rating.saved} ✓</span>}
+          </p>
+          <button
+            type="button"
+            onClick={() => setEditing(true)}
+            className="shrink-0 font-mono text-[11px] uppercase tracking-[0.05em] text-brand hover:underline"
+          >
+            {tr.rating.changeCta}
+          </button>
+        </div>
+      )}
 
       {error && <p className="mt-2 text-body-sm text-danger">{error}</p>}
 

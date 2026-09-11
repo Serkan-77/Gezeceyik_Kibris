@@ -7,7 +7,7 @@
 // screen. Selecting a result pans the map; selecting a marker scrolls
 // the list — one shared selection state, not two disconnected views.
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Category, Place, Region } from '@/types/place';
@@ -16,10 +16,11 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { tr } from '@/lib/i18n/tr';
 import { isImageRepresentative } from '@/lib/format';
-import { SearchIcon, ListIcon, MapIcon, ArrowRightIcon, PinIcon } from '@/components/ui/icons';
+import { SearchIcon, ListIcon, MapIcon, ArrowRightIcon, PinIcon, StarIcon } from '@/components/ui/icons';
 import { CATEGORY_ICONS } from '@/lib/categoryIcons';
 
 const ALL = '__all__';
+type SortBy = 'default' | 'rating';
 
 interface HaritaExplorerProps {
   places: Place[];
@@ -31,8 +32,34 @@ export function HaritaExplorer({ places, categories, regions }: HaritaExplorerPr
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<string>(ALL);
   const [region, setRegion] = useState<string>(ALL);
+  const [sortBy, setSortBy] = useState<SortBy>('default');
+  const [ratings, setRatings] = useState<Record<string, { average: number; count: number }>>({});
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [mobileView, setMobileView] = useState<'list' | 'map'>('map');
+
+  // Same batched lookup as DiscoveryExplorer — one request for every
+  // place's average/count instead of one per marker/list row.
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/ratings/batch', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ placeIds: places.map((p) => p.id) }),
+    })
+      .then((res) => res.json())
+      .then((data: { ratings: Record<string, { average: number | undefined; count: number }> }) => {
+        if (cancelled) return;
+        const withVotes: Record<string, { average: number; count: number }> = {};
+        for (const [id, agg] of Object.entries(data.ratings)) {
+          if (agg.average !== undefined) withVotes[id] = { average: agg.average, count: agg.count };
+        }
+        setRatings(withVotes);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [places]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -44,14 +71,26 @@ export function HaritaExplorer({ places, categories, regions }: HaritaExplorerPr
     });
   }, [places, category, region, query]);
 
-  const visibleSlugs = useMemo(() => new Set(filtered.map((p) => p.slug)), [filtered]);
+  // Unrated places sort to the bottom (average -1) rather than as a 0 —
+  // a genuine 0-star average must stay distinguishable from no votes yet.
+  const sorted = useMemo(() => {
+    if (sortBy !== 'rating') return filtered;
+    return [...filtered].sort((a, b) => {
+      const ra = ratings[a.id];
+      const rb = ratings[b.id];
+      const diff = (rb?.average ?? -1) - (ra?.average ?? -1);
+      return diff !== 0 ? diff : (rb?.count ?? 0) - (ra?.count ?? 0);
+    });
+  }, [filtered, sortBy, ratings]);
+
+  const visibleSlugs = useMemo(() => new Set(sorted.map((p) => p.slug)), [sorted]);
 
   return (
     <div className="relative flex h-[calc(100dvh-4rem)] flex-col lg:flex-row">
       <div className={`flex w-full shrink-0 flex-col border-r border-line bg-paper lg:w-[380px] ${mobileView === 'map' ? 'hidden lg:flex' : 'flex'}`}>
         <div className="space-y-2.5 border-b border-line p-4">
           <Input icon={<SearchIcon className="h-4 w-4" />} placeholder="Yer veya şehir ara…" value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Yer ara" />
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Select value={category} onChange={(e) => setCategory(e.target.value)} aria-label="Kategori" className="flex-1">
               <option value={ALL}>Tüm kategoriler</option>
               {categories.map((c) => (
@@ -69,11 +108,15 @@ export function HaritaExplorer({ places, categories, regions }: HaritaExplorerPr
               ))}
             </Select>
           </div>
+          <Select value={sortBy} onChange={(e) => setSortBy(e.target.value as SortBy)} aria-label="Sıralama">
+            <option value="default">Öne çıkanlar</option>
+            <option value="rating">Gezeceyik Puanına göre</option>
+          </Select>
           <p className="text-meta text-subtle">{filtered.length} yer</p>
         </div>
 
         <div className="flex-1 overflow-y-auto pb-20 lg:pb-0">
-          {filtered.map((place) => {
+          {sorted.map((place) => {
             const representative = isImageRepresentative(place.verificationStatus);
             const active = place.slug === selectedSlug;
             const CategoryIcon = CATEGORY_ICONS[place.category];
@@ -101,6 +144,12 @@ export function HaritaExplorer({ places, categories, regions }: HaritaExplorerPr
                   <span className="mt-0.5 flex items-center gap-1 truncate text-meta text-subtle">
                     <PinIcon className="h-3 w-3 shrink-0" />
                     {place.city}
+                    {ratings[place.id] && (
+                      <span className="ml-1 flex shrink-0 items-center gap-0.5 text-ink-soft">
+                        <StarIcon filled className="h-3 w-3 text-ochre" />
+                        {ratings[place.id].average.toFixed(1)}
+                      </span>
+                    )}
                   </span>
                 </span>
                 <Link
