@@ -339,6 +339,14 @@ export function SunIcon(props: IconProps) {
   );
 }
 
+export function MoonIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20.5 14.5A8.5 8.5 0 119.5 3.5a7 7 0 0011 11z" />
+    </svg>
+  );
+}
+
 export function CloudIcon(props: IconProps) {
   return (
     <svg {...base(props)}>

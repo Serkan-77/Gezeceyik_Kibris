@@ -14,19 +14,30 @@ const variantClass: Record<ButtonVariant, string> = {
   // action site-wide reads as the same brand, not a rotating palette.
   // Stamped-offset shadow that snaps flush on press, like a physical
   // button, not a soft SaaS lift.
+  // brand-fill/danger-fill (not brand/danger) — those two stay
+  // constant across themes, since they're paired with fixed white
+  // text; --color-brand and --color-danger themselves brighten in
+  // dark mode for text/border contrast and would break that pairing.
   primary:
-    'border border-brand bg-brand text-white shadow-[3px_3px_0_0_var(--color-ink)] hover:bg-brand-hover active:translate-x-[3px] active:translate-y-[3px] active:shadow-none',
+    'border border-brand-fill bg-brand-fill text-white shadow-[3px_3px_0_0_var(--color-ink)] hover:bg-brand-hover active:translate-x-[3px] active:translate-y-[3px] active:shadow-none',
   secondary:
     'border border-ink bg-surface text-strong shadow-[3px_3px_0_0_var(--color-ink)] hover:bg-surface-muted active:translate-x-[3px] active:translate-y-[3px] active:shadow-none',
   ghost:
     'text-muted hover:text-strong hover:bg-surface-muted',
   // Flat inverted step between the shadowed primary and plain ghost —
-  // solid ink, no offset shadow of its own.
+  // solid ink, no offset shadow of its own. text-paper (not text-white)
+  // because --color-ink and --color-paper are exact opposites in both
+  // themes (ink flips near-black→near-white, paper flips the other
+  // way), so this pairing stays high-contrast whichever theme is active.
   ink:
-    'border border-ink bg-ink text-white hover:bg-ink-soft',
-  // Solid white on a photograph (hero, cards over imagery).
+    'border border-ink bg-ink text-paper hover:bg-ink-soft',
+  // Solid white on a photograph (hero, cards over imagery) — always a
+  // photo overlay, never page chrome, so this stays fixed white/dark
+  // regardless of site theme; text-neutral-900 (not text-ink) on
+  // purpose, since --color-ink flips to near-white in dark mode and
+  // would vanish against this always-white pill.
   white:
-    'border border-white bg-white text-ink shadow-[3px_3px_0_0_rgb(255_255_255_/_0.35)] hover:bg-white/90 active:translate-x-[3px] active:translate-y-[3px] active:shadow-none',
+    'border border-white bg-white text-neutral-900 shadow-[3px_3px_0_0_rgb(255_255_255_/_0.35)] hover:bg-white/90 active:translate-x-[3px] active:translate-y-[3px] active:shadow-none',
   'outline-on-ink':
     'border border-white/40 text-white/90 hover:border-white hover:text-white',
   'ghost-on-ink':
@@ -34,7 +45,7 @@ const variantClass: Record<ButtonVariant, string> = {
   // Destructive confirmation only (route/rating deletion) — never a
   // general-purpose "error" button.
   danger:
-    'border border-danger bg-danger text-white hover:bg-danger/90',
+    'border border-danger-fill bg-danger-fill text-white hover:bg-danger-fill/90',
 };
 
 const sizeClass: Record<ButtonSize, string> = {

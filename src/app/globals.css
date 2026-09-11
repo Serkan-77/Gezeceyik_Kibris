@@ -12,16 +12,31 @@
    brand color. Neutrals are true gray, not warm parchment/khaki — that
    warm cast read as brown/yellow across the site and was dropped.
    ══════════════════════════════════════════════════════════════════ */
-@theme inline {
+/* Color and shadow tokens live in their own non-inline @theme block —
+   Tailwind's `inline` modifier bakes each utility's LITERAL resolved
+   value into the compiled CSS instead of a `var(--color-x)` reference,
+   which is fine for static tokens (fonts, spacing) but means dark mode
+   below — which works purely by redefining these custom properties —
+   would have nothing to hook into for a plain `@theme inline` block. */
+@theme {
   /* ── Brand — chart-blue ink is the one interactive color: links,
      primary actions, active nav, focus rings, map markers. Reads as a
-     surveyor's stamped blue ink on paper, not a SaaS accent. ── */
+     surveyor's stamped blue ink on paper, not a SaaS accent. Flips
+     brighter in dark mode for text/border/ring contrast against a near-
+     black page — see the dark overrides below. ── */
   --color-brand:         #1D5C82;
   --color-brand-hover:   #164A69;
   --color-brand-strong:  #0F3450;
   --color-brand-bright:  #6BB0D6; /* on-dark accent only, never small text on light */
+  /* Constant across both themes — paired with white text on a solid
+     fill (buttons, badges, active toggles). --color-brand itself can't
+     serve that role once it brightens for dark mode: white text on a
+     light chart-blue fill loses the contrast the darker, constant fill
+     keeps. See Button.tsx primary/danger, Navbar's route-count badge,
+     PlacesMap's basemap toggle, RouteBuilderClient's stop numbers. */
+  --color-brand-fill:    #1D5C82;
 
-  --color-deep:          #0E1E28; /* ink-blue near-black — immersive dark sections only */
+  --color-deep:          #0E1E28; /* ink-blue near-black — immersive dark sections (Hero, Footer, photo scrims) regardless of site theme */
   --color-deep-soft:     #16303F;
 
   /* Quiet accents — used sparingly, never as a base or a system color. */
@@ -43,6 +58,9 @@
   --color-muted:         #4C4C4C;
   --color-subtle:        #707070;
   --color-faint:         #979797;
+  /* Constant across both themes — always white-on-dark text for the
+     site's permanently-dark sections (Hero, Footer, photo overlays),
+     independent of whichever theme the rest of the page is in. */
   --color-on-ink-strong:  #FFFFFF;
   --color-on-ink-muted:   rgb(255 255 255 / 66%);
   --color-on-ink-subtle:  rgb(255 255 255 / 42%);
@@ -58,7 +76,23 @@
   --color-warning-soft: #F3E7CC;
   --color-danger:       #9A2E1F;
   --color-danger-soft:  #F3E1DA;
+  /* Constant across both themes — same reasoning as --color-brand-fill:
+     Button.tsx's danger variant pairs this with white text. */
+  --color-danger-fill:  #9A2E1F;
 
+  /* ── Shadows — hard-edge, stamped offsets instead of soft blur; a
+     printed card lifted off the page, not a SaaS elevation system.
+     Colocated with color tokens (not in the typography @theme inline
+     block below), and built from color-mix(var(--color-ink)) rather
+     than a hardcoded rgb literal, so all three stay reactive to
+     --color-ink flipping between themes with no separate dark
+     override needed. ── */
+  --shadow-card: 0 0 0 1px color-mix(in oklab, var(--color-ink) 8%, transparent);
+  --shadow-lift: 4px 4px 0 0 var(--color-ink);
+  --shadow-ink:  6px 6px 0 0 color-mix(in oklab, var(--color-ink) 90%, transparent);
+}
+
+@theme inline {
   /* ── Typography ─────────────────────────────────────────────────
      Anton sets headlines, era names and section numerals — a single
      heavy condensed grotesk, plotted rather than written; no italics.
@@ -103,12 +137,6 @@
   --radius-md: 1px;
   --radius-lg: 2px;
 
-  /* ── Shadows — hard-edge, stamped offsets instead of soft blur; a
-     printed card lifted off the page, not a SaaS elevation system. ── */
-  --shadow-card: 0 0 0 1px rgb(23 20 15 / 0.08);
-  --shadow-lift: 4px 4px 0 0 var(--color-ink);
-  --shadow-ink:  6px 6px 0 0 rgb(23 20 15 / 0.9);
-
   /* ── Containers ─────────────────────────────────────────────────── */
   --max-width-site:   1320px;
   --max-width-narrow: 720px;
@@ -138,6 +166,96 @@
   color-scheme: light;
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   DARK MODE — same "Kıbrıs Atlas" chart system, inverted, not a new
+   palette. --color-deep/-deep-soft (the site's existing "immersive
+   dark section" tones, already used by Hero/Footer/photo scrims) are
+   reused directly as the dark page ground, so the dark theme reads as
+   the same instrument continuing at night, not a different app.
+   Neutrals stay true cool gray/blue, never warm — same rule as light
+   mode. Three states: no attribute = follow system preference;
+   data-theme="dark"/"light" = explicit user choice, set by
+   ThemeToggle.tsx and applied before paint by the inline script in
+   layout.tsx to avoid a flash of the wrong theme.
+   --color-*-fill and --color-on-ink-* tokens are deliberately absent
+   below — they're the "constant across both themes" tokens (solid
+   fills paired with fixed white text, and text that's always on a
+   permanently-dark section) documented next to their declarations
+   above.
+   ══════════════════════════════════════════════════════════════════ */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    --color-brand:        #5FA8D3;
+    --color-brand-strong: #9FCBE8;
+    --color-brand-bright: #8CC4E3;
+
+    --color-olive:      #A8B97E;
+    --color-olive-soft: #2B2E1C;
+    --color-ochre:      #D9A44B;
+    --color-ochre-soft: #332711;
+
+    --color-ink:           #F2F5F7;
+    --color-ink-soft:      #E2E6E8;
+    --color-paper:         #0E1E28;
+    --color-header:        #16303F;
+    --color-surface:       #132531;
+    --color-surface-muted: #1C3542;
+    --color-line:          #35505C;
+
+    --color-strong: #F2F5F7;
+    --color-muted:  #B7C3C9;
+    --color-subtle: #8CA0AA;
+    --color-faint:  #62767F;
+
+    --color-cat:      #F2F5F7;
+    --color-cat-soft: #1C3542;
+
+    --color-success:      #6FCB7C;
+    --color-success-soft: #16281A;
+    --color-warning:      #E3A23F;
+    --color-warning-soft: #2E2210;
+    --color-danger:       #E2695A;
+    --color-danger-soft:  #341C16;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-brand:        #5FA8D3;
+  --color-brand-strong: #9FCBE8;
+  --color-brand-bright: #8CC4E3;
+
+  --color-olive:      #A8B97E;
+  --color-olive-soft: #2B2E1C;
+  --color-ochre:      #D9A44B;
+  --color-ochre-soft: #332711;
+
+  --color-ink:           #F2F5F7;
+  --color-ink-soft:      #E2E6E8;
+  --color-paper:         #0E1E28;
+  --color-header:        #16303F;
+  --color-surface:       #132531;
+  --color-surface-muted: #1C3542;
+  --color-line:          #35505C;
+
+  --color-strong: #F2F5F7;
+  --color-muted:  #B7C3C9;
+  --color-subtle: #8CA0AA;
+  --color-faint:  #62767F;
+
+  --color-cat:      #F2F5F7;
+  --color-cat-soft: #1C3542;
+
+  --color-success:      #6FCB7C;
+  --color-success-soft: #16281A;
+  --color-warning:      #E3A23F;
+  --color-warning-soft: #2E2210;
+  --color-danger:       #E2695A;
+  --color-danger-soft:  #341C16;
+}
+
 body {
   background: var(--color-paper);
   color: var(--color-strong);
@@ -149,7 +267,7 @@ body {
 }
 
 ::selection {
-  background: var(--color-brand);
+  background: var(--color-brand-fill);
   color: white;
 }
 
@@ -250,8 +368,11 @@ img {
   color: var(--color-strong);
 }
 .gk-map-tooltip {
+  /* --color-ink and --color-paper are exact opposites in both themes
+     (see the Button.tsx 'ink' variant comment) — paper (not a literal
+     white) keeps this readable after ink flips near-white in dark mode. */
   background: var(--color-ink);
-  color: white;
+  color: var(--color-paper);
   border: none;
   border-radius: var(--radius-sm);
   padding: 3px 8px;
@@ -320,8 +441,12 @@ img {
   position: absolute;
   bottom: 0;
   left: 0;
+  /* A label chip over a photo thumbnail, not page chrome — background
+     and text both stay fixed light-chip/dark-text regardless of site
+     theme. --color-ink-soft would flip to near-white in dark mode and
+     vanish against this constant near-white chip. */
   background: rgb(248 246 238 / 0.95);
-  color: var(--color-ink-soft);
+  color: #1E1E1E;
   font-family: var(--font-mono);
   font-size: 9px;
   text-transform: uppercase;
@@ -434,14 +559,20 @@ img {
   background: var(--color-ochre-soft);
 }
 .harita-preview-icon-btn[data-action='route'][aria-pressed='true'] {
+  /* --color-brand-fill (not --color-brand) — a solid fill paired with
+     fixed white text; --color-brand itself brightens in dark mode and
+     would lose contrast against white. See globals.css's color tokens. */
   color: white;
-  border-color: var(--color-brand);
-  background: var(--color-brand);
+  border-color: var(--color-brand-fill);
+  background: var(--color-brand-fill);
 }
 
 .harita-hover-tag {
+  /* --color-ink and --color-paper are exact opposites in both themes
+     (see the Button.tsx 'ink' variant comment) — paper (not a literal
+     white) keeps this readable after ink flips near-white in dark mode. */
   background: var(--color-ink);
-  color: white;
+  color: var(--color-paper);
   border: none;
   border-radius: var(--radius-sm);
   padding: 3px 8px;
@@ -527,6 +658,26 @@ img {
      stop order) staggers the sequence along the route. */
   [data-marker-enter] {
     animation: marker-drop var(--duration-slow) var(--ease-out) backwards;
+  }
+
+  /* HistoryScene's era text (heading/quote/link) — the photo already
+     crossfades between mounted slides; the text swapped instantly on
+     the same rotation because nothing was driving an opacity change on
+     it. Re-mounting on slide change (key={slug}) replays this on every
+     era switch, not just first paint. */
+  [data-history-crossfade] {
+    animation: history-crossfade var(--duration-slow) var(--ease-out) both;
+  }
+}
+
+@keyframes history-crossfade {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 

@@ -13,6 +13,7 @@ import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { HeartIcon, CompassIcon, RouteIcon, MenuIcon, CloseIcon, ArrowRightIcon } from '@/components/ui/icons';
 import { useDraftRoute } from '@/context/DraftRouteContext';
+import { ThemeToggle } from '@/components/layout/ThemeToggle';
 
 interface NavLink {
   href: string;
@@ -30,7 +31,6 @@ const primaryLinks: NavLink[] = [
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [hoveredHref, setHoveredHref] = useState<string | null>(null);
   const [indicator, setIndicator] = useState<{ left: number; width: number } | null>(null);
@@ -41,12 +41,6 @@ export function Navbar() {
   const showBadge = hydrated && count > 0;
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/');
-
-  // The mobile sheet is portaled to document.body (see the render below) —
-  // needs a mounted flag since document isn't available during SSR.
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   // Close the mobile sheet on route change so a back-navigation never
   // leaves it stuck open. Deferred to a microtask (matches the pattern in
@@ -152,7 +146,7 @@ export function Navbar() {
             <RouteIcon className="h-[18px] w-[18px]" />
             <span className="hidden xl:inline">Rotam</span>
             {showBadge && (
-              <span className="absolute -right-0.5 -top-0.5 flex h-[16px] min-w-[16px] items-center justify-center rounded-full bg-brand px-1 font-mono text-[10px] font-semibold tabular-nums text-white">
+              <span className="absolute -right-0.5 -top-0.5 flex h-[16px] min-w-[16px] items-center justify-center rounded-full bg-brand-fill px-1 font-mono text-[10px] font-semibold tabular-nums text-white">
                 {count}
               </span>
             )}
@@ -177,24 +171,31 @@ export function Navbar() {
             <HeartIcon filled={isActive('/favoriler')} className="h-[18px] w-[18px]" />
             <span className="hidden xl:inline">Favoriler</span>
           </Link>
+          <ThemeToggle />
           <Button href="/gezi-planla" size="sm" className="ml-2">
             Gezi Planla
           </Button>
         </div>
 
-        <button
-          type="button"
-          className="flex h-11 w-11 items-center justify-center text-strong transition-colors hover:bg-surface-muted lg:hidden"
-          onClick={() => setOpen((v) => !v)}
-          aria-expanded={open}
-          aria-controls="mobile-nav"
-          aria-label={open ? 'Menüyü kapat' : 'Menüyü aç'}
-        >
-          {open ? <CloseIcon className="h-5 w-5" /> : <MenuIcon className="h-5 w-5" />}
-        </button>
+        <div className="flex items-center lg:hidden">
+          <ThemeToggle />
+          <button
+            type="button"
+            className="flex h-11 w-11 items-center justify-center text-strong transition-colors hover:bg-surface-muted"
+            onClick={() => setOpen((v) => !v)}
+            aria-expanded={open}
+            aria-controls="mobile-nav"
+            aria-label={open ? 'Menüyü kapat' : 'Menüyü aç'}
+          >
+            {open ? <CloseIcon className="h-5 w-5" /> : <MenuIcon className="h-5 w-5" />}
+          </button>
+        </div>
       </div>
 
-      {open && mounted && createPortal(
+      {/* Portaled to document.body — safe unguarded since `open` only ever
+          becomes true from a client click handler, never during SSR, so
+          `document` is guaranteed to exist by the time this branch runs. */}
+      {open && createPortal(
         <div
           id="mobile-nav"
           className="fixed inset-x-0 bottom-0 z-overlay overflow-y-auto border-t border-line bg-header lg:hidden"
@@ -234,7 +235,7 @@ export function Navbar() {
                 <RouteIcon className={`h-5 w-5 ${isActive('/rotam') ? 'text-brand' : 'text-muted'}`} />
                 <span className={`font-mono text-[11px] uppercase tracking-[0.04em] ${isActive('/rotam') ? 'text-brand' : 'text-strong'}`}>Rotam</span>
                 {showBadge && (
-                  <span className="absolute right-2 top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand px-1 font-mono text-[10px] font-semibold tabular-nums text-white">
+                  <span className="absolute right-2 top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand-fill px-1 font-mono text-[10px] font-semibold tabular-nums text-white">
                     {count}
                   </span>
                 )}

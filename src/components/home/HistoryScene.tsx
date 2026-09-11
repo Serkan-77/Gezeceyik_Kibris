@@ -68,7 +68,10 @@ export function HistoryScene({ places }: HistorySceneProps) {
   if (slides.length === 0) return null;
   const { era, place } = slides[activeIdx];
   const representative = isImageRepresentative(place.verificationStatus);
-  const statement = place.history!.split(/(?<=[.!?])\s+/)[0];
+  // Negative lookbehind excludes a period that's part of an ordinal-number
+  // abbreviation ("MÖ 6. yüzyılda", "14. yüzyılda") so those don't get
+  // mistaken for sentence boundaries and truncate the pull-quote.
+  const statement = place.history!.split(/(?<![0-9]\.)(?<=[.!?])\s+/)[0];
   // Alternates the image side per era instead of always pinning it right —
   // reads as a livelier, less templated rhythm as the slides advance.
   const imageOnLeft = activeIdx % 2 === 1;
@@ -78,19 +81,24 @@ export function HistoryScene({ places }: HistorySceneProps) {
       <Container className="py-14 sm:py-20 lg:py-24">
         <div className={`grid gap-8 lg:items-center lg:gap-16 xl:gap-20 ${imageOnLeft ? 'lg:grid-cols-[1fr_minmax(0,42%)]' : 'lg:grid-cols-[minmax(0,42%)_1fr]'}`}>
         <Reveal className={`flex flex-col justify-center ${imageOnLeft ? 'lg:order-2' : 'lg:order-1'}`}>
-          <p className="font-mono text-xs uppercase tracking-[0.14em] text-brand">§03 — Tarihin Katmanları · {era.range}</p>
-          <h2 id="history-scene-heading" className="mt-2 font-display text-display leading-[0.86] text-strong transition-opacity duration-500 pt-[0.12em] pb-[0.28em]">
-            {era.label}
-          </h2>
-          <p key={place.slug} className="mt-6 max-w-md font-serif text-xl italic leading-relaxed text-ink-soft text-pretty">
-            &ldquo;{statement}&rdquo;
-          </p>
-          <Link
-            href={`/places/${place.slug}`}
-            className="mt-7 inline-flex w-fit items-center gap-1.5 border-b border-brand pb-0.5 font-mono text-xs uppercase tracking-[0.05em] text-strong transition-colors hover:text-brand"
-          >
-            {place.name} ↗
-          </Link>
+          {/* Keyed by slug so the whole text block re-mounts and replays the
+              crossfade on every era switch, matching the photo's transition
+              instead of snapping to the new copy instantly. */}
+          <div key={place.slug} data-history-crossfade>
+            <p className="font-mono text-xs uppercase tracking-[0.14em] text-brand">§03 — Tarihin Katmanları · {era.range}</p>
+            <h2 id="history-scene-heading" className="mt-2 font-display text-display leading-[0.86] text-strong pt-[0.12em] pb-[0.28em]">
+              {era.label}
+            </h2>
+            <p className="mt-6 max-w-md font-serif text-xl italic leading-relaxed text-ink-soft text-pretty">
+              &ldquo;{statement}&rdquo;
+            </p>
+            <Link
+              href={`/places/${place.slug}`}
+              className="mt-7 inline-flex w-fit items-center gap-1.5 border-b border-brand pb-0.5 font-mono text-xs uppercase tracking-[0.05em] text-strong transition-colors hover:text-brand"
+            >
+              {place.name} ↗
+            </Link>
+          </div>
         </Reveal>
 
         <div className={imageOnLeft ? 'lg:order-1' : 'lg:order-2'}>

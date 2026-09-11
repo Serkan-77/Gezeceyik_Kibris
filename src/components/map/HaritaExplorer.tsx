@@ -129,7 +129,7 @@ export function HaritaExplorer({ places, categories, regions }: HaritaExplorerPr
           <button
             type="button"
             onClick={() => setMobileView('list')}
-            className={`flex items-center gap-1.5 px-4 py-2.5 font-mono text-xs uppercase tracking-[0.05em] transition-colors ${mobileView === 'list' ? 'bg-ink text-white' : 'text-muted'}`}
+            className={`flex items-center gap-1.5 px-4 py-2.5 font-mono text-xs uppercase tracking-[0.05em] transition-colors ${mobileView === 'list' ? 'bg-ink text-paper' : 'text-muted'}`}
           >
             <ListIcon className="h-4 w-4" />
             Liste
@@ -137,7 +137,7 @@ export function HaritaExplorer({ places, categories, regions }: HaritaExplorerPr
           <button
             type="button"
             onClick={() => setMobileView('map')}
-            className={`flex items-center gap-1.5 border-l border-ink px-4 py-2.5 font-mono text-xs uppercase tracking-[0.05em] transition-colors ${mobileView === 'map' ? 'bg-ink text-white' : 'text-muted'}`}
+            className={`flex items-center gap-1.5 border-l border-ink px-4 py-2.5 font-mono text-xs uppercase tracking-[0.05em] transition-colors ${mobileView === 'map' ? 'bg-ink text-paper' : 'text-muted'}`}
           >
             <MapIcon className="h-4 w-4" />
             Harita

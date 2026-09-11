@@ -24,10 +24,13 @@ interface PlaceGeoContextProps {
 }
 
 function mainIcon(): L.DivIcon {
+  // A white-ringed pin over map tiles, not page chrome — fixed ink hex,
+  // not var(--color-ink), which flips near-white in dark mode and would
+  // wash out against this marker's fixed white ring.
   return L.divIcon({
     html: `<div style="
       width:30px;height:30px;border-radius:9999px;
-      background:var(--color-ink);border:3px solid white;
+      background:#141414;border:3px solid white;
       box-shadow:0 3px 10px rgba(23,25,28,0.4);
     "></div>`,
     className: '',
@@ -40,7 +43,7 @@ function nearbyIcon(): L.DivIcon {
   return L.divIcon({
     html: `<div style="
       width:16px;height:16px;border-radius:9999px;
-      background:var(--color-brand);border:2px solid white;
+      background:#1D5C82;border:2px solid white;
       box-shadow:0 2px 6px rgba(23,25,28,0.3);
     "></div>`,
     className: '',

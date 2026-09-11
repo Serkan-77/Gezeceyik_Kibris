@@ -14,20 +14,30 @@ import 'leaflet/dist/leaflet.css';
 import { RouteStop } from '@/types/route';
 import { fixLeafletIcons } from '@/lib/leafletIcons';
 
+// Fixed outer box at the focused size — the unfocused state is drawn at
+// full size and visually shrunk with transform:scale, not by animating
+// width/height, so the 150ms transition is a compositor-only transform
+// instead of a relayout on every focus toggle.
+const STOP_ICON_SIZE = 32;
+const STOP_ICON_UNFOCUSED_SCALE = 26 / STOP_ICON_SIZE;
+
 function stopIcon(order: number, focused: boolean): L.DivIcon {
-  const size = focused ? 32 : 26;
+  // A white-ringed pin over map tiles, not page chrome — fixed ink/brand
+  // hexes (not the var() tokens, which flip near-white/bright in dark
+  // mode) so it doesn't wash out against its own white ring/number.
   return L.divIcon({
     html: `<div data-marker-enter style="
-      width:${size}px;height:${size}px;border-radius:9999px;
-      background:${focused ? 'var(--color-ink)' : 'var(--color-brand)'};border:2.5px solid white;
-      box-shadow:0 3px 8px rgba(23,25,28,0.3)${focused ? ', 0 0 0 4px color-mix(in srgb, var(--color-brand) 25%, transparent)' : ''};
+      width:${STOP_ICON_SIZE}px;height:${STOP_ICON_SIZE}px;border-radius:9999px;
+      background:${focused ? '#141414' : '#1D5C82'};border:2.5px solid white;
+      box-shadow:0 3px 8px rgba(23,25,28,0.3)${focused ? ', 0 0 0 4px rgba(29,92,130,0.25)' : ''};
       display:flex;align-items:center;justify-content:center;
       font:700 12px var(--font-sans);color:white;
-      transition:width 150ms,height 150ms;
+      transform:scale(${focused ? 1 : STOP_ICON_UNFOCUSED_SCALE});
+      transition:transform 150ms;
     ">${order}</div>`,
     className: '',
-    iconSize: [size, size],
-    iconAnchor: [size / 2, size / 2],
+    iconSize: [STOP_ICON_SIZE, STOP_ICON_SIZE],
+    iconAnchor: [STOP_ICON_SIZE / 2, STOP_ICON_SIZE / 2],
   });
 }
 

@@ -21,10 +21,14 @@ import { ItineraryDay, AccommodationLocation } from '@/lib/trip-planner/types';
 import { fixLeafletIcons } from '@/lib/leafletIcons';
 
 function startIcon(): L.DivIcon {
+  // A white-ringed pin over map tiles, not page chrome — uses the
+  // constant ink hex directly rather than var(--color-ink), which
+  // flips near-white in dark mode and would wash out this marker's
+  // fixed white ring/icon (same reasoning as PlacesMap's clusterIcon).
   return L.divIcon({
     html: `<div data-marker-enter style="
       width:28px;height:28px;border-radius:8px;
-      background:var(--color-ink);border:2px solid white;
+      background:#141414;border:2px solid white;
       box-shadow:0 3px 8px rgba(23,25,28,0.35);
       display:flex;align-items:center;justify-content:center;
     ">
@@ -38,21 +42,31 @@ function startIcon(): L.DivIcon {
   });
 }
 
+// Fixed outer box at the focused size — the unfocused state is drawn at
+// full size and visually shrunk with transform:scale, not by animating
+// width/height, so the 150ms transition is a compositor-only transform
+// instead of a relayout on every focus toggle.
+const STOP_ICON_SIZE = 32;
+const STOP_ICON_UNFOCUSED_SCALE = 26 / STOP_ICON_SIZE;
+
 function stopIcon(order: number, focused: boolean): L.DivIcon {
-  const size = focused ? 32 : 26;
+  // Same fixed-hex reasoning as startIcon() above — a pin over map
+  // tiles, always paired with a white ring and white order number, so
+  // it stays on the constant (non-theme-flipping) ink/brand hexes.
   return L.divIcon({
     html: `<div data-marker-enter style="
-      width:${size}px;height:${size}px;border-radius:9999px;
-      background:${focused ? 'var(--color-ink)' : 'var(--color-brand)'};border:2.5px solid white;
-      box-shadow:0 3px 8px rgba(23,25,28,0.3)${focused ? ', 0 0 0 4px color-mix(in srgb, var(--color-brand) 25%, transparent)' : ''};
+      width:${STOP_ICON_SIZE}px;height:${STOP_ICON_SIZE}px;border-radius:9999px;
+      background:${focused ? '#141414' : '#1D5C82'};border:2.5px solid white;
+      box-shadow:0 3px 8px rgba(23,25,28,0.3)${focused ? ', 0 0 0 4px rgba(29,92,130,0.25)' : ''};
       display:flex;align-items:center;justify-content:center;
       font:700 12px var(--font-sans);color:white;
       animation-delay:${order * 70}ms;
-      transition:width 150ms,height 150ms;
+      transform:scale(${focused ? 1 : STOP_ICON_UNFOCUSED_SCALE});
+      transition:transform 150ms;
     ">${order}</div>`,
     className: '',
-    iconSize: [size, size],
-    iconAnchor: [size / 2, size / 2],
+    iconSize: [STOP_ICON_SIZE, STOP_ICON_SIZE],
+    iconAnchor: [STOP_ICON_SIZE / 2, STOP_ICON_SIZE / 2],
   });
 }
 

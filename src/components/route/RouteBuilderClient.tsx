@@ -274,7 +274,7 @@ export function RouteBuilderClient({ mode, initialRoute, places }: RouteBuilderC
                 <span className="hidden shrink-0 cursor-grab text-faint active:cursor-grabbing sm:block" aria-hidden="true">
                   <GripIcon className="h-5 w-5" />
                 </span>
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand font-mono text-sm font-bold text-white">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-fill font-mono text-sm font-bold text-white">
                   {String(i + 1).padStart(2, '0')}
                 </span>
                 <Link

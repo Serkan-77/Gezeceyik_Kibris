@@ -112,6 +112,18 @@ export default function RootLayout({
             "default visible" to "hidden until observed" — only once JS is
             confirmed running, so content never stays invisible without it. */}
         <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
+        {/* Applies a stored explicit light/dark override (see
+            ThemeToggle.tsx) before first paint, so a dark-mode visitor never
+            sees a flash of the light theme. No stored value = no attribute =
+            the dark-mode block in globals.css falls through to
+            prefers-color-scheme, so this only needs to run at all when
+            there's an explicit override to apply. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{var t=localStorage.getItem('gk-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}",
+          }}
+        />
       </head>
       <body className="flex min-h-screen flex-col bg-paper text-strong">
         <JsonLd data={websiteSchema()} />
@@ -119,7 +131,7 @@ export default function RootLayout({
         <Analytics />
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-overlay focus:rounded-sm focus:bg-ink focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-overlay focus:rounded-sm focus:bg-ink focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-paper"
         >
           İçeriğe geç
         </a>

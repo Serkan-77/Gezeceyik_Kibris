@@ -130,8 +130,8 @@ export function ItineraryView({ itinerary }: Props) {
       <div className="grid gap-8 lg:grid-cols-[1fr_45%] lg:items-start">
         <div ref={listRef} className="order-2 lg:order-1">
           <p className="mb-3 flex items-center gap-2 text-meta text-subtle">
-            <span className="flex h-6 w-6 items-center justify-center rounded-sm bg-ink text-white">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth={2} strokeLinecap="round">
+            <span className="flex h-6 w-6 items-center justify-center rounded-sm bg-ink text-paper">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">
                 <path d="M6 3v18m0-16.5h10l-2 3 2 3H6" />
               </svg>
             </span>

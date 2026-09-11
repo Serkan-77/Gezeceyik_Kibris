@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { Place } from '@/types/place';
 import { Container } from '@/components/ui/Container';
 import { Reveal } from '@/components/ui/Reveal';
-import { CastleIcon, WavesIcon, ArchIcon, ColumnsIcon, IconProps } from '@/components/ui/icons';
+import { CastleIcon, WavesIcon, ArchIcon, ColumnsIcon, CompassIcon, IconProps } from '@/components/ui/icons';
 
 const CATEGORY_LINKS: { href: string; label: string; category: Place['category']; Icon: ComponentType<IconProps> }[] = [
   { href: '/castles', label: 'Kaleler', category: 'Castle', Icon: CastleIcon },
@@ -22,10 +22,18 @@ interface CategoryNavProps {
 }
 
 export function CategoryNav({ places }: CategoryNavProps) {
+  // The four categories above each have their own dedicated landing page,
+  // but the catalogue has eleven categories total (arkeolojik alanlar,
+  // manastırlar, kiliseler, doğa, seyir noktaları, kültürel alanlar, ...)
+  // that only live on /places. Without this tile those places were
+  // reachable but never surfaced here, so the bar undercounted the
+  // catalogue by roughly a quarter of its places.
+  const allPlacesTile = { href: '/places', label: 'Tüm Yerler', count: places.length, Icon: CompassIcon };
+
   return (
     <nav className="border-b border-line bg-paper" aria-label="Kategoriye göre keşfet">
       <Container>
-        <ul className="grid grid-cols-2 sm:grid-cols-4">
+        <ul className="grid grid-cols-2 sm:grid-cols-5">
           {CATEGORY_LINKS.map(({ href, label, category, Icon }, i) => {
             const count = places.filter((p) => p.category === category).length;
             return (
@@ -45,6 +53,20 @@ export function CategoryNav({ places }: CategoryNavProps) {
               </li>
             );
           })}
+          <li className="col-span-2 border-t border-line sm:col-span-1 sm:border-t-0 sm:border-l">
+            <Reveal delayMs={CATEGORY_LINKS.length * 60}>
+              <Link
+                href={allPlacesTile.href}
+                className="group flex items-center gap-3 px-4 py-6 transition-colors hover:bg-surface-muted sm:justify-center sm:px-3"
+              >
+                <allPlacesTile.Icon className="h-6 w-6 shrink-0 text-brand transition-transform duration-[var(--duration-base)] ease-[var(--ease-out)] group-hover:-translate-y-0.5" />
+                <span>
+                  <span className="block font-mono text-[11px] font-semibold uppercase tracking-[0.05em] text-strong">{allPlacesTile.label}</span>
+                  <span className="block font-mono text-[11px] tabular-nums text-subtle">{allPlacesTile.count} yer</span>
+                </span>
+              </Link>
+            </Reveal>
+          </li>
         </ul>
       </Container>
     </nav>

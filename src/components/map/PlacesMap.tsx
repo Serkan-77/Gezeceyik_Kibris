@@ -34,13 +34,19 @@ import { DAY_KEYS } from '@/hooks/useTodayKey';
 
 type MarkerState = 'default' | 'favorite' | 'selected';
 
+// All markers below are white-ringed pins over map tiles, not page
+// chrome — fixed ink/brand hexes, not the var() tokens (which flip
+// near-white/bright in dark mode), so they don't wash out against
+// their own fixed white ring/border (same reasoning throughout this
+// file's clusterIcon(), and RouteMap.tsx / RouteBuilderMap.tsx /
+// PlaceGeoContext.tsx's marker icons).
 function dotIcon(state: MarkerState): L.DivIcon {
   if (state === 'selected') {
     return L.divIcon({
       html: `<div style="
         width:18px;height:18px;border-radius:9999px;
-        background:var(--color-ink);border:2px solid white;
-        box-shadow:0 0 0 5px color-mix(in srgb, var(--color-brand) 28%, transparent), 0 2px 6px rgb(23 25 28 / 0.35);
+        background:#141414;border:2px solid white;
+        box-shadow:0 0 0 5px rgba(29,92,130,0.28), 0 2px 6px rgb(23 25 28 / 0.35);
       "></div>`,
       className: '',
       iconSize: [18, 18],
@@ -52,8 +58,8 @@ function dotIcon(state: MarkerState): L.DivIcon {
     return L.divIcon({
       html: `<div style="
         width:10px;height:10px;border-radius:9999px;
-        background:var(--color-brand);border:1.5px solid white;
-        box-shadow:0 0 0 2.5px var(--color-brand);
+        background:#1D5C82;border:1.5px solid white;
+        box-shadow:0 0 0 2.5px #1D5C82;
       "></div>`,
       className: '',
       iconSize: [10, 10],
@@ -64,7 +70,7 @@ function dotIcon(state: MarkerState): L.DivIcon {
   return L.divIcon({
     html: `<div style="
       width:10px;height:10px;border-radius:9999px;
-      background:var(--color-brand);border:1.5px solid white;
+      background:#1D5C82;border:1.5px solid white;
       box-shadow:0 1px 3px rgb(23 25 28 / 0.35);
     "></div>`,
     className: '',
@@ -78,7 +84,7 @@ function routeIcon(order: number): L.DivIcon {
   return L.divIcon({
     html: `<div data-marker-enter style="
       width:24px;height:24px;border-radius:9999px;
-      background:var(--color-ink);border:2px solid white;
+      background:#141414;border:2px solid white;
       box-shadow:0 2px 6px rgb(23 25 28 / 0.35);
       display:flex;align-items:center;justify-content:center;
       font:700 11px var(--font-sans);color:white;
@@ -95,13 +101,18 @@ function routeIcon(order: number): L.DivIcon {
 function clusterIcon(count: number): L.DivIcon {
   const size = count < 10 ? 36 : count < 30 ? 44 : 54;
   const fontSize = count < 10 ? 12 : count < 30 ? 13 : 15;
+  // Always a white-ringed pin over map tiles, not page chrome, so this
+  // uses the constant brand hexes directly rather than --color-brand /
+  // --color-brand-strong — those flip brighter in dark mode for
+  // page-background contrast, which would wash out against this
+  // marker's fixed white inset ring.
   return L.divIcon({
     html: `<div style="
       width:${size}px;height:${size}px;border-radius:9999px;
-      background:color-mix(in srgb, var(--color-brand) 16%, transparent);border:1.5px solid color-mix(in srgb, var(--color-brand) 55%, transparent);
-      box-shadow:0 2px 8px color-mix(in srgb, var(--color-ink) 18%, transparent), inset 0 0 0 4px rgb(255 255 255 / 0.55);
+      background:color-mix(in srgb, #1D5C82 16%, transparent);border:1.5px solid color-mix(in srgb, #1D5C82 55%, transparent);
+      box-shadow:0 2px 8px rgb(20 20 20 / 0.18), inset 0 0 0 4px rgb(255 255 255 / 0.55);
       display:flex;align-items:center;justify-content:center;
-      font:700 ${fontSize}px var(--font-mono);color:var(--color-brand-strong);
+      font:700 ${fontSize}px var(--font-mono);color:#0F3450;
     ">${count}</div>`,
     className: '',
     iconSize: [size, size],
@@ -512,7 +523,7 @@ export default function PlacesMap({
             type="button"
             onClick={() => setBasemap(mode)}
             className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-              basemap === mode ? 'bg-brand text-white' : 'text-muted hover:text-strong'
+              basemap === mode ? 'bg-brand-fill text-white' : 'text-muted hover:text-strong'
             }`}
           >
             {mode === 'street' ? 'Harita' : 'Uydu'}
