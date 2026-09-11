@@ -122,7 +122,15 @@ export function Navbar() {
   }, []);
 
   useEffect(() => {
-    const activeKey = isExploreActive ? 'explore' : isActive('/harita') ? 'harita' : null;
+    const activeKey = isExploreActive
+      ? 'explore'
+      : isActive('/harita')
+        ? 'harita'
+        : isActive('/rotam')
+          ? 'rotam'
+          : isActive('/gezilerim')
+            ? 'gezilerim'
+            : null;
     const target = hoveredKey ?? activeKey;
     const recalc = () => updateIndicator(target);
     recalc();
@@ -138,7 +146,7 @@ export function Navbar() {
       }`}
     >
       <div
-        className={`mx-auto flex max-w-[1320px] items-center justify-between px-4 transition-[height] duration-300 ease-[var(--ease-out)] sm:px-6 lg:px-8 ${
+        className={`relative mx-auto flex max-w-[1320px] items-center justify-between px-4 transition-[height] duration-300 ease-[var(--ease-out)] sm:px-6 lg:px-8 ${
           scrolled ? 'h-14' : 'h-16'
         }`}
       >
@@ -147,7 +155,10 @@ export function Navbar() {
           <span className="font-display text-xl leading-none text-brand">Kıbrıs</span>
         </Link>
 
-        <nav className="hidden items-center lg:flex" aria-label="Ana navigasyon">
+        <nav
+          className="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center lg:flex"
+          aria-label="Ana navigasyon"
+        >
           <ul ref={navListRef} className="relative flex items-center gap-1">
             <span
               aria-hidden="true"
@@ -214,35 +225,49 @@ export function Navbar() {
                 Harita
               </Link>
             </li>
+            <li className="relative z-10">
+              <Link
+                ref={(el) => {
+                  linkRefs.current.rotam = el;
+                }}
+                href="/rotam"
+                onMouseEnter={() => setHoveredKey('rotam')}
+                onMouseLeave={() => setHoveredKey(null)}
+                aria-label={showBadge ? `Rotam, ${count} durak` : 'Rotam'}
+                className={`relative block px-3 py-2 font-mono text-[12px] uppercase tracking-[0.05em] transition-colors ${
+                  isActive('/rotam') ? 'text-brand' : 'text-muted hover:text-strong'
+                }`}
+              >
+                Rotam
+                {showBadge && (
+                  <span className="absolute -right-1.5 -top-0.5 flex h-[14px] min-w-[14px] items-center justify-center rounded-full bg-brand-fill px-1 font-mono text-[9px] font-semibold tabular-nums text-white">
+                    {count}
+                  </span>
+                )}
+              </Link>
+            </li>
+            <li className="relative z-10">
+              <Link
+                ref={(el) => {
+                  linkRefs.current.gezilerim = el;
+                }}
+                href="/gezilerim"
+                onMouseEnter={() => setHoveredKey('gezilerim')}
+                onMouseLeave={() => setHoveredKey(null)}
+                className={`block px-3 py-2 font-mono text-[12px] uppercase tracking-[0.05em] transition-colors ${
+                  isActive('/gezilerim') ? 'text-brand' : 'text-muted hover:text-strong'
+                }`}
+              >
+                Gezilerim
+              </Link>
+            </li>
           </ul>
         </nav>
 
-        <div className="hidden items-center gap-1 lg:flex">
-          <Link
-            href="/rotam"
-            aria-label={showBadge ? `Rotam, ${count} durak` : 'Rotam'}
-            className={`relative flex items-center gap-1.5 px-2.5 py-2 font-mono text-[12px] uppercase tracking-[0.05em] transition-colors hover:bg-surface-muted ${
-              isActive('/rotam') ? 'text-brand' : 'text-muted'
-            }`}
-          >
-            <RouteIcon className="h-[18px] w-[18px]" />
-            <span className="hidden xl:inline">Rotam</span>
-            {showBadge && (
-              <span className="absolute -right-0.5 -top-0.5 flex h-[16px] min-w-[16px] items-center justify-center rounded-full bg-brand-fill px-1 font-mono text-[10px] font-semibold tabular-nums text-white">
-                {count}
-              </span>
-            )}
-          </Link>
-          <Link
-            href="/gezilerim"
-            aria-label="Gezilerim"
-            className={`flex items-center gap-1.5 px-2.5 py-2 font-mono text-[12px] uppercase tracking-[0.05em] transition-colors hover:bg-surface-muted ${
-              isActive('/gezilerim') ? 'text-brand' : 'text-muted'
-            }`}
-          >
-            <CompassIcon className="h-[18px] w-[18px]" />
-            <span className="hidden xl:inline">Gezilerim</span>
-          </Link>
+        <div className="hidden items-center gap-2 lg:flex">
+          <Button href="/gezi-planla" size="sm">
+            Gezi Planla
+          </Button>
           <Link
             href="/favoriler"
             aria-label="Favorilerim"
@@ -254,9 +279,6 @@ export function Navbar() {
             <span className="hidden xl:inline">Favoriler</span>
           </Link>
           <ThemeToggle />
-          <Button href="/gezi-planla" size="sm" className="ml-2">
-            Gezi Planla
-          </Button>
         </div>
 
         <div className="flex items-center lg:hidden">
