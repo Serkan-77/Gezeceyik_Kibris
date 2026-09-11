@@ -56,7 +56,7 @@ export function Hero({ placeCount, regionCount, feature }: HeroProps) {
         className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-45 mix-blend-screen"
         style={{ backgroundImage: 'url(/textures/topo-grid-black.webp)', filter: 'invert(1)' }}
       />
-      <Container className="relative grid gap-12 pb-12 pt-10 sm:pt-14 lg:grid-cols-[0.85fr_1.15fr] lg:items-end lg:gap-16 lg:pb-16 lg:pt-20">
+      <Container className="relative grid gap-12 pb-12 pt-10 sm:pt-14 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:gap-16 lg:pb-16 lg:pt-20">
         <div
           data-motion="fade-up"
           data-enter="true"
