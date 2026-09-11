@@ -7,6 +7,7 @@
 import Link from 'next/link';
 import { CuratedTrip } from '@/lib/curatedRoutes';
 import { CuratedRouteCard } from '@/components/curated-routes/CuratedRouteCard';
+import { CuratedRouteSpotlight } from '@/components/curated-routes/CuratedRouteSpotlight';
 import { Container } from '@/components/ui/Container';
 import { ArrowRightIcon } from '@/components/ui/icons';
 import { SplitHeading } from '@/components/ui/SplitHeading';
@@ -48,13 +49,19 @@ export function CuratedRoutesBand({ trips }: CuratedRoutesBandProps) {
           )}
         </div>
 
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {trips.slice(0, 3).map((trip, i) => (
-            <Reveal key={trip.slug} delayMs={i * 70}>
-              <CuratedRouteCard trip={trip} priority={i === 0} />
-            </Reveal>
-          ))}
-        </div>
+        {trips.length === 1 ? (
+          <Reveal className="mt-6">
+            <CuratedRouteSpotlight trip={trips[0]} />
+          </Reveal>
+        ) : (
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {trips.slice(0, 3).map((trip, i) => (
+              <Reveal key={trip.slug} delayMs={i * 70}>
+                <CuratedRouteCard trip={trip} priority={i === 0} />
+              </Reveal>
+            ))}
+          </div>
+        )}
       </Container>
     </section>
   );
