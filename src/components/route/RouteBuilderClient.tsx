@@ -230,61 +230,76 @@ export function RouteBuilderClient({ mode, initialRoute, places }: RouteBuilderC
 
   const isDraft = route.status === 'draft';
   const nameDirty = name.trim() !== (route.name ?? '');
+  const totalKm = segments.reduce((sum, s) => sum + s.km, 0);
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[1fr_420px] lg:items-start">
+    <div className="grid gap-10 lg:grid-cols-[1fr_420px] lg:items-start">
       <div className="min-w-0">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:gap-3">
-          <div className="flex-1">
-            <label htmlFor="route-name" className="mb-1.5 block font-mono text-[10px] font-medium uppercase tracking-[0.06em] text-subtle">
-              Rota Adı
-            </label>
-            <Input
-              id="route-name"
-              value={name}
-              onChange={(e) => {
-                setName(e.target.value);
-                setNameSaved(false);
-                setNameError(null);
-              }}
-              placeholder={tr.route.namePlaceholder}
-              maxLength={120}
-            />
+        {/* Masthead: stop count as an oversized numeral beside the name
+            field, echoing Discovery's "count as architecture" header —
+            a journey ledger, not a settings form. */}
+        <div className="grid gap-5 border-b border-line pb-6 sm:grid-cols-[auto_1fr] sm:items-end sm:gap-8">
+          <p className="font-display text-hero leading-[0.8] text-brand tabular-nums">
+            {String(stops.length).padStart(2, '0')}
+          </p>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:gap-3">
+            <div className="flex-1">
+              <label htmlFor="route-name" className="mb-1.5 block font-mono text-[10px] font-medium uppercase tracking-[0.06em] text-subtle">
+                Rota Adı
+              </label>
+              <Input
+                id="route-name"
+                value={name}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  setNameSaved(false);
+                  setNameError(null);
+                }}
+                placeholder={tr.route.namePlaceholder}
+                maxLength={120}
+              />
+            </div>
+            <Button onClick={handleSaveName} disabled={saving || (!isDraft && !nameDirty)} className="shrink-0">
+              {saving ? tr.route.saving : isDraft ? tr.route.save : nameSaved ? tr.route.renamed : tr.route.rename}
+            </Button>
           </div>
-          <Button onClick={handleSaveName} disabled={saving || (!isDraft && !nameDirty)} className="shrink-0">
-            {saving ? tr.route.saving : isDraft ? tr.route.save : nameSaved ? tr.route.renamed : tr.route.rename}
-          </Button>
         </div>
-        {nameError && <p className="mt-1.5 text-body-sm text-danger">{nameError}</p>}
-        {!isDraft && route.updatedAt && (
-          <p className="mt-1.5 text-meta text-subtle">{tr.route.updatedAt(formatUpdatedAt(route.updatedAt))}</p>
-        )}
+        {nameError && <p className="mt-2 text-body-sm text-danger">{nameError}</p>}
+        <p className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[11px] uppercase tracking-[0.05em] text-subtle">
+          {stops.length > 1 && <span>~{totalKm.toFixed(0)} km toplam</span>}
+          {!isDraft && route.updatedAt && <span>{tr.route.updatedAt(formatUpdatedAt(route.updatedAt))}</span>}
+        </p>
 
-        <ol className="mt-6 space-y-2.5">
+        {/* Stop list as a plotted route: a hairline runs down the marker
+            column connecting every stop, segment distance/time sits
+            inline ON that line between stops (a leg of the journey), and
+            each marker is a large display numeral rather than a small
+            mono badge — the sequence itself is the point. */}
+        <ol className="relative mt-8">
+          <div className="absolute left-7 top-7 bottom-7 w-px bg-line" aria-hidden="true" />
           {stops.map((stop, i) => (
-            <li
-              key={stop.id}
-              draggable
-              onDragStart={() => handleDragStart(i)}
-              onDragOver={(e) => handleDragOver(i, e)}
-              onDragEnd={handleDragEnd}
-              className="rounded-md border border-line bg-surface"
-            >
-              <div className="flex items-center gap-3 p-3">
-                <span className="hidden shrink-0 cursor-grab text-faint active:cursor-grabbing sm:block" aria-hidden="true">
-                  <GripIcon className="h-5 w-5" />
-                </span>
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-fill font-mono text-sm font-bold text-white">
-                  {String(i + 1).padStart(2, '0')}
+            <li key={stop.id} className="relative">
+              <div
+                draggable
+                onDragStart={() => handleDragStart(i)}
+                onDragOver={(e) => handleDragOver(i, e)}
+                onDragEnd={handleDragEnd}
+                className="group flex items-center gap-4 py-2.5"
+              >
+                <span
+                  className="relative z-10 flex h-14 w-14 shrink-0 cursor-grab items-center justify-center rounded-2xl border-2 border-brand bg-paper font-display text-xl leading-none text-brand tabular-nums shadow-[var(--shadow-card)] active:cursor-grabbing"
+                  aria-hidden="true"
+                >
+                  {i + 1}
                 </span>
                 <Link
                   href={`/places/${stop.place.slug}`}
-                  className="group flex min-w-0 flex-1 items-center gap-3"
+                  className="flex min-w-0 flex-1 items-center gap-3.5"
                   onMouseEnter={() => setFocusedSlug(stop.place.slug)}
                 >
-                  <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-sm bg-surface-muted">
+                  <span className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-surface-muted sm:h-16 sm:w-20">
                     {stop.place.image && (
-                      <Image src={stop.place.image} alt="" fill sizes="48px" className="object-cover" />
+                      <Image src={stop.place.image} alt="" fill sizes="80px" className="object-cover" />
                     )}
                   </span>
                   <span className="min-w-0">
@@ -294,13 +309,16 @@ export function RouteBuilderClient({ mode, initialRoute, places }: RouteBuilderC
                     <span className="block truncate font-mono text-meta text-subtle">{stop.place.city}</span>
                   </span>
                 </Link>
-                <div className="flex shrink-0 items-center gap-1">
+                <div className="flex shrink-0 items-center gap-0.5">
+                  <span className="hidden text-faint sm:block" aria-hidden="true">
+                    <GripIcon className="h-4 w-4" />
+                  </span>
                   <button
                     type="button"
                     onClick={() => handleMoveUp(i)}
                     disabled={i === 0}
                     aria-label={`${stop.place.name} — ${tr.route.moveUp.toLowerCase()}`}
-                    className="flex h-11 w-11 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface-muted hover:text-strong disabled:pointer-events-none disabled:opacity-30"
+                    className="flex h-10 w-10 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface-muted hover:text-strong disabled:pointer-events-none disabled:opacity-30"
                   >
                     <ChevronUpIcon className="h-4 w-4" />
                   </button>
@@ -309,7 +327,7 @@ export function RouteBuilderClient({ mode, initialRoute, places }: RouteBuilderC
                     onClick={() => handleMoveDown(i)}
                     disabled={i === stops.length - 1}
                     aria-label={`${stop.place.name} — ${tr.route.moveDown.toLowerCase()}`}
-                    className="flex h-11 w-11 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface-muted hover:text-strong disabled:pointer-events-none disabled:opacity-30"
+                    className="flex h-10 w-10 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface-muted hover:text-strong disabled:pointer-events-none disabled:opacity-30"
                   >
                     <ChevronDownIcon className="h-4 w-4" />
                   </button>
@@ -317,16 +335,18 @@ export function RouteBuilderClient({ mode, initialRoute, places }: RouteBuilderC
                     type="button"
                     onClick={() => handleRemove(stop)}
                     aria-label={`${stop.place.name} ${tr.route.remove.toLowerCase()}`}
-                    className="flex h-11 w-11 items-center justify-center rounded-full text-muted transition-colors hover:bg-danger-soft hover:text-danger"
+                    className="flex h-10 w-10 items-center justify-center rounded-full text-muted transition-colors hover:bg-danger-soft hover:text-danger"
                   >
                     <TrashIcon className="h-4 w-4" />
                   </button>
                 </div>
               </div>
               {segments[i] && (
-                <p className="border-t border-line px-3 py-2 pl-[4.75rem] text-meta text-subtle">
-                  {tr.route.segmentDistance(segments[i].km)} · {tr.route.segmentTime(segments[i].min)}
-                </p>
+                <div className="relative z-10 ml-[3.5rem] flex items-center gap-3 py-1 pl-6">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.05em] text-faint">
+                    {tr.route.segmentDistance(segments[i].km)} · {tr.route.segmentTime(segments[i].min)}
+                  </span>
+                </div>
               )}
             </li>
           ))}
@@ -349,7 +369,7 @@ export function RouteBuilderClient({ mode, initialRoute, places }: RouteBuilderC
                 {tr.route.delete}
               </button>
             ) : (
-              <div className="rounded-md border border-danger-soft bg-danger-soft/40 p-4">
+              <div className="border border-danger-soft bg-danger-soft/40 p-4">
                 <p className="text-body-sm font-medium text-strong">{tr.route.deleteConfirmTitle}</p>
                 <p className="mt-1 text-body-sm text-muted">{tr.route.deleteConfirmBody(route.name ?? tr.route.unnamedRoute)}</p>
                 <div className="mt-3 flex gap-2.5">
@@ -366,7 +386,7 @@ export function RouteBuilderClient({ mode, initialRoute, places }: RouteBuilderC
         )}
       </div>
 
-      <div className="h-72 overflow-hidden rounded-lg border border-line sm:h-96 lg:sticky lg:top-20">
+      <div className="h-72 overflow-hidden rounded-xl sm:h-96 lg:sticky lg:top-20">
         <RouteBuilderMapWrapper stops={stops} focusedSlug={focusedSlug} onSelectStop={setFocusedSlug} />
       </div>
     </div>

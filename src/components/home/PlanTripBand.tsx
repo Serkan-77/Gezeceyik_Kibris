@@ -8,7 +8,7 @@
 // left, the actual route map on the right. Renders nothing extra when
 // there's no example day to show — never a placeholder map.
 
-import Image from 'next/image';
+import { SafeImage } from '@/components/ui/SafeImage';
 import { ItineraryDay, AccommodationLocation } from '@/lib/trip-planner/types';
 import { Container } from '@/components/ui/Container';
 import { Button } from '@/components/ui/Button';
@@ -30,7 +30,7 @@ export function PlanTripBand({ exampleDay, accommodation }: PlanTripBandProps) {
   const firstStop = exampleDay?.stops[0]?.place ?? null;
 
   return (
-    <section className="border-t border-line bg-paper py-20 sm:py-28" aria-labelledby="plan-band-heading">
+    <section className="border-t border-line bg-paper py-14 sm:py-20" aria-labelledby="plan-band-heading">
       <Container>
         <div className={`grid gap-10 lg:gap-16 ${hasExample ? 'lg:grid-cols-[minmax(0,42%)_1fr] lg:items-center' : 'justify-items-center text-center'}`}>
           <div>
@@ -67,15 +67,15 @@ export function PlanTripBand({ exampleDay, accommodation }: PlanTripBandProps) {
 
           {hasExample && (
             <Reveal delayMs={140} className="relative">
-              <div className="overflow-hidden border border-line bg-surface p-2 shadow-lift sm:p-3">
-                <div className="h-72 w-full overflow-hidden border border-line sm:h-96 lg:h-[420px]">
+              <div className="overflow-hidden rounded-xl bg-surface p-2 shadow-lift sm:p-3">
+                <div className="h-72 w-full overflow-hidden rounded-xl sm:h-96 lg:h-[420px]">
                   <RouteMapWrapper day={exampleDay} accommodation={accommodation} />
                 </div>
               </div>
               {firstStop?.image && (
-                <div className="absolute -bottom-5 -left-5 hidden items-center gap-2.5 border border-line bg-surface py-1.5 pl-1.5 pr-3.5 shadow-lift sm:flex">
-                  <div className="relative h-9 w-9 shrink-0 overflow-hidden border border-line">
-                    <Image src={firstStop.image} alt="" fill sizes="36px" className="object-cover" />
+                <div className="absolute -bottom-5 -left-5 hidden items-center gap-2.5 rounded-full bg-surface py-1.5 pl-1.5 pr-4 shadow-[var(--shadow-lift)] sm:flex">
+                  <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-xl">
+                    <SafeImage src={firstStop.image} alt="" fill sizes="36px" className="object-cover" />
                   </div>
                   <span className="font-mono text-[11px] text-muted">
                     Örnek gün <span className="font-semibold text-strong">{firstStop.name}</span> ile başlıyor

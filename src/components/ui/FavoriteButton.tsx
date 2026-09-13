@@ -32,7 +32,7 @@ export function FavoriteButton({ slug, name, className = '', size = 'md' }: Favo
       aria-label={active ? `${name} favorilerden çıkar` : `${name} favorilere ekle`}
       className={`flex ${dim} items-center justify-center border border-line bg-surface/95 text-ink backdrop-blur-sm transition-colors hover:border-ink ${className}`}
     >
-      <HeartIcon filled={active} className={`${iconDim} ${active ? 'text-ochre' : ''}`} />
+      <HeartIcon filled={active} className={`${iconDim} ${active ? 'text-sand' : ''}`} />
     </button>
   );
 }

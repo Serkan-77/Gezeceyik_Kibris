@@ -4,6 +4,7 @@
 // generic dark footer.
 
 import Link from 'next/link';
+import { CYPRUS_PATH, CYPRUS_VIEWBOX } from '@/lib/geo/cyprusOutline';
 
 const exploreLinks = [
   { href: '/places', label: 'Tüm Yerler' },
@@ -16,6 +17,7 @@ const exploreLinks = [
 
 const planLinks = [
   { href: '/gezi-planla', label: 'Gezi Planla' },
+  { href: '/ulasim', label: 'Ulaşım' },
   { href: '/rotalar', label: 'Hazır Rotalar' },
   { href: '/favoriler', label: 'Favorilerim' },
   { href: '/places?category=Natural+Attraction', label: 'Doğa' },
@@ -32,13 +34,24 @@ const trustLinks = [
 
 export function Footer() {
   return (
-    <footer className="on-ink bg-deep" role="contentinfo">
-      <div className="mx-auto max-w-[1320px] px-4 pb-8 pt-14 sm:px-6 lg:px-8">
+    <footer className="on-ink relative overflow-hidden bg-deep" role="contentinfo">
+      {/* Same real coastline as the Hero/GeographyBand — the closing note
+          echoes the opening one, quietly, as a watermark rather than a
+          repeat of the same loud moment. */}
+      <svg
+        viewBox={CYPRUS_VIEWBOX}
+        aria-hidden="true"
+        className="pointer-events-none absolute -right-24 -top-16 hidden h-[420px] w-[420px] opacity-[0.07] sm:block"
+        fill="none"
+      >
+        <path d={CYPRUS_PATH} stroke="var(--color-on-ink-strong)" strokeWidth={2.2} strokeLinejoin="round" strokeLinecap="round" />
+      </svg>
+      <div className="relative mx-auto max-w-[1320px] px-4 pb-8 pt-14 sm:px-6 lg:px-8">
         <div className="grid gap-10 border-t border-white/10 pt-10 sm:grid-cols-2 lg:grid-cols-5 lg:divide-x lg:divide-white/10">
           <div className="lg:col-span-2 lg:pr-8">
             <Link href="/" className="mb-5 inline-flex items-baseline gap-2" aria-label="Gezeceyik Kıbrıs, Ana Sayfa">
               <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-on-ink-subtle">Gezeceyik</span>
-              <span className="font-display text-xl leading-none text-brand-bright">Kıbrıs</span>
+              <span className="font-display-accent font-display text-2xl leading-none text-brand-bright">Kıbrıs</span>
             </Link>
             <p className="max-w-sm text-body-sm leading-relaxed text-on-ink-muted">
               Kuzey Kıbrıs&apos;taki en iyi müzeleri, kaleleri, arkeolojik alanları, plajları ve tarihi

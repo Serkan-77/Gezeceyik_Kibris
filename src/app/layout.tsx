@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter, Anton, Source_Serif_4, JetBrains_Mono } from 'next/font/google';
+import { Inter, Bricolage_Grotesque, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
@@ -17,25 +17,17 @@ const inter = Inter({
   display: 'swap',
 });
 
-// Headline/index face — a single-weight, tall, condensed grotesk. No
-// italics, no optical warmth: headlines are set, not written, like a
-// survey plate or gazetteer title block. Carries H1s, era names, section
-// numerals — never body copy.
-const anton = Anton({
+// Headline/index face — a confident modern variable grotesk with real
+// geometric presence at display sizes. Replaces the previous editorial
+// serif entirely: "Smooth Mediterranean Futurism" has no archive/journal
+// voice left in it. Carries H1s, era names, section numerals, the
+// signature-moment hero headline — never body copy. Body copy and
+// interactive chrome both run on Inter now (see --font-serif's alias to
+// --font-inter in globals.css) — one clean sans for the whole UI.
+const bricolage = Bricolage_Grotesque({
   subsets: ['latin', 'latin-ext'],
-  weight: '400',
-  variable: '--font-anton',
-  display: 'swap',
-});
-
-// Reading face — long-form prose only (place descriptions, history essays,
-// About/FAQ copy): a book serif for the archival-document register, distinct
-// from the grotesk headline and the mono instrument readouts around it.
-const sourceSerif = Source_Serif_4({
-  subsets: ['latin', 'latin-ext'],
-  weight: ['400', '500', '600'],
-  style: ['normal', 'italic'],
-  variable: '--font-source-serif',
+  weight: ['500', '600', '700', '800'],
+  variable: '--font-bricolage',
   display: 'swap',
 });
 
@@ -106,7 +98,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="tr" className={`${inter.variable} ${anton.variable} ${sourceSerif.variable} ${jbMono.variable}`} suppressHydrationWarning>
+    <html lang="tr" className={`${inter.variable} ${bricolage.variable} ${jbMono.variable}`} suppressHydrationWarning>
       <head>
         {/* Flips scroll-reveal motion (see [data-motion] in globals.css) from
             "default visible" to "hidden until observed" — only once JS is

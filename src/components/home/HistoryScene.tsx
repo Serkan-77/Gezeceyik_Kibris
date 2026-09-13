@@ -12,7 +12,7 @@
 // badge chips on the image.
 
 import { useEffect, useMemo, useState } from 'react';
-import Image from 'next/image';
+import { SafeImage } from '@/components/ui/SafeImage';
 import Link from 'next/link';
 import { Place } from '@/types/place';
 import { Container } from '@/components/ui/Container';
@@ -78,7 +78,7 @@ export function HistoryScene({ places }: HistorySceneProps) {
 
   return (
     <section className="border-t border-line bg-surface" aria-labelledby="history-scene-heading">
-      <Container className="py-14 sm:py-20 lg:py-24">
+      <Container className="py-10 sm:py-14 lg:py-16">
         <div className={`grid gap-8 lg:items-center lg:gap-16 xl:gap-20 ${imageOnLeft ? 'lg:grid-cols-[1fr_minmax(0,42%)]' : 'lg:grid-cols-[minmax(0,42%)_1fr]'}`}>
         <Reveal className={`flex flex-col justify-center ${imageOnLeft ? 'lg:order-2' : 'lg:order-1'}`}>
           {/* Keyed by slug so the whole text block re-mounts and replays the
@@ -86,7 +86,7 @@ export function HistoryScene({ places }: HistorySceneProps) {
               instead of snapping to the new copy instantly. */}
           <div key={place.slug} data-history-crossfade>
             <p className="font-mono text-xs uppercase tracking-[0.14em] text-brand">§03 — Tarihin Katmanları · {era.range}</p>
-            <h2 id="history-scene-heading" className="mt-2 font-display text-display leading-[0.86] text-strong pt-[0.12em] pb-[0.28em]">
+            <h2 id="history-scene-heading" className="font-display-accent mt-2 font-display text-display leading-[0.86] text-strong pt-[0.12em] pb-[0.28em]">
               {era.label}
             </h2>
             <p className="mt-6 max-w-md font-serif text-xl italic leading-relaxed text-ink-soft text-pretty">
@@ -102,7 +102,7 @@ export function HistoryScene({ places }: HistorySceneProps) {
         </Reveal>
 
         <div className={imageOnLeft ? 'lg:order-1' : 'lg:order-2'}>
-          <div className="relative min-h-[320px] w-full overflow-hidden border border-line sm:min-h-[420px] lg:aspect-[4/5] lg:min-h-0">
+          <div className="relative min-h-[320px] w-full overflow-hidden rounded-xl sm:min-h-[420px] lg:aspect-[4/5] lg:min-h-0">
             {/* All slide images stay mounted, stacked, and crossfade via opacity —
                 swapping the <Image> itself (previously keyed by src) unmounted/
                 remounted it on every era change, which reads as an instant cut
@@ -115,7 +115,7 @@ export function HistoryScene({ places }: HistorySceneProps) {
                 aria-hidden={i === activeIdx ? undefined : true}
               >
                 {slide.place.image && (
-                  <Image
+                  <SafeImage
                     src={slide.place.image}
                     alt={`${slide.place.name}, ${slide.place.city}, Kuzey Kıbrıs`}
                     fill

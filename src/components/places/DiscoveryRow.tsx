@@ -4,7 +4,7 @@
 // detail page — real photographic presence and breathing room, not a
 // directory line or a repeated card grid.
 
-import Image from 'next/image';
+import { SafeImage } from '@/components/ui/SafeImage';
 import Link from 'next/link';
 import { Place } from '@/types/place';
 import { FavoriteButton } from '@/components/ui/FavoriteButton';
@@ -33,12 +33,12 @@ export function DiscoveryRow({ place, rating }: DiscoveryRowProps) {
   const CategoryIcon = CATEGORY_ICONS[place.category];
 
   return (
-    <div className="group flex items-stretch gap-4 border-b border-line py-4 transition-colors hover:bg-surface-muted sm:gap-5">
+    <div className="group mb-3 flex items-stretch gap-4 rounded-2xl bg-surface p-3 shadow-[var(--shadow-card)] transition-[box-shadow,transform] duration-[var(--duration-base)] ease-[var(--ease-out)] hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)] sm:gap-5">
       <Link href={`/places/${place.slug}`} className="flex min-w-0 flex-1 items-stretch gap-4 sm:gap-5">
-        <span className="relative w-32 shrink-0 self-stretch overflow-hidden border border-line bg-surface-muted sm:w-44">
-          {place.image && <Image src={place.image} alt="" fill sizes="(max-width: 640px) 40vw, 260px" className="object-cover" />}
+        <span className="relative w-32 shrink-0 self-stretch overflow-hidden rounded-xl bg-surface-muted sm:w-44">
+          {place.image && <SafeImage src={place.image} alt="" fill sizes="(max-width: 640px) 40vw, 260px" className="object-cover" />}
           {representative && place.image && (
-            <span className="absolute bottom-0 left-0 border-r border-t border-line bg-surface/95 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.05em] text-subtle">
+            <span className="absolute bottom-1.5 left-1.5 rounded-full bg-white/90 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.05em] text-subtle backdrop-blur-sm">
               Temsili
             </span>
           )}
@@ -55,7 +55,7 @@ export function DiscoveryRow({ place, rating }: DiscoveryRowProps) {
             {place.city}, {place.region}
             {rating && rating.count > 0 && (
               <span className="ml-1.5 flex items-center gap-0.5 text-strong">
-                <StarIcon filled className="h-3 w-3 text-ochre" />
+                <StarIcon filled className="h-3 w-3 text-sand" />
                 {rating.average.toFixed(1)} · {tr.rating.reviewCount(rating.count)}
               </span>
             )}
@@ -81,7 +81,7 @@ export function DiscoveryRow({ place, rating }: DiscoveryRowProps) {
         <Link
           href={`/places/${place.slug}`}
           aria-label={`${place.name}, ${tr.place.viewDetails}`}
-          className="flex h-9 w-9 items-center justify-center rounded-sm text-subtle transition-colors hover:text-brand"
+          className="flex h-9 w-9 items-center justify-center rounded-full text-subtle transition-colors hover:bg-surface-muted hover:text-brand"
         >
           <ArrowRightIcon className="h-4 w-4" />
         </Link>

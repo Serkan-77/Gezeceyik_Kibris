@@ -28,8 +28,8 @@ function stopIcon(order: number, focused: boolean): L.DivIcon {
   return L.divIcon({
     html: `<div data-marker-enter style="
       width:${STOP_ICON_SIZE}px;height:${STOP_ICON_SIZE}px;border-radius:9999px;
-      background:${focused ? '#141414' : '#1D5C82'};border:2.5px solid white;
-      box-shadow:0 3px 8px rgba(23,25,28,0.3)${focused ? ', 0 0 0 4px rgba(29,92,130,0.25)' : ''};
+      background:${focused ? '#151A1F' : '#0A6E8C'};border:2.5px solid white;
+      box-shadow:0 3px 8px rgba(23,25,28,0.3)${focused ? ', 0 0 0 4px rgba(10,110,140,0.25)' : ''};
       display:flex;align-items:center;justify-content:center;
       font:700 12px var(--font-sans);color:white;
       transform:scale(${focused ? 1 : STOP_ICON_UNFOCUSED_SCALE});

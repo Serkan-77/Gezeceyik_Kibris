@@ -1,14 +1,19 @@
 'use client';
 // components/map/HaritaExplorer.tsx
-// The map is the dominant surface from the moment the page loads — no
-// hero, no floating toolbar islands. A compact list panel (search +
-// region/category filters) sits beside it on desktop; on mobile the two
-// swap via a simple List/Map toggle rather than fighting for the same
-// screen. Selecting a result pans the map; selecting a marker scrolls
-// the list — one shared selection state, not two disconnected views.
+// Second rebuild: the map is not "map beside a panel" any more — it fills
+// the entire surface edge to edge, and the search/filter/results list
+// floats over it as a single instrument card (blurred, shadow-lifted,
+// with its own scroll), the same way a marker preview or the mobile List/
+// Map switch already floats over the map rather than claiming a fixed
+// row. This is the "entering the geographic layer" moment: story mode's
+// contained columns give way to one continuous surface. On mobile the
+// List/Map toggle is unchanged — full-screen panels, not a cramped
+// floating card, is still the right call at that size. Selecting a
+// result pans the map; selecting a marker scrolls the list — one shared
+// selection state, not two disconnected views.
 
 import { useEffect, useMemo, useState } from 'react';
-import Image from 'next/image';
+import { SafeImage } from '@/components/ui/SafeImage';
 import Link from 'next/link';
 import { Category, Place, Region } from '@/types/place';
 import { PlacesMapWrapper } from './PlacesMapWrapper';
@@ -85,100 +90,119 @@ export function HaritaExplorer({ places, categories, regions }: HaritaExplorerPr
 
   const visibleSlugs = useMemo(() => new Set(sorted.map((p) => p.slug)), [sorted]);
 
-  return (
-    <div className="relative flex h-[calc(100dvh-4rem)] flex-col lg:flex-row">
-      <div className={`flex w-full shrink-0 flex-col border-r border-line bg-paper lg:w-[380px] ${mobileView === 'map' ? 'hidden lg:flex' : 'flex'}`}>
-        <div className="space-y-2.5 border-b border-line p-4">
-          <Input icon={<SearchIcon className="h-4 w-4" />} placeholder="Yer veya şehir ara…" value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Yer ara" />
-          <div className="flex flex-wrap gap-2">
-            <Select value={category} onChange={(e) => setCategory(e.target.value)} aria-label="Kategori" className="flex-1">
-              <option value={ALL}>Tüm kategoriler</option>
-              {categories.map((c) => (
-                <option key={c} value={c}>
-                  {tr.categories[c]}
-                </option>
-              ))}
-            </Select>
-            <Select value={region} onChange={(e) => setRegion(e.target.value)} aria-label="Bölge" className="flex-1">
-              <option value={ALL}>Tüm bölgeler</option>
-              {regions.map((r) => (
-                <option key={r} value={r}>
-                  {r}
-                </option>
-              ))}
-            </Select>
-          </div>
-          <Select value={sortBy} onChange={(e) => setSortBy(e.target.value as SortBy)} aria-label="Sıralama">
-            <option value="default">Öne çıkanlar</option>
-            <option value="rating">Gezeceyik Puanına göre</option>
-          </Select>
-          <p className="text-meta text-subtle">{filtered.length} yer</p>
-        </div>
+  const filterFields = (
+    <div className="space-y-3 border-b border-line p-4">
+      <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-brand">§ Harita</p>
+      <Input icon={<SearchIcon className="h-4 w-4" />} placeholder="Yer veya şehir ara…" value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Yer ara" />
+      <div className="flex flex-wrap gap-2">
+        <Select value={category} onChange={(e) => setCategory(e.target.value)} aria-label="Kategori" className="flex-1">
+          <option value={ALL}>Tüm kategoriler</option>
+          {categories.map((c) => (
+            <option key={c} value={c}>
+              {tr.categories[c]}
+            </option>
+          ))}
+        </Select>
+        <Select value={region} onChange={(e) => setRegion(e.target.value)} aria-label="Bölge" className="flex-1">
+          <option value={ALL}>Tüm bölgeler</option>
+          {regions.map((r) => (
+            <option key={r} value={r}>
+              {r}
+            </option>
+          ))}
+        </Select>
+      </div>
+      <Select value={sortBy} onChange={(e) => setSortBy(e.target.value as SortBy)} aria-label="Sıralama">
+        <option value="default">Öne çıkanlar</option>
+        <option value="rating">Gezeceyik Puanına göre</option>
+      </Select>
+      <p className="font-mono text-[11px] tabular-nums text-subtle">{String(filtered.length).padStart(3, '0')} yer</p>
+    </div>
+  );
 
-        <div className="flex-1 overflow-y-auto pb-20 lg:pb-0">
-          {sorted.map((place) => {
-            const representative = isImageRepresentative(place.verificationStatus);
-            const active = place.slug === selectedSlug;
-            const CategoryIcon = CATEGORY_ICONS[place.category];
-            return (
-              <button
-                key={place.slug}
-                type="button"
-                onClick={() => setSelectedSlug(place.slug)}
-                className={`relative flex w-full items-center gap-3.5 border-b border-line py-3.5 pl-4 pr-4 text-left transition-colors ${active ? 'bg-brand/[0.06]' : 'hover:bg-surface-muted'}`}
-              >
-                <span
-                  className={`absolute inset-y-0 left-0 w-[3px] transition-colors ${active ? 'bg-brand' : 'bg-transparent'}`}
-                  aria-hidden="true"
-                />
-                <span className="relative h-16 w-20 shrink-0 overflow-hidden border border-line bg-surface-muted">
-                  {place.image && <Image src={place.image} alt="" fill sizes="80px" className="object-cover" />}
-                  {representative && place.image && <span className="absolute bottom-0 left-0 bg-surface/90 px-1 font-mono text-[8px] uppercase text-ink-soft">Temsili</span>}
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="flex items-center gap-1.5 font-mono text-[10px] font-medium uppercase tracking-[0.05em] text-subtle">
-                    <CategoryIcon className="h-3 w-3 shrink-0" />
-                    {tr.categories[place.category]}
+  const resultsList = (
+    <div className="flex-1 overflow-y-auto pb-20 lg:pb-0">
+      {sorted.map((place) => {
+        const representative = isImageRepresentative(place.verificationStatus);
+        const active = place.slug === selectedSlug;
+        const CategoryIcon = CATEGORY_ICONS[place.category];
+        return (
+          <button
+            key={place.slug}
+            type="button"
+            onClick={() => setSelectedSlug(place.slug)}
+            className={`relative flex w-full items-center gap-3.5 border-b border-line py-3.5 pl-4 pr-4 text-left transition-colors ${active ? 'bg-brand/[0.06]' : 'hover:bg-surface-muted'}`}
+          >
+            <span
+              className={`absolute inset-y-0 left-0 w-[3px] transition-colors ${active ? 'bg-brand' : 'bg-transparent'}`}
+              aria-hidden="true"
+            />
+            <span className="relative h-16 w-20 shrink-0 overflow-hidden rounded-xl bg-surface-muted">
+              {place.image && <SafeImage src={place.image} alt="" fill sizes="80px" className="object-cover" />}
+              {representative && place.image && <span className="absolute bottom-0 left-0 bg-surface/90 px-1 font-mono text-[8px] uppercase text-ink-soft">Temsili</span>}
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="flex items-center gap-1.5 font-mono text-[10px] font-medium uppercase tracking-[0.05em] text-subtle">
+                <CategoryIcon className="h-3 w-3 shrink-0" />
+                {tr.categories[place.category]}
+              </span>
+              <span className={`block truncate font-serif text-base font-semibold ${active ? 'text-brand-strong' : 'text-strong'}`}>{place.name}</span>
+              <span className="mt-0.5 flex items-center gap-1 truncate text-meta text-subtle">
+                <PinIcon className="h-3 w-3 shrink-0" />
+                {place.city}
+                {ratings[place.id] && (
+                  <span className="ml-1 flex shrink-0 items-center gap-0.5 text-ink-soft">
+                    <StarIcon filled className="h-3 w-3 text-sand" />
+                    {ratings[place.id].average.toFixed(1)}
                   </span>
-                  <span className={`block truncate font-serif text-base font-semibold ${active ? 'text-brand-strong' : 'text-strong'}`}>{place.name}</span>
-                  <span className="mt-0.5 flex items-center gap-1 truncate text-meta text-subtle">
-                    <PinIcon className="h-3 w-3 shrink-0" />
-                    {place.city}
-                    {ratings[place.id] && (
-                      <span className="ml-1 flex shrink-0 items-center gap-0.5 text-ink-soft">
-                        <StarIcon filled className="h-3 w-3 text-ochre" />
-                        {ratings[place.id].average.toFixed(1)}
-                      </span>
-                    )}
-                  </span>
-                </span>
-                <Link
-                  href={`/places/${place.slug}`}
-                  onClick={(e) => e.stopPropagation()}
-                  aria-label={`${place.name}, ${tr.place.viewDetails}`}
-                  className="shrink-0 text-subtle transition-colors hover:text-brand"
-                >
-                  <ArrowRightIcon className="h-4 w-4" />
-                </Link>
-              </button>
-            );
-          })}
+                )}
+              </span>
+            </span>
+            <Link
+              href={`/places/${place.slug}`}
+              onClick={(e) => e.stopPropagation()}
+              aria-label={`${place.name}, ${tr.place.viewDetails}`}
+              className="shrink-0 text-subtle transition-colors hover:text-brand"
+            >
+              <ArrowRightIcon className="h-4 w-4" />
+            </Link>
+          </button>
+        );
+      })}
+    </div>
+  );
+
+  return (
+    <div className="relative h-[calc(100dvh-4rem)] overflow-hidden">
+      {/* The map is the whole surface now, not a column beside a panel. */}
+      <div className={`absolute inset-0 ${mobileView === 'list' ? 'hidden lg:block' : 'block'}`}>
+        <PlacesMapWrapper places={places} visibleSlugs={visibleSlugs} selectedSlug={selectedSlug} onSelect={setSelectedSlug} />
+      </div>
+
+      {/* Desktop/tablet: search+filters+results float over the map as one
+          instrument card, not a fixed column abutting it. */}
+      <div className="pointer-events-none absolute inset-y-0 left-0 z-[var(--z-index-map-controls)] hidden w-full max-w-[380px] p-4 sm:flex sm:flex-col">
+        <div className="pointer-events-auto flex min-h-0 flex-1 flex-col overflow-hidden rounded-3xl border border-white/40 bg-paper/90 shadow-[var(--shadow-ink)] backdrop-blur-xl">
+          {filterFields}
+          {resultsList}
         </div>
       </div>
 
-      <div className={`relative flex-1 ${mobileView === 'list' ? 'hidden lg:block' : 'block'}`}>
-        <PlacesMapWrapper places={places} visibleSlugs={visibleSlugs} selectedSlug={selectedSlug} onSelect={setSelectedSlug} />
+      {/* Mobile: the existing full-panel list, swapped in by the toggle below. */}
+      <div className={`absolute inset-0 flex flex-col bg-paper sm:hidden ${mobileView === 'map' ? 'hidden' : 'flex'}`}>
+        {filterFields}
+        {resultsList}
       </div>
 
       {/* Floating switch instead of a full-width bar — overlaps the active
           view (list or map) rather than claiming its own permanent row, so
           both panels get the full viewport height beneath it. */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-4 z-[var(--z-index-map-controls)] flex justify-center lg:hidden">
-        <div className="pointer-events-auto flex items-center border border-ink bg-paper/95 shadow-lift backdrop-blur-sm">
+      <div className="pointer-events-none absolute inset-x-0 bottom-4 z-[var(--z-index-map-controls)] flex justify-center sm:hidden">
+        <div className="pointer-events-auto flex items-center gap-1 rounded-full border border-white/40 bg-paper/90 p-1 shadow-[var(--shadow-lift)] backdrop-blur-xl">
           <button
             type="button"
             onClick={() => setMobileView('list')}
-            className={`flex items-center gap-1.5 px-4 py-2.5 font-mono text-xs uppercase tracking-[0.05em] transition-colors ${mobileView === 'list' ? 'bg-ink text-paper' : 'text-muted'}`}
+            className={`flex items-center gap-1.5 rounded-full px-4 py-2.5 font-mono text-xs uppercase tracking-[0.05em] transition-colors ${mobileView === 'list' ? 'bg-ink text-paper' : 'text-muted'}`}
           >
             <ListIcon className="h-4 w-4" />
             Liste
@@ -186,7 +210,7 @@ export function HaritaExplorer({ places, categories, regions }: HaritaExplorerPr
           <button
             type="button"
             onClick={() => setMobileView('map')}
-            className={`flex items-center gap-1.5 border-l border-ink px-4 py-2.5 font-mono text-xs uppercase tracking-[0.05em] transition-colors ${mobileView === 'map' ? 'bg-ink text-paper' : 'text-muted'}`}
+            className={`flex items-center gap-1.5 rounded-full px-4 py-2.5 font-mono text-xs uppercase tracking-[0.05em] transition-colors ${mobileView === 'map' ? 'bg-ink text-paper' : 'text-muted'}`}
           >
             <MapIcon className="h-4 w-4" />
             Harita

@@ -68,15 +68,16 @@ export default function IletisimPage() {
   return (
     <Container size="narrow" className="py-12 sm:py-16">
       <p className="font-mono text-xs uppercase tracking-[0.14em] text-brand">§00 — Kurumsal</p>
-      <h1 className="mb-2 mt-1 font-display text-block-title text-strong">İletişim</h1>
-      <p className="mb-10 max-w-xl font-serif text-body leading-relaxed text-muted">
+      <h1 className="mt-1 font-display text-hero leading-[0.9] text-strong text-balance">İletişim</h1>
+      <p className="mt-3 max-w-xl font-serif text-body leading-relaxed text-muted">
         Yanlış bir bilgi mi gördünüz, teknik bir sorunla mı karşılaştınız, yoksa bir öneriniz mi var?
         Aşağıdaki konulardan size uygun olanı seçip doğrudan e-posta gönderebilirsiniz.
       </p>
 
-      <div className="divide-y divide-line border-y border-line">
-        {REASONS.map((reason) => (
-          <div key={reason.title} className="flex flex-col gap-3 py-5 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+      <div className="mt-10">
+        {REASONS.map((reason, i) => (
+          <div key={reason.title} className="grid gap-3 border-t border-line py-5 sm:grid-cols-[4rem_1fr_auto] sm:items-center sm:gap-6">
+            <p className="font-mono text-xs uppercase tracking-[0.08em] text-faint">{String(i + 1).padStart(2, '0')}</p>
             <div className="min-w-0">
               <p className="font-display text-card-title text-strong">{reason.title}</p>
               <p className="mt-1 font-serif text-body-sm text-muted">{reason.description}</p>
@@ -86,6 +87,7 @@ export default function IletisimPage() {
             </Button>
           </div>
         ))}
+        <div className="border-t border-line" />
       </div>
 
       <p className="mt-8 text-body-sm text-subtle">

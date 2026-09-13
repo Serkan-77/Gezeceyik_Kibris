@@ -7,7 +7,7 @@
 // connection reads with full confidence; an estimated hop always carries
 // an explicit "tahmini" qualifier.
 
-import Image from 'next/image';
+import { SafeImage } from '@/components/ui/SafeImage';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { TripItinerary, AccommodationLocation, TransportMode, DayTransitLeg } from '@/lib/trip-planner/types';
@@ -92,8 +92,10 @@ export function ItineraryView({ itinerary }: Props) {
         <span>{itinerary.totalCost > 0 ? `${itinerary.totalCost.toLocaleString('tr-TR')} TRY giriş` : 'giriş ücretsiz'}</span>
       </p>
 
+      {/* Day tabs as boarding-pass stubs — a real artifact to screenshot,
+          not a small tab strip. */}
       <nav aria-label="Gün seçimi" className="mb-8 border-y border-line">
-        <ol className="flex gap-6 overflow-x-auto sm:gap-10">
+        <ol className="flex gap-8 overflow-x-auto sm:gap-12">
           {itinerary.days.map((d, i) => {
             const current = i === activeDay;
             return (
@@ -101,9 +103,9 @@ export function ItineraryView({ itinerary }: Props) {
                 <button
                   type="button"
                   onClick={() => setActiveDay(i)}
-                  className={`flex flex-col items-start gap-1 border-b-2 py-3 text-left transition-colors ${current ? 'border-brand' : 'border-transparent'}`}
+                  className={`flex flex-col items-start gap-0.5 border-b-2 py-3 text-left transition-colors ${current ? 'border-brand' : 'border-transparent'}`}
                 >
-                  <span className={`font-mono text-lg font-semibold tabular-nums ${current ? 'text-brand' : 'text-strong'}`}>
+                  <span className={`font-display text-3xl leading-none tabular-nums ${current ? 'text-brand' : 'text-strong'}`}>
                     {String(d.dayNumber).padStart(2, '0')}
                   </span>
                   <span className="whitespace-nowrap font-mono text-meta text-subtle">
@@ -160,11 +162,11 @@ export function ItineraryView({ itinerary }: Props) {
                     aria-label={`${stop.place.name}, haritada göster`}
                     className="flex min-w-0 flex-1 items-stretch gap-4 text-left"
                   >
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center self-start rounded-full border-2 border-brand bg-surface font-mono text-xs font-bold text-brand">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center self-start rounded-xl border-2 border-brand bg-paper font-display text-base leading-none text-brand tabular-nums shadow-[var(--shadow-card)]">
                       {i + 1}
                     </span>
-                    <span className="relative h-24 w-28 shrink-0 overflow-hidden border border-line bg-surface-muted sm:w-36">
-                      {stop.place.image && <Image src={stop.place.image} alt="" fill sizes="112px" className="object-cover" />}
+                    <span className="relative h-24 w-28 shrink-0 overflow-hidden rounded-xl bg-surface-muted sm:w-36">
+                      {stop.place.image && <SafeImage src={stop.place.image} alt="" fill sizes="112px" className="object-cover" />}
                       {representative && stop.place.image && (
                         <span className="absolute bottom-1 left-1 rounded-full bg-white/92 px-1.5 py-0.5 text-[9px] font-medium text-ink-soft">
                           Temsili
@@ -265,7 +267,7 @@ function TravelSegment({ leg, transport }: { leg: DayTransitLeg; transport: Tran
   if (leg.transitDetail) {
     const t = leg.transitDetail;
     return (
-      <div className="ml-11 flex items-start gap-2 border-l border-line py-3 pl-4 text-meta leading-relaxed text-muted">
+      <div className="ml-5 flex items-start gap-2 border-l border-line py-3 pl-4 text-meta leading-relaxed text-muted">
         <BusIcon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-brand" />
         <span>
           {t.walkToStopMin}dk yürü → <strong className="text-strong">{t.fromStopName}</strong>
@@ -286,7 +288,7 @@ function TravelSegment({ leg, transport }: { leg: DayTransitLeg; transport: Tran
 
   const label = transport === 'public' ? 'toplu taşıma (tahmini)' : `${TRANSPORT_LABEL[transport].toLowerCase()} (tahmini)`;
   return (
-    <div className="ml-11 border-l border-line py-3 pl-4 text-meta text-faint">
+    <div className="ml-5 border-l border-line py-3 pl-4 text-meta text-faint">
       ~{formatMinutes(leg.travelMin)} · ~{leg.distanceKm} km · {label}
     </div>
   );

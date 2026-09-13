@@ -69,7 +69,7 @@ export function PlaceEssentials({ place }: PlaceEssentialsProps) {
   }
 
   return (
-    <div className="border border-line bg-surface p-5">
+    <div className="rounded-3xl bg-surface p-5 shadow-[var(--shadow-card)]">
       <p className="font-mono text-xs uppercase tracking-[0.1em] text-brand">Fiş</p>
       <h2 className="mt-1 font-display text-block-title text-strong">{tr.place.visitorInfo}</h2>
       <dl className="mt-3 divide-y divide-line">

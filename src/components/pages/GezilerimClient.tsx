@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { useSavedTrips } from '@/hooks/useSavedTrips';
 import { ItineraryView } from '@/components/trip/ItineraryView';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { Reveal } from '@/components/ui/Reveal';
 import { Button } from '@/components/ui/Button';
 import { CompassIcon, ChevronDownIcon } from '@/components/ui/icons';
 
@@ -40,37 +41,38 @@ export function GezilerimClient() {
   }
 
   return (
-    <div className="space-y-3">
-      {trips.map((trip) => {
+    <div>
+      {trips.map((trip, i) => {
         const isOpen = expandedId === trip.id;
         const { itinerary } = trip;
         return (
-          <div key={trip.id} className="overflow-hidden rounded-md border border-line bg-surface">
-            <div className="flex items-center justify-between gap-4 px-5 py-4">
+          <Reveal key={trip.id} delayMs={Math.min(i, 6) * 50} className="border-t border-line first:border-t-0">
+            <div className="flex items-center justify-between gap-4 py-4">
               <button
                 type="button"
                 onClick={() => setExpandedId(isOpen ? null : trip.id)}
-                className="flex min-w-0 flex-1 items-center gap-3 text-left"
+                className="flex min-w-0 flex-1 items-center gap-4 text-left"
                 aria-expanded={isOpen}
               >
-                <ChevronDownIcon className={`h-4 w-4 shrink-0 text-subtle transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                <span className="font-display text-2xl leading-none text-brand tabular-nums">{String(i + 1).padStart(2, '0')}</span>
                 <div className="min-w-0">
                   <p className="truncate font-serif text-card-title font-semibold text-strong">{trip.label}</p>
                   <p className="font-mono text-meta text-subtle">
                     {formatDate(trip.createdAt)} · {itinerary.days.length} gün · {itinerary.totalPlaces} yer
                   </p>
                 </div>
+                <ChevronDownIcon className={`ml-auto h-4 w-4 shrink-0 text-subtle transition-transform ${isOpen ? 'rotate-180' : ''}`} />
               </button>
-              <button type="button" onClick={() => removeTrip(trip.id)} className="shrink-0 text-meta text-subtle transition-colors hover:text-brand">
+              <button type="button" onClick={() => removeTrip(trip.id)} className="shrink-0 text-meta text-subtle transition-colors hover:text-danger">
                 Sil
               </button>
             </div>
             {isOpen && (
-              <div className="border-t border-line px-5 py-5">
+              <div className="border-t border-line pb-6 pt-5">
                 <ItineraryView itinerary={itinerary} />
               </div>
             )}
-          </div>
+          </Reveal>
         );
       })}
     </div>

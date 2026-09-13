@@ -196,6 +196,19 @@ export function BusIcon(props: IconProps) {
   );
 }
 
+export function PlaneIcon(props: IconProps) {
+  return (
+    <svg {...base(props)}>
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={1.7}
+        d="M10.5 20.5l1.5-4.5-7-2.5v-2l7-1V6a2 2 0 0 1 4 0v4.5l7 1v2l-7 2.5 1.5 4.5-2.5-1.5-2.5 1.5z"
+      />
+    </svg>
+  );
+}
+
 export function CompassIcon(props: IconProps) {
   return (
     <svg {...base(props)}>

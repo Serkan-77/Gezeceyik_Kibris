@@ -172,15 +172,18 @@ export default function SssPage() {
   return (
     <Container size="narrow" className="py-12 sm:py-16">
       <p className="font-mono text-xs uppercase tracking-[0.14em] text-brand">§00 — Kurumsal</p>
-      <h1 className="mb-2 mt-1 font-display text-block-title text-strong">Sıkça Sorulan Sorular</h1>
-      <p className="mb-10 max-w-xl font-serif text-body leading-relaxed text-muted">
+      <h1 className="mt-1 font-display text-hero leading-[0.9] text-strong text-balance">Sıkça Sorulan Sorular</h1>
+      <p className="mt-3 max-w-xl font-serif text-body leading-relaxed text-muted">
         Rota oluşturma, Gezeceyik Puanı ve verilerimiz hakkında en çok sorulanlar.
       </p>
 
-      <div className="space-y-10">
-        {GROUPS.map((group) => (
+      <div className="mt-10 space-y-12">
+        {GROUPS.map((group, gi) => (
           <section key={group.title}>
-            <h2 className="mb-3 font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-subtle">{group.title}</h2>
+            <h2 className="mb-3 flex items-baseline gap-3 font-mono text-[11px] font-semibold uppercase tracking-[0.1em] text-brand">
+              <span className="text-faint">{String(gi + 1).padStart(2, '0')}</span>
+              {group.title}
+            </h2>
             <div className="divide-y divide-line border-y border-line">
               {group.items.map((item) => (
                 <details key={item.q} className="group py-1">

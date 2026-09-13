@@ -3,7 +3,7 @@
 // framed-photo-then-caption-strip language so curated routes read as part
 // of the same catalogue, not a bolted-on widget.
 
-import Image from 'next/image';
+import { SafeImage } from '@/components/ui/SafeImage';
 import Link from 'next/link';
 import { CuratedTrip } from '@/lib/curatedRoutes';
 import { tr } from '@/lib/i18n/tr';
@@ -24,11 +24,11 @@ export function CuratedRouteCard({ trip, priority }: CuratedRouteCardProps) {
   return (
     <Link
       href={`/rotalar/${trip.slug}`}
-      className="group relative flex h-full flex-col border border-line bg-surface transition-colors hover:border-ink"
+      className="group relative flex h-full flex-col overflow-hidden rounded-2xl bg-surface shadow-[var(--shadow-card)] transition-[box-shadow,transform] duration-[var(--duration-base)] ease-[var(--ease-out)] hover:-translate-y-1 hover:shadow-[var(--shadow-lift)]"
     >
-      <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden border-b border-line bg-surface-muted">
+      <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden bg-surface-muted">
         {trip.coverImage ? (
-          <Image
+          <SafeImage
             src={trip.coverImage}
             alt=""
             fill

@@ -13,16 +13,16 @@ export async function WeatherBand() {
   if (weather.length === 0) return null;
 
   return (
-    <section className="border-b border-line bg-paper" aria-label="Bölgelere göre bugünkü hava durumu">
+    <section className="bg-paper pb-8 pt-8 sm:pb-10 sm:pt-10" aria-label="Bölgelere göre bugünkü hava durumu">
       <Container>
-        <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
+        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
           {weather.map(({ region, temperatureC, label, Icon }, i) => (
-            <li key={region} className={i > 0 ? 'border-l border-line' : ''}>
-              <Reveal delayMs={i * 50}>
-                <div className="flex items-center gap-3 px-4 py-5 sm:justify-center sm:px-3">
+            <li key={region} className="flex">
+              <Reveal delayMs={i * 50} className="flex w-full">
+                <div className="flex w-full items-center gap-3 rounded-2xl bg-surface px-4 py-4 shadow-[var(--shadow-card)] sm:justify-center sm:px-3">
                   <Icon className="h-6 w-6 shrink-0 text-brand" />
                   <span>
-                    <span className="block font-mono text-[11px] font-semibold uppercase tracking-[0.05em] text-strong">{region}</span>
+                    <span className="block font-sans text-[13px] font-semibold text-strong">{region}</span>
                     <span className="block font-mono text-[11px] tabular-nums text-subtle">
                       {temperatureC !== null ? `${temperatureC}°C` : '—'} · {label}
                     </span>

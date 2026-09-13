@@ -10,48 +10,49 @@ export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'ink' | 'white' 
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 const variantClass: Record<ButtonVariant, string> = {
-  // Clay/terracotta — the one brand action color, so every primary
-  // action site-wide reads as the same brand, not a rotating palette.
-  // Stamped-offset shadow that snaps flush on press, like a physical
-  // button, not a soft SaaS lift.
+  // Coastal-blue fill — the one brand action color, so every primary
+  // action site-wide reads as the same brand. Soft floating elevation
+  // that blooms into a gentle aqua glow on hover/focus and eases down
+  // on press, like a physical surface lifting toward you — not a
+  // stamped offset that snaps flush.
   // brand-fill/danger-fill (not brand/danger) — those two stay
   // constant across themes, since they're paired with fixed white
   // text; --color-brand and --color-danger themselves brighten in
   // dark mode for text/border contrast and would break that pairing.
   primary:
-    'border border-brand-fill bg-brand-fill text-white shadow-[3px_3px_0_0_var(--color-ink)] hover:bg-brand-hover active:translate-x-[3px] active:translate-y-[3px] active:shadow-none',
+    'bg-brand-fill text-white shadow-[var(--shadow-lift)] hover:bg-brand-hover hover:shadow-[var(--shadow-glow)] active:scale-[0.97]',
   secondary:
-    'border border-ink bg-surface text-strong shadow-[3px_3px_0_0_var(--color-ink)] hover:bg-surface-muted active:translate-x-[3px] active:translate-y-[3px] active:shadow-none',
+    'border border-line bg-surface text-strong shadow-[var(--shadow-card)] hover:border-brand/40 hover:bg-white active:scale-[0.97]',
   ghost:
-    'text-muted hover:text-strong hover:bg-surface-muted',
+    'text-muted hover:text-strong hover:bg-surface-muted active:scale-[0.97]',
   // Flat inverted step between the shadowed primary and plain ghost —
-  // solid ink, no offset shadow of its own. text-paper (not text-white)
-  // because --color-ink and --color-paper are exact opposites in both
-  // themes (ink flips near-black→near-white, paper flips the other
-  // way), so this pairing stays high-contrast whichever theme is active.
+  // solid ink, no glow of its own. text-paper (not text-white) because
+  // --color-ink and --color-paper are exact opposites in both themes
+  // (ink flips near-black→near-white, paper flips the other way), so
+  // this pairing stays high-contrast whichever theme is active.
   ink:
-    'border border-ink bg-ink text-paper hover:bg-ink-soft',
+    'bg-ink text-paper shadow-[var(--shadow-card)] hover:bg-ink-soft active:scale-[0.97]',
   // Solid white on a photograph (hero, cards over imagery) — always a
   // photo overlay, never page chrome, so this stays fixed white/dark
   // regardless of site theme; text-neutral-900 (not text-ink) on
   // purpose, since --color-ink flips to near-white in dark mode and
   // would vanish against this always-white pill.
   white:
-    'border border-white bg-white text-neutral-900 shadow-[3px_3px_0_0_rgb(255_255_255_/_0.35)] hover:bg-white/90 active:translate-x-[3px] active:translate-y-[3px] active:shadow-none',
+    'bg-white text-neutral-900 shadow-[var(--shadow-lift)] hover:bg-white/95 active:scale-[0.97]',
   'outline-on-ink':
-    'border border-white/40 text-white/90 hover:border-white hover:text-white',
+    'border border-white/35 text-white/90 backdrop-blur-sm hover:border-white/70 hover:bg-white/10 hover:text-white active:scale-[0.97]',
   'ghost-on-ink':
-    'text-white/70 hover:text-white hover:bg-white/10',
+    'text-white/70 hover:text-white hover:bg-white/10 active:scale-[0.97]',
   // Destructive confirmation only (route/rating deletion) — never a
   // general-purpose "error" button.
   danger:
-    'border border-danger-fill bg-danger-fill text-white hover:bg-danger-fill/90',
+    'bg-danger-fill text-white shadow-[var(--shadow-card)] hover:bg-danger-fill/90 active:scale-[0.97]',
 };
 
 const sizeClass: Record<ButtonSize, string> = {
-  sm: 'h-9 gap-1.5 px-3.5 text-xs',
-  md: 'h-11 gap-2 px-5 text-[13px]',
-  lg: 'h-[3.25rem] gap-2 px-7 text-sm',
+  sm: 'h-9 gap-1.5 px-4 text-[13px] rounded-full',
+  md: 'h-11 gap-2 px-6 text-sm rounded-full',
+  lg: 'h-[3.25rem] gap-2 px-8 text-[15px] rounded-full',
 };
 
 interface CommonProps {
@@ -71,10 +72,10 @@ type ButtonAsLink = CommonProps &
 
 export type ButtonProps = ButtonAsButton | ButtonAsLink;
 
-// Sharp corners, uppercase mono-tracked label — an instrument switch,
-// not a rounded marketing pill.
+// Soft full-round pill, clean sans label — a smooth, premium touch
+// target, not an instrument switch.
 const base =
-  'inline-flex shrink-0 items-center justify-center font-mono font-semibold uppercase tracking-[0.06em] transition-[color,background-color,transform,box-shadow] duration-[var(--duration-fast)] disabled:pointer-events-none disabled:opacity-40';
+  'inline-flex shrink-0 items-center justify-center font-sans font-semibold tracking-[-0.005em] transition-[color,background-color,transform,box-shadow] duration-[var(--duration-base)] ease-[var(--ease-out)] disabled:pointer-events-none disabled:opacity-40';
 
 export function Button({
   variant = 'primary',

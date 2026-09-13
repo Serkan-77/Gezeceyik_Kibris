@@ -68,7 +68,7 @@ export function DiscoveryTeaser({ places, ratings }: DiscoveryTeaserProps) {
   if (picks.length === 0) return null;
 
   return (
-    <section className="bg-paper py-16 sm:py-24" aria-labelledby="discovery-heading">
+    <section className="bg-paper py-12 sm:py-16" aria-labelledby="discovery-heading">
       <Container>
         <div className="flex flex-wrap items-end justify-between gap-4 border-b border-line pb-5">
           <div>

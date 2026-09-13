@@ -22,7 +22,7 @@ export function MobileActionBar({ place }: { place: Place }) {
 
   return (
     <div
-      className="fixed inset-x-0 bottom-0 z-overlay border-t border-line bg-surface/95 backdrop-blur-md lg:hidden"
+      className="fixed inset-x-0 bottom-0 z-overlay rounded-t-3xl border border-white/40 bg-surface/90 shadow-[var(--shadow-ink)] backdrop-blur-xl lg:hidden"
       style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
     >
       {hydrated && count > 0 && (

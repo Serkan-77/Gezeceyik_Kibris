@@ -1,16 +1,17 @@
 @import "tailwindcss";
 
 /* ══════════════════════════════════════════════════════════════════
-   DESIGN TOKENS — Gezeceyik Kıbrıs — "Kıbrıs Atlas"
-   Second ground-up rebuild. The editorial-travel-magazine system this
-   replaced (soft rounded cards, italic serif, blurred shadows) is gone.
-   This is a field-survey / gazetteer register instead: a deep chart-blue
-   ink as the one interactive color — nautical chart / cartographic-survey
-   blue, not a SaaS blue — hard edges, hairline rules, and a mono
-   "instrument readout" voice running through nav, labels and data.
-   Ochre stays as a rationed secondary (ratings/medals) — never a second
-   brand color. Neutrals are true gray, not warm parchment/khaki — that
-   warm cast read as brown/yellow across the site and was dropped.
+   DESIGN TOKENS — Gezeceyik Kıbrıs — "Smooth Mediterranean Futurism"
+   Fourth ground-up rebuild, commissioned 2026-09-13. Everything before
+   this — cold cartographic chart-blue, then warm limestone/editorial —
+   is gone, palette AND material language both. This is not an archive
+   or a survey chart any more: fluid ocean blues, misty translucent
+   surfaces, soft diffused depth, warm-white grounds, one sand-warm
+   accent. Hard stamped shadows and 0px architectural corners are gone —
+   replaced by soft elevation and rounded surfaces (see radius/shadow
+   tokens below). Still deliberately NOT glassmorphism-everywhere: blur
+   is used sparingly, on real floating instruments (nav, map panel,
+   signature moment), never as a base surface treatment.
    ══════════════════════════════════════════════════════════════════ */
 /* Color and shadow tokens live in their own non-inline @theme block —
    Tailwind's `inline` modifier bakes each utility's LITERAL resolved
@@ -19,94 +20,106 @@
    below — which works purely by redefining these custom properties —
    would have nothing to hook into for a plain `@theme inline` block. */
 @theme {
-  /* ── Brand — chart-blue ink is the one interactive color: links,
-     primary actions, active nav, focus rings, map markers. Reads as a
-     surveyor's stamped blue ink on paper, not a SaaS accent. Flips
-     brighter in dark mode for text/border/ring contrast against a near-
-     black page — see the dark overrides below. ── */
-  --color-brand:         #1D5C82;
-  --color-brand-hover:   #164A69;
-  --color-brand-strong:  #0F3450;
-  --color-brand-bright:  #6BB0D6; /* on-dark accent only, never small text on light */
+  /* ── Brand — premium coastal teal-blue, the one interactive color:
+     links, primary actions, active nav, focus rings, map markers.
+     Flips brighter in dark mode for text/border/ring contrast against a
+     near-black page — see the dark overrides below. ── */
+  --color-brand:         #0A6E8C;
+  --color-brand-hover:   #085A73;
+  --color-brand-strong:  #06465A;
+  --color-brand-bright:  #5FD4E0; /* on-dark accent only, never small text on light */
   /* Constant across both themes — paired with white text on a solid
      fill (buttons, badges, active toggles). --color-brand itself can't
      serve that role once it brightens for dark mode: white text on a
-     light chart-blue fill loses the contrast the darker, constant fill
-     keeps. See Button.tsx primary/danger, Navbar's route-count badge,
-     PlacesMap's basemap toggle, RouteBuilderClient's stop numbers. */
-  --color-brand-fill:    #1D5C82;
+     light coastal-blue fill loses the contrast the darker, constant
+     fill keeps. See Button.tsx primary/danger, Navbar's route-count
+     badge, PlacesMap's basemap toggle, RouteBuilderClient's stop
+     numbers. */
+  --color-brand-fill:    #0A6E8C;
+  /* Secondary glow accent — signature-moment highlights, active/focus
+     glows, map pulse states. Used far more sparingly than brand. */
+  --color-aqua:          #2FB8C4;
+  --color-aqua-soft:     #DDF3F1;
 
-  --color-deep:          #0E1E28; /* ink-blue near-black — immersive dark sections (Hero, Footer, photo scrims) regardless of site theme */
-  --color-deep-soft:     #16303F;
+  --color-deep:          #0A1620; /* near-black ocean blue — immersive dark sections (Hero, Footer, photo scrims) regardless of site theme */
+  --color-deep-soft:     #10222E;
 
-  /* Quiet accents — used sparingly, never as a base or a system color. */
-  --color-olive:         #5E6B3E;
-  --color-olive-soft:    #E7E6D4;
-  --color-ochre:         #B3811E; /* ratings, medals, highlight marks */
-  --color-ochre-soft:    #F1E4C4;
+  /* One warm accent — ratings, medals, highlight marks. Sand, not gold-
+     ochre: cooler, quieter, doesn't compete with the aqua/brand blues. */
+  --color-sand:      #C98A3E;
+  --color-sand-soft: #F5E7CE;
 
-  /* ── Neutrals — true gray, no warm parchment/khaki tint. ── */
-  --color-ink:           #141414;
-  --color-ink-soft:      #1E1E1E;
-  --color-paper:         #FAFAFA; /* off-white page ground — near-white, minimal tint */
-  --color-header:        #FFFFFF; /* header ground — crisp white, separated from the page by the line below it */
-  --color-surface:       #F4F4F4;
-  --color-surface-muted: #DADADA;
-  --color-line:          #A6A6A6; /* visible hairline rule, not a faint SaaS divider */
+  /* ── Neutrals — clean warm-white ground + misty pale-blue surfaces,
+     charcoal ink. No parchment, no true-gray. ── */
+  --color-ink:           #151A1F;
+  --color-ink-soft:      #20262C;
+  --color-paper:         #FAFAF8; /* clean warm white page ground */
+  --color-header:        #FFFFFF; /* header ground — pure white, separated from the page by a hairline */
+  --color-surface:       #EEF3F5; /* misty pale-blue surface */
+  --color-surface-muted: #E1E9EC;
+  --color-line:          #D8E1E4;
 
-  --color-strong:        #141414;
-  --color-muted:         #4C4C4C;
-  --color-subtle:        #707070;
-  --color-faint:         #979797;
+  --color-strong:        #151A1F;
+  --color-muted:         #52606A;
+  --color-subtle:        #7C8991;
+  --color-faint:         #A3ADB3;
   /* Constant across both themes — always white-on-dark text for the
      site's permanently-dark sections (Hero, Footer, photo overlays),
      independent of whichever theme the rest of the page is in. */
   --color-on-ink-strong:  #FFFFFF;
-  --color-on-ink-muted:   rgb(255 255 255 / 66%);
-  --color-on-ink-subtle:  rgb(255 255 255 / 42%);
+  --color-on-ink-muted:   rgb(255 255 255 / 68%);
+  --color-on-ink-subtle:  rgb(255 255 255 / 44%);
 
   /* ── Category — read from icon + label, never hue. One neutral pair. ── */
-  --color-cat:      #141414;
-  --color-cat-soft: #DADADA;
+  --color-cat:      #151A1F;
+  --color-cat-soft: #E1E9EC;
 
   /* ── Semantic state ─────────────────────────────────────────────── */
-  --color-success:      #2B6B34;
-  --color-success-soft: #E4EEDF;
-  --color-warning:      #8A5A12;
-  --color-warning-soft: #F3E7CC;
-  --color-danger:       #9A2E1F;
-  --color-danger-soft:  #F3E1DA;
+  --color-success:      #1D8A5D;
+  --color-success-soft: #DCF2E7;
+  --color-warning:      #B4791F;
+  --color-warning-soft: #F5E7CC;
+  --color-danger:       #C23B2E;
+  --color-danger-soft:  #F6DFDA;
   /* Constant across both themes — same reasoning as --color-brand-fill:
      Button.tsx's danger variant pairs this with white text. */
-  --color-danger-fill:  #9A2E1F;
+  --color-danger-fill:  #C23B2E;
 
-  /* ── Shadows — hard-edge, stamped offsets instead of soft blur; a
-     printed card lifted off the page, not a SaaS elevation system.
-     Colocated with color tokens (not in the typography @theme inline
-     block below), and built from color-mix(var(--color-ink)) rather
-     than a hardcoded rgb literal, so all three stay reactive to
-     --color-ink flipping between themes with no separate dark
-     override needed. ── */
-  --shadow-card: 0 0 0 1px color-mix(in oklab, var(--color-ink) 8%, transparent);
-  --shadow-lift: 4px 4px 0 0 var(--color-ink);
-  --shadow-ink:  6px 6px 0 0 color-mix(in oklab, var(--color-ink) 90%, transparent);
+  /* ── Shadows — soft, diffused, premium elevation instead of hard
+     stamped offsets: a panel floating with real atmospheric depth, not
+     a printed card lifted off the page. Built from color-mix(var(
+     --color-deep)) rather than a hardcoded rgb literal, so they stay
+     reactive to theme changes with no separate dark override needed.
+     --shadow-glow is new: a soft aqua bloom for signature-moment and
+     active/focus states — used sparingly, never as base card elevation. ── */
+  --shadow-card: 0 1px 2px color-mix(in oklab, var(--color-deep) 7%, transparent), 0 1px 1px color-mix(in oklab, var(--color-deep) 4%, transparent);
+  --shadow-lift: 0 16px 40px -12px color-mix(in oklab, var(--color-deep) 28%, transparent), 0 4px 14px -4px color-mix(in oklab, var(--color-deep) 12%, transparent);
+  --shadow-ink:  0 24px 60px -16px color-mix(in oklab, var(--color-deep) 38%, transparent), 0 8px 20px -6px color-mix(in oklab, var(--color-deep) 16%, transparent);
+  --shadow-glow: 0 0 0 1px color-mix(in oklab, var(--color-brand-bright) 40%, transparent), 0 0 32px color-mix(in oklab, var(--color-aqua) 45%, transparent);
 }
 
 @theme inline {
   /* ── Typography ─────────────────────────────────────────────────
-     Anton sets headlines, era names and section numerals — a single
-     heavy condensed grotesk, plotted rather than written; no italics.
-     Source Serif reads long-form prose (descriptions, history essays)
-     — the one warm, human voice in the system. Inter runs interactive
-     chrome (nav, filters, buttons). JetBrains Mono is the instrument
-     face — coordinates, prices, hours, index numbers, nav labels — and
-     carries a much larger share of the UI than "numerals only". */
-  --font-display: var(--font-anton), 'Arial Narrow', sans-serif;
-  --font-serif:   var(--font-source-serif), Georgia, serif;
+     Bricolage Grotesque sets headlines, era names and section numerals
+     — a confident modern variable grotesk with real geometric presence
+     at display sizes, replacing Fraunces' editorial serif entirely: no
+     archive/journal voice left anywhere in the type system. Inter reads
+     both long-form body copy AND interactive chrome now — one clean
+     modern sans runs the whole UI, not a separate "reading" face.
+     --font-serif is kept as a token (not removed) only so every
+     existing `font-serif` className across the codebase resolves to
+     this same clean sans instead of silently breaking — there is no
+     serif left in the system. JetBrains Mono stays the instrument face
+     for coordinates, prices, hours, index numbers — 01/02/03 etc. */
+  --font-display: var(--font-bricolage), 'Space Grotesk', ui-sans-serif, sans-serif;
+  --font-serif:   var(--font-inter), ui-sans-serif, sans-serif;
   --font-sans:    var(--font-inter), system-ui, sans-serif;
   --font-mono:    var(--font-jbmono), ui-monospace, SFMono-Regular, monospace;
 
-  /* Fluid type scale — named by role. */
+  /* Fluid type scale — named by role. Display/hero pushed for real
+     scale-contrast drama (Top-Design: 10:1+ display:body) — hero now
+     reaches ~10.5rem at wide viewports against a 1rem body, versus the
+     old system's 7.5rem ceiling. */
   --text-caption:        0.75rem;
   --text-caption--line-height: 1.5;
   --text-label:          0.6875rem;
@@ -121,32 +134,36 @@
   --text-card-title--line-height: 1.35;
   --text-block-title:    clamp(1.25rem, 1.05rem + 0.7vw, 1.5rem);
   --text-block-title--line-height: 1.15;
-  --text-section-title:  clamp(1.75rem, 1.3rem + 1.7vw, 2.5rem);
+  --text-section-title:  clamp(1.75rem, 1.2rem + 2vw, 2.75rem);
   --text-section-title--line-height: 0.98;
-  --text-page-title:     clamp(2.125rem, 1.5rem + 2.4vw, 3.25rem);
+  --text-page-title:     clamp(2.125rem, 1.4rem + 2.8vw, 3.5rem);
   --text-page-title--line-height: 0.94;
-  --text-hero:           clamp(2.75rem, 1.7rem + 4vw, 5rem);
+  --text-hero:           clamp(2.75rem, 1.4rem + 5.2vw, 5.75rem);
   --text-hero--line-height: 0.92;
-  --text-display:        clamp(3.5rem, 2rem + 6.5vw, 7.5rem);
+  --text-display:        clamp(3.5rem, 1rem + 9.5vw, 10.5rem);
   --text-display--line-height: 0.86;
 
-  /* ── Radius — architectural, not rounded. Printed matter has corners,
-     not softened ones; the few genuine circles (favorite toggle, stepper)
-     use Tailwind's literal rounded-full, not this scale. ── */
-  --radius-sm: 0px;
-  --radius-md: 1px;
-  --radius-lg: 2px;
+  /* ── Radius — soft, spatial surfaces now, not architectural corners.
+     Every panel/card/button rounds; only hairline dividers and full
+     edge-to-edge surfaces (map, banners) stay square. ── */
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
 
   /* ── Containers ─────────────────────────────────────────────────── */
   --max-width-site:   1320px;
   --max-width-narrow: 720px;
   --max-width-prose:  66ch;
 
-  /* ── Motion ─────────────────────────────────────────────────────── */
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --duration-fast: 150ms;
-  --duration-base: 240ms;
-  --duration-slow: 420ms;
+  /* ── Motion — smooth and physical, not mechanical. Same expo-out
+     curve carries forward (it was already right for this); an eased
+     in-out is added for crossfades/shared-continuity transitions. ── */
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1); /* soft crossfades, shared continuity, choreographed sequences */
+  --duration-fast: 180ms;
+  --duration-base: 300ms;
+  --duration-slow: 520ms;
+  --duration-cinematic: 1800ms; /* signature-moment reveal only — never used for routine UI */
 
   /* ── Z-index scale — must live under the --z-index-* namespace for
      Tailwind v4 to generate matching z-* utilities (z-nav, z-overlay,
@@ -187,73 +204,73 @@
   :root:not([data-theme="light"]) {
     color-scheme: dark;
 
-    --color-brand:        #5FA8D3;
-    --color-brand-strong: #9FCBE8;
-    --color-brand-bright: #8CC4E3;
+    --color-brand:        #4FB8D6;
+    --color-brand-strong: #8FD9EC;
+    --color-brand-bright: #7FE3EC;
 
-    --color-olive:      #A8B97E;
-    --color-olive-soft: #2B2E1C;
-    --color-ochre:      #D9A44B;
-    --color-ochre-soft: #332711;
+    --color-aqua:      #5FE0E8;
+    --color-aqua-soft: #12333A;
+    --color-sand:      #E3AC5E;
+    --color-sand-soft: #362813;
 
-    --color-ink:           #F2F5F7;
-    --color-ink-soft:      #E2E6E8;
-    --color-paper:         #0E1E28;
-    --color-header:        #16303F;
-    --color-surface:       #132531;
-    --color-surface-muted: #1C3542;
-    --color-line:          #35505C;
+    --color-ink:           #F1F2F2;
+    --color-ink-soft:      #E3E5E6;
+    --color-paper:         #131416;
+    --color-header:        #1B1C1F;
+    --color-surface:       #1B1C1F;
+    --color-surface-muted: #26282B;
+    --color-line:          #3A3C40;
 
-    --color-strong: #F2F5F7;
-    --color-muted:  #B7C3C9;
-    --color-subtle: #8CA0AA;
-    --color-faint:  #62767F;
+    --color-strong: #F1F2F2;
+    --color-muted:  #B8BABC;
+    --color-subtle: #8C8F92;
+    --color-faint:  #616467;
 
-    --color-cat:      #F2F5F7;
-    --color-cat-soft: #1C3542;
+    --color-cat:      #F1F2F2;
+    --color-cat-soft: #26282B;
 
-    --color-success:      #6FCB7C;
-    --color-success-soft: #16281A;
+    --color-success:      #5FCE94;
+    --color-success-soft: #123322;
     --color-warning:      #E3A23F;
-    --color-warning-soft: #2E2210;
-    --color-danger:       #E2695A;
-    --color-danger-soft:  #341C16;
+    --color-warning-soft: #332510;
+    --color-danger:       #E27A6A;
+    --color-danger-soft:  #3A1F19;
   }
 }
 :root[data-theme="dark"] {
   color-scheme: dark;
 
-  --color-brand:        #5FA8D3;
-  --color-brand-strong: #9FCBE8;
-  --color-brand-bright: #8CC4E3;
+  --color-brand:        #4FB8D6;
+  --color-brand-strong: #8FD9EC;
+  --color-brand-bright: #7FE3EC;
 
-  --color-olive:      #A8B97E;
-  --color-olive-soft: #2B2E1C;
-  --color-ochre:      #D9A44B;
-  --color-ochre-soft: #332711;
+  --color-aqua:      #5FE0E8;
+  --color-aqua-soft: #12333A;
+  --color-sand:      #E3AC5E;
+  --color-sand-soft: #362813;
 
-  --color-ink:           #F2F5F7;
-  --color-ink-soft:      #E2E6E8;
-  --color-paper:         #0E1E28;
-  --color-header:        #16303F;
-  --color-surface:       #132531;
-  --color-surface-muted: #1C3542;
-  --color-line:          #35505C;
+  --color-ink:           #F2F6F7;
+  --color-ink-soft:      #E4ECEE;
+  --color-paper:         #0A1620;
+  --color-header:        #10222E;
+  --color-surface:       #10222E;
+  --color-surface-muted: #17303F;
+  --color-line:          #294A5B;
 
-  --color-strong: #F2F5F7;
-  --color-muted:  #B7C3C9;
-  --color-subtle: #8CA0AA;
-  --color-faint:  #62767F;
+  --color-strong: #F2F6F7;
+  --color-muted:  #B9C7CC;
+  --color-subtle: #86999F;
+  --color-faint:  #5C7178;
 
-  --color-cat:      #F2F5F7;
-  --color-cat-soft: #1C3542;
+  --color-cat:      #F2F6F7;
+  --color-cat-soft: #17303F;
 
-  --color-success:      #6FCB7C;
-  --color-success-soft: #16281A;
+  --color-success:      #5FCE94;
+  --color-success-soft: #123322;
   --color-warning:      #E3A23F;
-  --color-warning-soft: #2E2210;
-  --color-danger:       #E2695A;
-  --color-danger-soft:  #341C16;
+  --color-warning-soft: #332510;
+  --color-danger:       #E27A6A;
+  --color-danger-soft:  #3A1F19;
 }
 
 body {
@@ -282,14 +299,33 @@ body {
   outline-offset: 3px;
 }
 
-.font-display {
-  font-family: var(--font-display);
-  /* Anton ships one weight/style; without this, a stray font-bold or
-     italic class elsewhere synthesizes a fake bold/oblique onto an
-     already-heavy condensed face, which reads as muddy at display sizes. */
-  font-synthesis: none;
-  letter-spacing: -0.01em;
-  text-transform: uppercase;
+/* @layer base (not a bare unlayered rule): Tailwind v4 treats any
+   unlayered CSS as higher-priority than ITS OWN utilities layer
+   regardless of source order — so a plain `.font-display{font-weight}`
+   here would silently defeat `font-semibold`/`font-bold` wherever a
+   caller combines them (EmptyState.tsx does exactly this). Layering it
+   as `base` lets those utilities win as expected while still giving
+   every other .font-display caller a sensible default weight. */
+@layer base {
+  .font-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+    font-weight: 640;
+    text-wrap: balance;
+  }
+
+  /* The one recurring accent inside a headline — a single word or short
+     phrase set in the brand-blue-to-aqua range at a lighter weight, not
+     italic (Bricolage's italic isn't distinctive enough to carry the
+     device) — the "this word is the point" signal now comes from color
+     + weight contrast instead. Never a full sentence. */
+  .font-display-accent {
+    font-weight: 500;
+    color: var(--color-brand);
+  }
+  .on-ink .font-display-accent {
+    color: var(--color-brand-bright);
+  }
 }
 
 .font-serif {
@@ -630,6 +666,48 @@ img {
     opacity: 1;
   }
 
+  /* Fluid blur-to-focus reveal — the hero headline and other single
+     "arrival" moments resolve out of a soft blur instead of rising out
+     of a clipped mask; smoother/softer, matching the fluid-futurism
+     motion language (see .font-display-accent's color-only accent —
+     no italic here either). */
+  [data-motion="blur-in"] {
+    opacity: 0;
+    filter: blur(14px);
+    transform: translateY(10px);
+    transition: opacity var(--duration-slow) var(--ease-out), filter var(--duration-slow) var(--ease-out), transform var(--duration-slow) var(--ease-out);
+  }
+  [data-motion="blur-in"][data-enter="true"] {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+
+  /* Premium image reveal — a curtain opening left→right, not a fade.
+     Used for the hero's editorial photograph and other single-image
+     "arrival" moments; reserve for one image per view, never a grid. */
+  [data-motion="mask-reveal"] {
+    clip-path: inset(0 0 0 100%);
+    transition: clip-path var(--duration-cinematic) var(--ease-in-out);
+  }
+  [data-motion="mask-reveal"][data-enter="true"] {
+    clip-path: inset(0 0 0 0%);
+  }
+
+  /* Signature-moment coastline trace — the real Cyprus outline drawing
+     itself in as an ink line (see lib/geo/cyprusOutline.ts). `pathLength`
+     is set to 1 on the <path> element itself so this dasharray/dashoffset
+     pair always maps to 0%→100% of the real geometry regardless of its
+     actual SVG length. */
+  [data-hero-coastline] {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset var(--duration-cinematic) var(--ease-in-out);
+  }
+  [data-hero-coastline][data-enter="true"] {
+    stroke-dashoffset: 0;
+  }
+
   /* Word-by-word heading reveal — each word rises out of a clipped mask
      on its own delay. The wrapping [data-motion="words"] element carries
      the real accessible text (via aria-label); the word spans underneath
@@ -695,11 +773,25 @@ img {
   }
 }
 
+@keyframes hero-drift {
+  from { transform: scale(1.06) translate3d(0, 0, 0); }
+  to   { transform: scale(1) translate3d(0, -1.5%, 0); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   [data-motion] {
     transition: none !important;
     opacity: 1 !important;
     transform: none !important;
+    clip-path: none !important;
+    filter: none !important;
+  }
+  [data-hero-coastline] {
+    transition: none !important;
+    stroke-dashoffset: 0 !important;
+  }
+  img {
+    animation: none !important;
   }
 }
 
@@ -716,7 +808,12 @@ img {
 html:not(.js) [data-motion] {
   opacity: 1 !important;
   transform: none !important;
+  clip-path: none !important;
+  filter: none !important;
 }
 html:not(.js) [data-motion="words"] .word-inner {
   transform: none !important;
+}
+html:not(.js) [data-hero-coastline] {
+  stroke-dashoffset: 0 !important;
 }

@@ -17,6 +17,8 @@ import { useDraftRoute } from '@/context/DraftRouteContext';
 import { useSavedTrips } from '@/hooks/useSavedTrips';
 import { ItineraryView } from './ItineraryView';
 import { Button } from '@/components/ui/Button';
+import { Reveal } from '@/components/ui/Reveal';
+import { SplitHeading } from '@/components/ui/SplitHeading';
 import { tr } from '@/lib/i18n/tr';
 import { CarIcon, WalkIcon, BusIcon, CheckIcon } from '@/components/ui/icons';
 
@@ -41,9 +43,9 @@ const PACE_OPTIONS = [
   { value: 'intensive', label: 'Yoğun', hint: '~4 durak/gün' },
 ] as const;
 
-const choiceBase = 'border px-4 py-3.5 text-left font-mono text-[13px] transition-colors duration-[var(--duration-fast)]';
-const choiceActive = 'border-brand bg-brand/5 font-semibold text-brand';
-const choiceInactive = 'border-line text-muted hover:border-ink';
+const choiceBase = 'rounded-2xl border px-4 py-3.5 text-left font-sans text-[13px] shadow-[var(--shadow-card)] transition-[color,background-color,border-color,box-shadow,transform] duration-[var(--duration-base)] ease-[var(--ease-out)] hover:-translate-y-0.5';
+const choiceActive = 'border-brand bg-brand/10 font-semibold text-brand shadow-[var(--shadow-glow)]';
+const choiceInactive = 'border-transparent bg-surface text-muted hover:border-brand/30';
 
 interface Props {
   categories: Category[];
@@ -110,102 +112,114 @@ export function PlannerExperience({ categories, places, transitRoutes }: Props) 
       </div>
 
       <div className="mt-10 space-y-10">
-        <FieldGroup label="Nerede konaklıyorsun?">
-          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
-            {ACCOMMODATION_OPTIONS.map((opt, i) => (
-              <button
-                key={opt.label}
-                type="button"
-                onClick={() => setAccommodationIdx(i)}
-                className={`${choiceBase} ${i === accommodationIdx ? choiceActive : choiceInactive}`}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
-        </FieldGroup>
+        <Reveal delayMs={0}>
+          <FieldGroup label="Nerede konaklıyorsun?">
+            <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+              {ACCOMMODATION_OPTIONS.map((opt, i) => (
+                <button
+                  key={opt.label}
+                  type="button"
+                  onClick={() => setAccommodationIdx(i)}
+                  className={`${choiceBase} ${i === accommodationIdx ? choiceActive : choiceInactive}`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </FieldGroup>
+        </Reveal>
 
-        <FieldGroup label="Kaç gün?">
-          <div className="flex items-center gap-4">
+        <Reveal delayMs={60}>
+          <FieldGroup label="Kaç gün?">
+            <div className="flex items-center gap-4">
+              <button
+                type="button"
+                onClick={() => setDays((d) => Math.max(1, d - 1))}
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-line text-lg text-strong hover:border-ink"
+                aria-label="Bir gün azalt"
+              >
+                −
+              </button>
+              <span className="w-20 text-center font-display text-3xl text-strong tabular-nums">{days}</span>
+              <button
+                type="button"
+                onClick={() => setDays((d) => Math.min(14, d + 1))}
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-line text-lg text-strong hover:border-ink"
+                aria-label="Bir gün artır"
+              >
+                +
+              </button>
+              <span className="text-body-sm text-subtle">gün</span>
+            </div>
+          </FieldGroup>
+        </Reveal>
+
+        <Reveal delayMs={120}>
+          <FieldGroup label="Ulaşım">
+            <div className="flex flex-wrap gap-2.5">
+              {TRANSPORT_OPTIONS.map(({ value, label, icon: Icon }) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setTransport(value)}
+                  className={`${choiceBase} flex items-center gap-2 ${transport === value ? choiceActive : choiceInactive}`}
+                >
+                  <Icon className="h-4 w-4" />
+                  {label}
+                </button>
+              ))}
+            </div>
+          </FieldGroup>
+        </Reveal>
+
+        <Reveal delayMs={180}>
+          <FieldGroup label="İlgi alanların (opsiyonel)">
+            <div className="flex flex-wrap gap-2.5">
+              {categories.map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => toggleCategory(c)}
+                  className={`${choiceBase} ${preferredCategories.includes(c) ? choiceActive : choiceInactive}`}
+                >
+                  {tr.categories[c]}
+                </button>
+              ))}
+            </div>
+          </FieldGroup>
+        </Reveal>
+
+        <Reveal delayMs={240}>
+          <FieldGroup label="Tempo">
+            <div className="flex flex-wrap gap-2.5">
+              {PACE_OPTIONS.map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => setPace(opt.value)}
+                  className={`${choiceBase} ${pace === opt.value ? choiceActive : choiceInactive}`}
+                >
+                  <span className="block">{opt.label}</span>
+                  <span className="block text-meta text-subtle">{opt.hint}</span>
+                </button>
+              ))}
+            </div>
+          </FieldGroup>
+        </Reveal>
+
+        <Reveal delayMs={300}>
+          <FieldGroup label="Bütçe">
             <button
               type="button"
-              onClick={() => setDays((d) => Math.max(1, d - 1))}
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-line text-lg text-strong hover:border-ink"
-              aria-label="Bir gün azalt"
+              onClick={() => setOnlyFree((v) => !v)}
+              aria-pressed={onlyFree}
+              className={`${choiceBase} flex items-center gap-2 ${onlyFree ? choiceActive : choiceInactive}`}
             >
-              −
+              {onlyFree && <CheckIcon className="h-4 w-4" />}
+              Sadece ücretsiz yerler
             </button>
-            <span className="w-20 text-center font-mono text-3xl font-semibold text-strong tabular-nums">{days}</span>
-            <button
-              type="button"
-              onClick={() => setDays((d) => Math.min(14, d + 1))}
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-line text-lg text-strong hover:border-ink"
-              aria-label="Bir gün artır"
-            >
-              +
-            </button>
-            <span className="text-body-sm text-subtle">gün</span>
-          </div>
-        </FieldGroup>
-
-        <FieldGroup label="Ulaşım">
-          <div className="flex flex-wrap gap-2.5">
-            {TRANSPORT_OPTIONS.map(({ value, label, icon: Icon }) => (
-              <button
-                key={value}
-                type="button"
-                onClick={() => setTransport(value)}
-                className={`${choiceBase} flex items-center gap-2 ${transport === value ? choiceActive : choiceInactive}`}
-              >
-                <Icon className="h-4 w-4" />
-                {label}
-              </button>
-            ))}
-          </div>
-        </FieldGroup>
-
-        <FieldGroup label="İlgi alanların (opsiyonel)">
-          <div className="flex flex-wrap gap-2.5">
-            {categories.map((c) => (
-              <button
-                key={c}
-                type="button"
-                onClick={() => toggleCategory(c)}
-                className={`${choiceBase} ${preferredCategories.includes(c) ? choiceActive : choiceInactive}`}
-              >
-                {tr.categories[c]}
-              </button>
-            ))}
-          </div>
-        </FieldGroup>
-
-        <FieldGroup label="Tempo">
-          <div className="flex flex-wrap gap-2.5">
-            {PACE_OPTIONS.map((opt) => (
-              <button
-                key={opt.value}
-                type="button"
-                onClick={() => setPace(opt.value)}
-                className={`${choiceBase} ${pace === opt.value ? choiceActive : choiceInactive}`}
-              >
-                <span className="block">{opt.label}</span>
-                <span className="block text-meta text-subtle">{opt.hint}</span>
-              </button>
-            ))}
-          </div>
-        </FieldGroup>
-
-        <FieldGroup label="Bütçe">
-          <button
-            type="button"
-            onClick={() => setOnlyFree((v) => !v)}
-            aria-pressed={onlyFree}
-            className={`${choiceBase} flex items-center gap-2 ${onlyFree ? choiceActive : choiceInactive}`}
-          >
-            {onlyFree && <CheckIcon className="h-4 w-4" />}
-            Sadece ücretsiz yerler
-          </button>
-        </FieldGroup>
+          </FieldGroup>
+        </Reveal>
 
         {tripHydrated && selectedTripSlugs.length > 0 && (
           <p className="text-body-sm text-subtle">
@@ -221,8 +235,12 @@ export function PlannerExperience({ categories, places, transitRoutes }: Props) 
 
       {itinerary && (
         <div id="itinerary-result" className="mt-16 scroll-mt-20 border-t border-line pt-12">
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-            <h2 className="font-display text-section-title text-strong">Programın hazır</h2>
+          <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+            <SplitHeading
+              as="h2"
+              text="Programın hazır."
+              className="font-display text-hero leading-[0.88] text-strong text-balance"
+            />
             <Button variant={savedTripId ? 'ink' : 'secondary'} onClick={handleSave} disabled={!!savedTripId}>
               {savedTripId ? 'Kaydedildi ✓' : 'Geziyi Kaydet'}
             </Button>

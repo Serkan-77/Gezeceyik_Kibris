@@ -8,6 +8,7 @@ import { useFavorites } from '@/hooks/useFavorites';
 import { Place } from '@/types/place';
 import { DiscoveryRow } from '@/components/places/DiscoveryRow';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { Reveal } from '@/components/ui/Reveal';
 import { Button } from '@/components/ui/Button';
 import { HeartIcon } from '@/components/ui/icons';
 
@@ -21,13 +22,13 @@ export function FavorilerClient({ places }: FavorilerClientProps) {
 
   if (!hydrated) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-3">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="flex gap-4 border-t border-line py-4">
-            <div className="h-24 w-32 shrink-0 animate-pulse rounded-sm bg-surface-muted sm:w-44" />
+          <div key={i} className="flex gap-4 rounded-2xl bg-surface p-3 shadow-[var(--shadow-card)]">
+            <div className="h-24 w-32 shrink-0 animate-pulse rounded-xl bg-surface-muted sm:w-44" />
             <div className="flex-1 space-y-2 py-1">
-              <div className="h-4 w-24 animate-pulse rounded-sm bg-surface-muted" />
-              <div className="h-5 w-1/2 animate-pulse rounded-sm bg-surface-muted" />
+              <div className="h-4 w-24 animate-pulse rounded-full bg-surface-muted" />
+              <div className="h-5 w-1/2 animate-pulse rounded-full bg-surface-muted" />
             </div>
           </div>
         ))}
@@ -54,8 +55,10 @@ export function FavorilerClient({ places }: FavorilerClientProps) {
           Tümünü temizle
         </button>
       </div>
-      {favoritePlaces.map((place) => (
-        <DiscoveryRow key={place.slug} place={place} />
+      {favoritePlaces.map((place, i) => (
+        <Reveal key={place.slug} delayMs={Math.min(i, 6) * 50}>
+          <DiscoveryRow place={place} />
+        </Reveal>
       ))}
     </div>
   );

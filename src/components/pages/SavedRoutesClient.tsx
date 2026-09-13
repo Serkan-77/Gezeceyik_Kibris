@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { RouteSummary } from '@/types/route';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { Reveal } from '@/components/ui/Reveal';
 import { Button } from '@/components/ui/Button';
 import { RouteIcon, ArrowRightIcon } from '@/components/ui/icons';
 import { tr } from '@/lib/i18n/tr';
@@ -59,21 +60,23 @@ export function SavedRoutesClient() {
   }
 
   return (
-    <div className="space-y-2.5">
-      {routes.map((route) => (
-        <Link
-          key={route.id}
-          href={`/rotam/${route.id}`}
-          className="group flex items-center justify-between gap-4 rounded-md border border-line bg-surface px-5 py-4 transition-colors hover:border-ink"
-        >
-          <div className="min-w-0">
-            <p className="truncate font-serif text-card-title font-semibold text-strong">{route.name ?? tr.route.unnamedRoute}</p>
-            <p className="font-mono text-meta text-subtle">
-              {tr.route.stopCount(route.stopCount)} · {tr.route.updatedAt(formatDate(route.updatedAt))}
-            </p>
-          </div>
-          <ArrowRightIcon className="h-4 w-4 shrink-0 text-subtle transition-transform group-hover:translate-x-0.5 group-hover:text-brand" />
-        </Link>
+    <div>
+      {routes.map((route, i) => (
+        <Reveal key={route.id} delayMs={Math.min(i, 6) * 50} className="border-t border-line first:border-t-0">
+          <Link
+            href={`/rotam/${route.id}`}
+            className="group flex items-center gap-4 py-4"
+          >
+            <span className="font-display text-2xl leading-none text-brand tabular-nums">{String(i + 1).padStart(2, '0')}</span>
+            <div className="min-w-0 flex-1">
+              <p className="truncate font-serif text-card-title font-semibold text-strong">{route.name ?? tr.route.unnamedRoute}</p>
+              <p className="font-mono text-meta text-subtle">
+                {tr.route.stopCount(route.stopCount)} · {tr.route.updatedAt(formatDate(route.updatedAt))}
+              </p>
+            </div>
+            <ArrowRightIcon className="h-4 w-4 shrink-0 text-subtle transition-transform group-hover:translate-x-0.5 group-hover:text-brand" />
+          </Link>
+        </Reveal>
       ))}
     </div>
   );

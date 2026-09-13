@@ -6,7 +6,6 @@
 
 import { Metadata } from 'next';
 import { Hero } from '@/components/home/Hero';
-import { CategoryNav } from '@/components/home/CategoryNav';
 import { WeatherBand } from '@/components/home/WeatherBand';
 import { DiscoveryTeaser } from '@/components/home/DiscoveryTeaser';
 import { HistoryScene } from '@/components/home/HistoryScene';
@@ -15,6 +14,7 @@ import { CuratedRoutesBand } from '@/components/home/CuratedRoutesBand';
 import { PlanTripBand } from '@/components/home/PlanTripBand';
 import { getAllPlaces, getFeaturedPlaces, getAllRegions } from '@/lib/places';
 import { getPublishedCuratedTrips } from '@/lib/curatedRoutes';
+import { getActiveTransitRoutes } from '@/lib/transitRoutes';
 import { generateItinerary } from '@/lib/trip-planner/planner';
 import { PlannerInput } from '@/lib/trip-planner/types';
 import { getRatingAggregates } from '@/lib/repositories/ratingRepository';
@@ -40,11 +40,15 @@ const EXAMPLE_ACCOMMODATION = { label: 'Girne Merkez', city: 'Girne', region: 'G
 const EXAMPLE_MUST_VISIT = ['girne-kalesi', 'bellapais-manastiri', 'st-hilarion-kalesi'];
 
 export default async function HomePage() {
-  const [places, featured, regions, curatedTrips] = await Promise.all([
+  const [places, featured, regions, curatedTrips, transitRoutes] = await Promise.all([
     getAllPlaces(),
     getFeaturedPlaces(),
     getAllRegions(),
     getPublishedCuratedTrips(),
+    getActiveTransitRoutes().catch((err) => {
+      console.warn('[home] transit routes unavailable for hero card:', err instanceof Error ? err.message : err);
+      return [];
+    }),
   ]);
 
   // Powers the "highest-rated first" ordering in DiscoveryTeaser. Falls
@@ -76,10 +80,15 @@ export default async function HomePage() {
 
   return (
     <>
-      <Hero placeCount={places.length} regionCount={regions.length} feature={heroFeature} />
+      <Hero
+        placeCount={places.length}
+        regionCount={regions.length}
+        feature={heroFeature}
+        places={places}
+        transitRouteCount={transitRoutes.length}
+      />
       <WeatherBand />
       <DiscoveryTeaser places={places} ratings={ratings} />
-      <CategoryNav places={places} />
       <HistoryScene places={places} />
       <GeographyBand places={places} regionCount={regions.length} />
       <CuratedRoutesBand trips={curatedTrips} />

@@ -31,6 +31,7 @@ const STATIC_PAGES: StaticPageEntry[] = [
   { path: '/beaches', changeFrequency: 'weekly', priority: 0.8 },
   { path: '/historical-places', changeFrequency: 'weekly', priority: 0.8 },
   { path: '/harita', changeFrequency: 'weekly', priority: 0.7 },
+  { path: '/ulasim', changeFrequency: 'weekly', priority: 0.7 },
   { path: '/gezi-planla', changeFrequency: 'monthly', priority: 0.6 },
   { path: '/rotalar', changeFrequency: 'monthly', priority: 0.6 },
   { path: '/hakkimizda', changeFrequency: 'yearly', priority: 0.5 },

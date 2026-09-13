@@ -6,7 +6,7 @@
 // needs no server round-trip.
 
 import { useMemo, useState } from 'react';
-import Image from 'next/image';
+import { SafeImage } from '@/components/ui/SafeImage';
 import { PlaceLite } from '@/types/place';
 import { tr } from '@/lib/i18n/tr';
 import { PlusIcon, SearchIcon, CheckIcon } from '@/components/ui/icons';
@@ -42,15 +42,15 @@ export function AddStopSearch({ places, inRouteSlugs, pendingSlug, onAdd }: AddS
         aria-label={tr.route.addMore}
       />
       {query.trim() && (
-        <div className="mt-2 divide-y divide-line rounded-sm border border-line bg-surface">
+        <div className="mt-2 divide-y divide-line rounded-2xl bg-surface p-1 shadow-[var(--shadow-card)]">
           {results.length === 0 && <p className="px-3.5 py-3 text-body-sm text-subtle">{tr.route.addMoreEmpty}</p>}
           {results.map((place) => {
             const already = inRouteSlugs.has(place.slug);
             const pending = pendingSlug === place.slug;
             return (
-              <div key={place.slug} className="flex items-center gap-3 px-3.5 py-2.5">
-                <span className="relative h-10 w-10 shrink-0 overflow-hidden rounded-sm bg-surface-muted">
-                  {place.image && <Image src={place.image} alt="" fill sizes="40px" className="object-cover" />}
+              <div key={place.slug} className="flex items-center gap-3 px-2.5 py-2.5">
+                <span className="relative h-10 w-10 shrink-0 overflow-hidden rounded-xl bg-surface-muted">
+                  {place.image && <SafeImage src={place.image} alt="" fill sizes="40px" className="object-cover" />}
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-body-sm font-medium text-strong">{place.name}</span>

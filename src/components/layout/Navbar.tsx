@@ -59,6 +59,26 @@ export function Navbar() {
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/');
   const isExploreActive = EXPLORE_PATHS.some((href) => isActive(href));
 
+  // Only the homepage pulls its Hero photo up underneath the header (see
+  // Hero.tsx's negative top margin) for the header to blend over — doing
+  // the same on place-detail would also require reworking the breadcrumb
+  // above its banner, so that page keeps the always-solid header. The
+  // header starts transparent/light-on-dark here and solidifies the
+  // instant the page scrolls, exactly like the content underneath it.
+  const opensOnDarkPhoto = pathname === '/';
+  const transparent = opensOnDarkPhoto && !scrolled;
+
+  const navLinkClass = (active: boolean) =>
+    `px-3 py-2 font-mono text-[12px] uppercase tracking-[0.05em] transition-colors ${
+      active
+        ? transparent
+          ? 'text-brand-bright'
+          : 'text-brand'
+        : transparent
+          ? 'text-on-ink-muted hover:text-on-ink-strong'
+          : 'text-muted hover:text-strong'
+    }`;
+
   // Close the mobile sheet on route change so a back-navigation never
   // leaves it stuck open. Deferred to a microtask (matches the pattern in
   // hooks/useFavorites etc.) to avoid a synchronous setState-in-effect.
@@ -126,11 +146,13 @@ export function Navbar() {
       ? 'explore'
       : isActive('/harita')
         ? 'harita'
-        : isActive('/rotam')
-          ? 'rotam'
-          : isActive('/gezilerim')
-            ? 'gezilerim'
-            : null;
+        : isActive('/ulasim')
+          ? 'ulasim'
+          : isActive('/rotam')
+            ? 'rotam'
+            : isActive('/gezilerim')
+              ? 'gezilerim'
+              : null;
     const target = hoveredKey ?? activeKey;
     const recalc = () => updateIndicator(target);
     recalc();
@@ -141,18 +163,22 @@ export function Navbar() {
 
   return (
     <header
-      className={`sticky top-0 z-nav w-full border-b border-line bg-header/95 backdrop-blur-md transition-shadow duration-300 ${
-        scrolled ? 'shadow-[0_2px_0_0_var(--color-line)]' : 'shadow-none'
+      className={`sticky top-0 z-nav w-full transition-[background-color,border-color,box-shadow] duration-500 ease-[var(--ease-out)] ${
+        transparent ? 'border-b border-transparent bg-transparent' : 'border-b border-line bg-header/85 shadow-[var(--shadow-card)] backdrop-blur-xl'
       }`}
     >
       <div
         className={`relative mx-auto flex max-w-[1320px] items-center justify-between px-4 transition-[height] duration-300 ease-[var(--ease-out)] sm:px-6 lg:px-8 ${
-          scrolled ? 'h-14' : 'h-16'
+          scrolled ? 'h-14' : 'h-16 lg:h-20'
         }`}
       >
         <Link href="/" className="group flex shrink-0 items-baseline gap-2" aria-label="Gezeceyik Kıbrıs, Ana Sayfa">
-          <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-subtle">Gezeceyik</span>
-          <span className="font-display text-xl leading-none text-brand">Kıbrıs</span>
+          <span className={`font-mono text-[10px] uppercase tracking-[0.12em] transition-colors duration-500 ${transparent ? 'text-on-ink-subtle' : 'text-subtle'}`}>
+            Gezeceyik
+          </span>
+          <span className={`font-display-accent font-display text-2xl leading-none transition-colors duration-500 ${transparent ? 'text-brand-bright' : 'text-brand'}`}>
+            Kıbrıs
+          </span>
         </Link>
 
         <nav
@@ -162,7 +188,7 @@ export function Navbar() {
           <ul ref={navListRef} className="relative flex items-center gap-1">
             <span
               aria-hidden="true"
-              className="absolute bottom-0 left-0 z-0 h-[2px] bg-brand transition-all duration-300 ease-[var(--ease-out)]"
+              className={`absolute top-1/2 left-0 z-0 h-9 -translate-y-1/2 rounded-full transition-all duration-300 ease-[var(--ease-out)] ${transparent ? 'bg-white/15' : 'bg-surface'}`}
               style={indicator ? { left: indicator.left, width: indicator.width, opacity: 1 } : { width: 0, opacity: 0 }}
             />
             <li
@@ -187,26 +213,32 @@ export function Navbar() {
                   setExploreOpen(true);
                 }}
                 aria-expanded={exploreOpen}
-                className={`flex items-center gap-1 px-3 py-2 font-mono text-[12px] uppercase tracking-[0.05em] transition-colors ${
-                  isExploreActive ? 'text-brand' : 'text-muted hover:text-strong'
-                }`}
+                className={`flex items-center gap-1 ${navLinkClass(isExploreActive)}`}
               >
                 Keşfet
-                <ChevronDownIcon className={`h-3 w-3 transition-transform duration-200 ${exploreOpen ? 'rotate-180' : ''}`} />
+                <ChevronDownIcon className={`h-3 w-3 shrink-0 transition-transform duration-200 ${exploreOpen ? 'rotate-180' : ''}`} />
               </Link>
 
+              {/* pt-[10px] (not a top offset/margin on the panel itself) keeps
+                  the visual gap INSIDE this wrapper's own hoverable box — the
+                  previous version had that gap as empty space between the
+                  trigger and the panel, which the pointer had to cross
+                  without being "over" either element, firing mouseleave on
+                  the <li> and slamming the menu shut before a click landed. */}
               {exploreOpen && (
-                <div className="absolute left-0 top-full z-disclosure w-60 border border-line bg-paper py-1.5 shadow-lift">
-                  {exploreLinks.map(({ href, label }) => (
-                    <Link
-                      key={label}
-                      href={href}
-                      onClick={() => setExploreOpen(false)}
-                      className="block px-4 py-2 font-mono text-[11px] uppercase tracking-[0.05em] text-muted transition-colors hover:bg-surface-muted hover:text-strong"
-                    >
-                      {label}
-                    </Link>
-                  ))}
+                <div className="absolute left-0 top-full z-disclosure w-60 pt-[10px]">
+                  <div className="rounded-2xl border border-white/40 bg-header/95 py-2 shadow-[var(--shadow-lift)] backdrop-blur-xl">
+                    {exploreLinks.map(({ href, label }) => (
+                      <Link
+                        key={label}
+                        href={href}
+                        onClick={() => setExploreOpen(false)}
+                        className="mx-2 block rounded-lg px-3 py-2 font-mono text-[11px] uppercase tracking-[0.05em] text-muted transition-colors hover:bg-surface-muted hover:text-strong"
+                      >
+                        {label}
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               )}
             </li>
@@ -218,11 +250,22 @@ export function Navbar() {
                 href="/harita"
                 onMouseEnter={() => setHoveredKey('harita')}
                 onMouseLeave={() => setHoveredKey(null)}
-                className={`block px-3 py-2 font-mono text-[12px] uppercase tracking-[0.05em] transition-colors ${
-                  isActive('/harita') ? 'text-brand' : 'text-muted hover:text-strong'
-                }`}
+                className={`block ${navLinkClass(isActive('/harita'))}`}
               >
                 Harita
+              </Link>
+            </li>
+            <li className="relative z-10">
+              <Link
+                ref={(el) => {
+                  linkRefs.current.ulasim = el;
+                }}
+                href="/ulasim"
+                onMouseEnter={() => setHoveredKey('ulasim')}
+                onMouseLeave={() => setHoveredKey(null)}
+                className={`block ${navLinkClass(isActive('/ulasim'))}`}
+              >
+                Ulaşım
               </Link>
             </li>
             <li className="relative z-10">
@@ -234,9 +277,7 @@ export function Navbar() {
                 onMouseEnter={() => setHoveredKey('rotam')}
                 onMouseLeave={() => setHoveredKey(null)}
                 aria-label={showBadge ? `Rotam, ${count} durak` : 'Rotam'}
-                className={`relative block px-3 py-2 font-mono text-[12px] uppercase tracking-[0.05em] transition-colors ${
-                  isActive('/rotam') ? 'text-brand' : 'text-muted hover:text-strong'
-                }`}
+                className={`relative block ${navLinkClass(isActive('/rotam'))}`}
               >
                 Rotam
                 {showBadge && (
@@ -254,9 +295,7 @@ export function Navbar() {
                 href="/gezilerim"
                 onMouseEnter={() => setHoveredKey('gezilerim')}
                 onMouseLeave={() => setHoveredKey(null)}
-                className={`block px-3 py-2 font-mono text-[12px] uppercase tracking-[0.05em] transition-colors ${
-                  isActive('/gezilerim') ? 'text-brand' : 'text-muted hover:text-strong'
-                }`}
+                className={`block ${navLinkClass(isActive('/gezilerim'))}`}
               >
                 Gezilerim
               </Link>
@@ -265,27 +304,29 @@ export function Navbar() {
         </nav>
 
         <div className="hidden items-center gap-2 lg:flex">
-          <Button href="/gezi-planla" size="sm">
+          <Button href="/gezi-planla" size="sm" variant={transparent ? 'white' : 'primary'}>
             Gezi Planla
           </Button>
           <Link
             href="/favoriler"
             aria-label="Favorilerim"
-            className={`flex items-center gap-1.5 px-2.5 py-2 font-mono text-[12px] uppercase tracking-[0.05em] transition-colors hover:bg-surface-muted ${
-              isActive('/favoriler') ? 'text-brand' : 'text-muted'
-            }`}
+            className={`flex items-center gap-1.5 rounded-full px-3 py-2 font-mono text-[12px] uppercase tracking-[0.05em] transition-colors ${
+              transparent ? 'hover:bg-white/15' : 'hover:bg-surface-muted'
+            } ${isActive('/favoriler') ? (transparent ? 'text-brand-bright' : 'text-brand') : transparent ? 'text-on-ink-muted' : 'text-muted'}`}
           >
             <HeartIcon filled={isActive('/favoriler')} className="h-[18px] w-[18px]" />
             <span className="hidden xl:inline">Favoriler</span>
           </Link>
-          <ThemeToggle />
+          <ThemeToggle className={transparent ? 'text-on-ink-muted hover:bg-white/15 hover:text-on-ink-strong' : ''} />
         </div>
 
-        <div className="flex items-center lg:hidden">
-          <ThemeToggle />
+        <div className="flex items-center gap-1 lg:hidden">
+          <ThemeToggle className={transparent ? 'text-on-ink-muted hover:bg-white/15 hover:text-on-ink-strong' : ''} />
           <button
             type="button"
-            className="flex h-11 w-11 items-center justify-center text-strong transition-colors hover:bg-surface-muted"
+            className={`flex h-11 w-11 items-center justify-center rounded-full transition-colors ${
+              transparent ? 'text-on-ink-strong hover:bg-white/15' : 'text-strong hover:bg-surface-muted'
+            }`}
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
             aria-controls="mobile-nav"
@@ -302,21 +343,21 @@ export function Navbar() {
       {open && createPortal(
         <div
           id="mobile-nav"
-          className="fixed inset-x-0 bottom-0 z-overlay overflow-y-auto border-t border-line bg-header lg:hidden"
-          style={{ top: scrolled ? '3.5rem' : '4rem' }}
+          className="fixed inset-x-3 bottom-3 z-overlay overflow-y-auto rounded-3xl border border-white/40 bg-header shadow-[var(--shadow-ink)] backdrop-blur-xl lg:hidden"
+          style={{ top: scrolled ? '3.75rem' : '4.25rem' }}
         >
           <div className="flex min-h-full flex-col px-5 pb-8 pt-7 sm:px-8">
             <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-subtle">Kuzey Kıbrıs&apos;ı keşfet</p>
 
             <nav aria-label="Mobil navigasyon" className="mt-4">
-              <ul className="border-y border-line">
+              <ul className="divide-y divide-line rounded-2xl bg-surface">
                 <li>
                   <button
                     type="button"
                     onClick={() => setMobileExploreOpen((v) => !v)}
                     aria-expanded={mobileExploreOpen}
                     aria-controls="mobile-explore-panel"
-                    className="flex min-h-14 w-full items-center justify-between gap-4 py-3.5 active:opacity-60"
+                    className="flex min-h-14 w-full items-center justify-between gap-4 px-4 py-3.5 active:opacity-60"
                   >
                     <span className="flex items-baseline gap-3">
                       <span className="font-mono text-[11px] tabular-nums text-faint">01</span>
@@ -325,10 +366,10 @@ export function Navbar() {
                     <ChevronDownIcon className={`h-4 w-4 shrink-0 text-faint transition-transform ${mobileExploreOpen ? 'rotate-180' : ''}`} />
                   </button>
                   {mobileExploreOpen && (
-                    <ul id="mobile-explore-panel" className="border-t border-line pb-2">
+                    <ul id="mobile-explore-panel" className="pb-2">
                       {exploreLinks.map(({ href, label }) => (
                         <li key={label}>
-                          <Link href={href} className="flex min-h-11 items-center gap-3 py-2.5 pl-9 font-serif text-[17px] text-strong active:opacity-60">
+                          <Link href={href} className="flex min-h-11 items-center gap-3 px-4 py-2.5 pl-9 text-[17px] text-strong active:opacity-60">
                             {label}
                           </Link>
                         </li>
@@ -336,11 +377,20 @@ export function Navbar() {
                     </ul>
                   )}
                 </li>
-                <li className="border-t border-line">
-                  <Link href="/harita" className="group flex min-h-14 items-center justify-between gap-4 py-3.5 active:opacity-60">
+                <li>
+                  <Link href="/harita" className="group flex min-h-14 items-center justify-between gap-4 px-4 py-3.5 active:opacity-60">
                     <span className="flex items-baseline gap-3">
                       <span className="font-mono text-[11px] tabular-nums text-faint">02</span>
                       <span className={`font-display text-2xl leading-none ${isActive('/harita') ? 'text-brand' : 'text-strong'}`}>Harita</span>
+                    </span>
+                    <ArrowRightIcon className="h-4 w-4 shrink-0 text-faint transition-transform group-active:translate-x-1" />
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/ulasim" className="group flex min-h-14 items-center justify-between gap-4 px-4 py-3.5 active:opacity-60">
+                    <span className="flex items-baseline gap-3">
+                      <span className="font-mono text-[11px] tabular-nums text-faint">03</span>
+                      <span className={`font-display text-2xl leading-none ${isActive('/ulasim') ? 'text-brand' : 'text-strong'}`}>Ulaşım</span>
                     </span>
                     <ArrowRightIcon className="h-4 w-4 shrink-0 text-faint transition-transform group-active:translate-x-1" />
                   </Link>
@@ -351,8 +401,8 @@ export function Navbar() {
             <div className="mt-5 grid grid-cols-3 gap-2.5">
               <Link
                 href="/rotam"
-                className={`relative flex flex-col items-center gap-2 border py-4 text-center transition-colors active:opacity-70 ${
-                  isActive('/rotam') ? 'border-brand bg-brand/5' : 'border-line'
+                className={`relative flex flex-col items-center gap-2 rounded-2xl py-4 text-center transition-colors active:opacity-70 ${
+                  isActive('/rotam') ? 'bg-brand/10' : 'bg-surface'
                 }`}
               >
                 <RouteIcon className={`h-5 w-5 ${isActive('/rotam') ? 'text-brand' : 'text-muted'}`} />
@@ -365,8 +415,8 @@ export function Navbar() {
               </Link>
               <Link
                 href="/gezilerim"
-                className={`flex flex-col items-center gap-2 border py-4 text-center transition-colors active:opacity-70 ${
-                  isActive('/gezilerim') ? 'border-brand bg-brand/5' : 'border-line'
+                className={`flex flex-col items-center gap-2 rounded-2xl py-4 text-center transition-colors active:opacity-70 ${
+                  isActive('/gezilerim') ? 'bg-brand/10' : 'bg-surface'
                 }`}
               >
                 <CompassIcon className={`h-5 w-5 ${isActive('/gezilerim') ? 'text-brand' : 'text-muted'}`} />
@@ -374,8 +424,8 @@ export function Navbar() {
               </Link>
               <Link
                 href="/favoriler"
-                className={`flex flex-col items-center gap-2 border py-4 text-center transition-colors active:opacity-70 ${
-                  isActive('/favoriler') ? 'border-brand bg-brand/5' : 'border-line'
+                className={`flex flex-col items-center gap-2 rounded-2xl py-4 text-center transition-colors active:opacity-70 ${
+                  isActive('/favoriler') ? 'bg-brand/10' : 'bg-surface'
                 }`}
               >
                 <HeartIcon filled={isActive('/favoriler')} className={`h-5 w-5 ${isActive('/favoriler') ? 'text-brand' : 'text-muted'}`} />

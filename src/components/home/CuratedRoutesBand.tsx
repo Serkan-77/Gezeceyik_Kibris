@@ -23,7 +23,7 @@ export function CuratedRoutesBand({ trips }: CuratedRoutesBandProps) {
   if (trips.length === 0) return null;
 
   return (
-    <section className="border-t border-line bg-surface py-16 sm:py-24" aria-labelledby="curated-routes-heading">
+    <section className="border-t border-line bg-surface py-12 sm:py-16" aria-labelledby="curated-routes-heading">
       <Container>
         <div className="flex flex-wrap items-end justify-between gap-4 border-b border-line pb-5">
           <div>

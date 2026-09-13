@@ -40,7 +40,7 @@ function getServerSnapshot(): Theme {
   return 'light';
 }
 
-export function ThemeToggle() {
+export function ThemeToggle({ className = '' }: { className?: string }) {
   const theme = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   const toggle = () => {
@@ -60,7 +60,7 @@ export function ThemeToggle() {
       type="button"
       onClick={toggle}
       aria-label={theme === 'dark' ? 'Açık temaya geç' : 'Koyu temaya geç'}
-      className="flex h-11 w-11 items-center justify-center text-muted transition-colors hover:bg-surface-muted hover:text-strong"
+      className={`flex h-11 w-11 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface-muted hover:text-strong ${className}`}
     >
       {theme === 'dark' ? <SunIcon className="h-[18px] w-[18px]" /> : <MoonIcon className="h-[18px] w-[18px]" />}
     </button>

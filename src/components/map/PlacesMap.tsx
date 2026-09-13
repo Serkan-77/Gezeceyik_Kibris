@@ -45,8 +45,8 @@ function dotIcon(state: MarkerState): L.DivIcon {
     return L.divIcon({
       html: `<div style="
         width:18px;height:18px;border-radius:9999px;
-        background:#141414;border:2px solid white;
-        box-shadow:0 0 0 5px rgba(29,92,130,0.28), 0 2px 6px rgb(23 25 28 / 0.35);
+        background:#151A1F;border:2px solid white;
+        box-shadow:0 0 0 5px rgba(10,110,140,0.28), 0 2px 6px rgb(23 25 28 / 0.35);
       "></div>`,
       className: '',
       iconSize: [18, 18],
@@ -58,8 +58,8 @@ function dotIcon(state: MarkerState): L.DivIcon {
     return L.divIcon({
       html: `<div style="
         width:10px;height:10px;border-radius:9999px;
-        background:#1D5C82;border:1.5px solid white;
-        box-shadow:0 0 0 2.5px #1D5C82;
+        background:#0A6E8C;border:1.5px solid white;
+        box-shadow:0 0 0 2.5px #0A6E8C;
       "></div>`,
       className: '',
       iconSize: [10, 10],
@@ -70,7 +70,7 @@ function dotIcon(state: MarkerState): L.DivIcon {
   return L.divIcon({
     html: `<div style="
       width:10px;height:10px;border-radius:9999px;
-      background:#1D5C82;border:1.5px solid white;
+      background:#0A6E8C;border:1.5px solid white;
       box-shadow:0 1px 3px rgb(23 25 28 / 0.35);
     "></div>`,
     className: '',
@@ -84,7 +84,7 @@ function routeIcon(order: number): L.DivIcon {
   return L.divIcon({
     html: `<div data-marker-enter style="
       width:24px;height:24px;border-radius:9999px;
-      background:#141414;border:2px solid white;
+      background:#151A1F;border:2px solid white;
       box-shadow:0 2px 6px rgb(23 25 28 / 0.35);
       display:flex;align-items:center;justify-content:center;
       font:700 11px var(--font-sans);color:white;
@@ -109,10 +109,10 @@ function clusterIcon(count: number): L.DivIcon {
   return L.divIcon({
     html: `<div style="
       width:${size}px;height:${size}px;border-radius:9999px;
-      background:color-mix(in srgb, #1D5C82 16%, transparent);border:1.5px solid color-mix(in srgb, #1D5C82 55%, transparent);
+      background:color-mix(in srgb, #0A6E8C 16%, transparent);border:1.5px solid color-mix(in srgb, #0A6E8C 55%, transparent);
       box-shadow:0 2px 8px rgb(20 20 20 / 0.18), inset 0 0 0 4px rgb(255 255 255 / 0.55);
       display:flex;align-items:center;justify-content:center;
-      font:700 ${fontSize}px var(--font-mono);color:#0F3450;
+      font:700 ${fontSize}px var(--font-mono);color:#06465A;
     ">${count}</div>`,
     className: '',
     iconSize: [size, size],

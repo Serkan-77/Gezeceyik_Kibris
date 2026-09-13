@@ -5,7 +5,7 @@
 // hover) but at feature scale, with the route's real stops laid out as a
 // pipeline instead of hidden behind "view route".
 
-import Image from 'next/image';
+import { SafeImage } from '@/components/ui/SafeImage';
 import Link from 'next/link';
 import { CuratedTrip } from '@/lib/curatedRoutes';
 import { tr } from '@/lib/i18n/tr';
@@ -31,11 +31,11 @@ export function CuratedRouteSpotlight({ trip }: CuratedRouteSpotlightProps) {
   return (
     <Link
       href={`/rotalar/${trip.slug}`}
-      className="group grid overflow-hidden border border-line bg-surface transition-colors hover:border-ink sm:grid-cols-2"
+      className="group grid overflow-hidden rounded-3xl bg-surface shadow-[var(--shadow-card)] transition-[box-shadow,transform] duration-[var(--duration-base)] hover:-translate-y-1 hover:shadow-[var(--shadow-lift)] sm:grid-cols-2"
     >
-      <div className="relative min-h-[260px] overflow-hidden border-b border-line bg-surface-muted sm:min-h-[420px] sm:border-b-0 sm:border-r">
+      <div className="relative min-h-[260px] overflow-hidden bg-surface-muted sm:min-h-[420px]">
         {trip.coverImage ? (
-          <Image
+          <SafeImage
             src={trip.coverImage}
             alt=""
             fill
@@ -87,7 +87,7 @@ export function CuratedRouteSpotlight({ trip }: CuratedRouteSpotlightProps) {
             <RouteIcon className="h-3.5 w-3.5 shrink-0" />
             <span className="truncate">{tr.curatedRoutes.startsFrom(itinerary.input.accommodation.label)}</span>
           </p>
-          <span className="inline-flex shrink-0 items-center gap-2 border border-brand-fill bg-brand-fill px-5 py-2.5 font-mono text-xs font-semibold uppercase tracking-[0.06em] text-white shadow-[3px_3px_0_0_var(--color-ink)] transition-[transform,box-shadow] duration-[var(--duration-fast)] group-hover:translate-x-[3px] group-hover:translate-y-[3px] group-hover:shadow-none">
+          <span className="inline-flex shrink-0 items-center gap-2 rounded-full bg-brand-fill px-5 py-2.5 font-sans text-[13px] font-semibold text-white shadow-[var(--shadow-card)] transition-[box-shadow] duration-[var(--duration-base)] group-hover:shadow-[var(--shadow-glow)]">
             {tr.curatedRoutes.viewRoute}
             <ArrowRightIcon className="h-3.5 w-3.5" />
           </span>

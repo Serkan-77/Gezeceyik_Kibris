@@ -9,7 +9,7 @@
 import { ComponentPropsWithoutRef, ReactNode } from 'react';
 import { useInView } from '@/hooks/useInView';
 
-type HeadingTag = 'h1' | 'h2' | 'h3';
+type HeadingTag = 'h1' | 'h2' | 'h3' | 'span';
 
 interface SplitHeadingOwnProps {
   as?: HeadingTag;

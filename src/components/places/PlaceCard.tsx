@@ -1,11 +1,12 @@
 // components/places/PlaceCard.tsx
-// "Kıbrıs Atlas" rebuild — a specimen-plate card, not a photo-with-text-
-// overlay. The photograph sits in a hairline-bordered frame on its own;
-// the name, category and index number live in a caption block BELOW it,
-// like a museum label under a framed print. No gradient scrim, no white
-// pill badges on the image — the frame and the rule under it do the work.
+// Fourth rebuild — "Smooth Mediterranean Futurism". The hairline-framed
+// specimen-plate card (photo boxed off, museum-label caption below) is
+// gone as a composition: this is now one soft rounded surface that
+// lifts smoothly on hover, photography always in full color (no
+// grayscale-to-color reveal — that was an archival device), caption
+// resting directly under the image with no dividing rule.
 
-import Image from 'next/image';
+import { SafeImage } from '@/components/ui/SafeImage';
 import Link from 'next/link';
 import { Place } from '@/types/place';
 import { tr } from '@/lib/i18n/tr';
@@ -36,40 +37,46 @@ export function PlaceCard({ place, size = 'md', priority, rating, aspectClassNam
   return (
     <Link
       href={`/places/${place.slug}`}
-      className={`group relative flex flex-col border border-line bg-surface transition-colors hover:border-ink${fillHeight ? ' h-full' : ''}`}
+      className={`group relative flex flex-col overflow-hidden rounded-2xl bg-surface shadow-[var(--shadow-card)] transition-[box-shadow,transform] duration-[var(--duration-base)] ease-[var(--ease-out)] hover:-translate-y-1 hover:shadow-[var(--shadow-lift)]${fillHeight ? ' h-full' : ''}`}
     >
       <div
-        className={`relative w-full overflow-hidden border-b border-line bg-surface-muted ${
+        className={`relative w-full overflow-hidden bg-surface-muted ${
           fillHeight ? 'min-h-[160px] flex-1' : `${aspect} shrink-0`
         }`}
       >
         {place.image ? (
-          <Image
+          <SafeImage
             src={place.image}
             alt={`${place.name}, ${place.city}`}
             fill
             priority={priority}
             sizes={size === 'lg' ? '(max-width: 640px) 100vw, 50vw' : '(max-width: 640px) 50vw, 25vw'}
-            className="object-cover grayscale-[15%] transition-[filter,transform] duration-[var(--duration-slow)] ease-[var(--ease-out)] group-hover:grayscale-0"
+            className="object-cover transition-transform duration-[var(--duration-slow)] ease-[var(--ease-out)] group-hover:scale-[1.04]"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-deep">
             <span className="font-display text-lg text-white/25">Gezeceyik</span>
           </div>
         )}
+        {/* Soft bottom scrim so the caption reads even without the old
+            hairline divider between photo and text. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-[linear-gradient(0deg,color-mix(in_oklab,var(--color-deep)_35%,transparent)_0%,transparent_100%)] opacity-0 transition-opacity duration-[var(--duration-base)] group-hover:opacity-100"
+        />
 
-        <div className="absolute right-2 top-2">
+        <div className="absolute right-2.5 top-2.5">
           <FavoriteButton slug={place.slug} name={place.name} size="sm" />
         </div>
 
         {representative && (
-          <span className="absolute bottom-0 left-0 border-r border-t border-line bg-surface/95 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.06em] text-subtle">
+          <span className="absolute bottom-2.5 left-2.5 rounded-full bg-white/90 px-2.5 py-1 font-mono text-[9px] uppercase tracking-[0.06em] text-subtle backdrop-blur-sm">
             Temsili
           </span>
         )}
       </div>
 
-      <div className="flex shrink-0 flex-col gap-2 p-3 sm:p-3.5">
+      <div className="flex shrink-0 flex-col gap-2 p-4">
         <div>
           <p className="flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.08em] text-subtle">
             <span className="flex items-center gap-1.5">
@@ -78,13 +85,13 @@ export function PlaceCard({ place, size = 'md', priority, rating, aspectClassNam
             </span>
             {index !== undefined && <span className="text-faint">N&deg;{String(index + 1).padStart(3, '0')}</span>}
           </p>
-          <h3 className="mt-1 line-clamp-2 min-h-[2.5em] font-serif text-[17px] font-semibold leading-tight text-strong">{place.name}</h3>
+          <h3 className="mt-1.5 line-clamp-2 min-h-[2.5em] font-display text-[17px] font-semibold leading-tight text-strong">{place.name}</h3>
         </div>
         <p className="flex items-center gap-1.5 font-mono text-[11px] text-muted">
           <span>{place.city}, {place.region}</span>
           {rating && rating.count > 0 && (
             <span className="ml-auto flex items-center gap-1 text-ink-soft">
-              <StarIcon filled className="h-3 w-3 text-ochre" />
+              <StarIcon filled className="h-3 w-3 text-sand" />
               {rating.average.toFixed(1)}
             </span>
           )}

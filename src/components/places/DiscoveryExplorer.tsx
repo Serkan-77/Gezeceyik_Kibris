@@ -144,67 +144,88 @@ export function DiscoveryExplorer({ places, categories, regions, lockedCategory,
     });
   }, [filtered, sortBy, ratings]);
 
+  // Three tile sizes on a repeating 9-item cycle, not two — so scrolling
+  // through 122 places reads as a recurring lead/wide/standard cadence
+  // (Top-Design: "unexpected scale shifts create rhythm") instead of one
+  // moment of drama up top followed by a wall of identical squares.
+  // grid-flow-dense (below) auto-fills the gaps the larger tiles leave
+  // behind, so this needs no manual row/column placement per item.
+  const CYCLE = 9;
+  type TileSpan = 'lead' | 'wide' | 'standard';
+  const tileSpan = (i: number): TileSpan => {
+    const pos = i % CYCLE;
+    if (pos === 0) return 'lead'; // 2x2
+    if (pos === 4) return 'wide'; // 2x1
+    return 'standard';
+  };
+
   return (
     <div>
-      <div className="max-w-2xl">
-        <p className="font-mono text-xs uppercase tracking-[0.14em] text-brand">§01 — Keşfet</p>
-        <h1 className="mt-1 font-display text-page-title leading-[0.9] text-strong text-balance pt-[0.5em] pb-[0.22em]">{title}</h1>
-        <p className="mt-3 font-serif text-body leading-relaxed text-muted text-pretty">{subtitle}</p>
+      {/* Header as architecture: the count becomes an oversized numeral the
+          title runs alongside, not a small caption beneath it — an
+          asymmetric two-column mast instead of a centered stacked block. */}
+      <div className="grid gap-6 border-b border-line pb-8 sm:grid-cols-[auto_1fr] sm:items-end sm:gap-10">
+        <p className="font-display text-display leading-[0.8] text-strong tabular-nums">
+          {String(places.length).padStart(3, '0')}
+        </p>
+        <div>
+          <p className="font-mono text-xs uppercase tracking-[0.14em] text-brand">§01 — Keşfet</p>
+          <h1 className="mt-1 font-display text-page-title leading-[0.94] text-strong text-balance pt-[0.2em] pb-[0.1em]">{title}</h1>
+          <p className="mt-2 max-w-lg font-serif text-body leading-relaxed text-muted text-pretty">{subtitle}</p>
+        </div>
       </div>
 
-      <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-        <div className="flex-1">
+      {/* Filter instrument strip — mono labels over hairline-divided
+          fields, the same cartographic register as WeatherBand/CategoryNav,
+          not a generic form row of boxed inputs. */}
+      <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-4 border-b border-line pb-6 sm:grid-cols-[1.4fr_1fr_1fr_1fr_auto] sm:items-end sm:gap-x-6">
+        <div className="col-span-2 sm:col-span-1">
+          <label htmlFor="discovery-q" className="mb-1.5 block font-mono text-[10px] uppercase tracking-[0.08em] text-subtle">Ara</label>
           <Input
+            id="discovery-q"
             icon={<SearchIcon className="h-4 w-4" />}
-            placeholder="İsim veya şehirle ara…"
+            placeholder="İsim veya şehir…"
             value={queryInput}
             onChange={(e) => setQueryInput(e.target.value)}
-            aria-label="Yer ara"
           />
         </div>
         {!lockedCategory && (
-          <Select
-            value={selectedCategory}
-            onChange={(e) => setParam('category', e.target.value)}
-            aria-label="Kategori"
-            className="sm:w-52"
-          >
-            <option value={ALL}>Tüm kategoriler</option>
-            {categories.map((c) => (
-              <option key={c} value={c}>
-                {tr.categories[c]}
+          <div>
+            <label className="mb-1.5 block font-mono text-[10px] uppercase tracking-[0.08em] text-subtle">Kategori</label>
+            <Select value={selectedCategory} onChange={(e) => setParam('category', e.target.value)} aria-label="Kategori">
+              <option value={ALL}>Tümü</option>
+              {categories.map((c) => (
+                <option key={c} value={c}>
+                  {tr.categories[c]}
+                </option>
+              ))}
+            </Select>
+          </div>
+        )}
+        <div>
+          <label className="mb-1.5 block font-mono text-[10px] uppercase tracking-[0.08em] text-subtle">Bölge</label>
+          <Select value={selectedRegion} onChange={(e) => setParam('region', e.target.value)} aria-label="Bölge">
+            <option value={ALL}>Tümü</option>
+            {regions.map((r) => (
+              <option key={r} value={r}>
+                {r}
               </option>
             ))}
           </Select>
-        )}
-        <Select
-          value={selectedRegion}
-          onChange={(e) => setParam('region', e.target.value)}
-          aria-label="Bölge"
-          className="sm:w-48"
-        >
-          <option value={ALL}>Tüm bölgeler</option>
-          {regions.map((r) => (
-            <option key={r} value={r}>
-              {r}
-            </option>
-          ))}
-        </Select>
-        <Select
-          value={sortBy}
-          onChange={(e) => setParam('sort', e.target.value)}
-          aria-label="Sıralama"
-          className="sm:w-56"
-        >
-          <option value="default">Öne çıkanlar</option>
-          <option value="rating">Gezeceyik Puanına göre</option>
-        </Select>
-        <Button href="/harita" variant="secondary" icon={<MapIcon className="h-4 w-4" />} iconPosition="leading" className="shrink-0">
+        </div>
+        <div>
+          <label className="mb-1.5 block font-mono text-[10px] uppercase tracking-[0.08em] text-subtle">Sırala</label>
+          <Select value={sortBy} onChange={(e) => setParam('sort', e.target.value)} aria-label="Sıralama">
+            <option value="default">Öne çıkanlar</option>
+            <option value="rating">Puana göre</option>
+          </Select>
+        </div>
+        <Button href="/harita" variant="secondary" icon={<MapIcon className="h-4 w-4" />} iconPosition="leading" className="col-span-2 sm:col-span-1">
           Haritada gör
         </Button>
       </div>
 
-      <p className="mt-6 font-mono text-xs uppercase tracking-[0.05em] text-subtle">{filtered.length} yer bulundu</p>
+      <p className="mt-5 font-mono text-xs uppercase tracking-[0.05em] text-subtle">{filtered.length} yer bulundu</p>
 
       {filtered.length === 0 ? (
         <div className="mt-16 flex flex-col items-center justify-center border border-line py-16 text-center">
@@ -214,22 +235,23 @@ export function DiscoveryExplorer({ places, categories, regions, lockedCategory,
           </p>
         </div>
       ) : (
-        <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-          {sorted.map((place, i) => (
-            // The lead card also spans 2 rows at lg so it sits flush against its
-            // row-mates' combined height, instead of a taller 16:10 card leaving a
-            // gap below the shorter square cards beside it in the same row.
-            <div key={place.slug} className={i === 0 ? 'col-span-2 lg:row-span-2' : ''}>
-              <PlaceCard
-                place={place}
-                size={i === 0 ? 'lg' : 'md'}
-                priority={i < 4}
-                rating={ratings[place.id]}
-                fillHeight={i === 0}
-                index={i}
-              />
-            </div>
-          ))}
+        <div className="mt-6 grid grid-flow-row-dense grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+          {sorted.map((place, i) => {
+            const span = tileSpan(i);
+            return (
+              <div key={place.slug} className={span === 'lead' ? 'col-span-2 lg:row-span-2' : span === 'wide' ? 'col-span-2' : ''}>
+                <PlaceCard
+                  place={place}
+                  size={span === 'standard' ? 'md' : 'lg'}
+                  aspectClassName={span === 'wide' ? 'aspect-[21/9]' : undefined}
+                  priority={i < 4}
+                  rating={ratings[place.id]}
+                  fillHeight={span === 'lead'}
+                  index={i}
+                />
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
